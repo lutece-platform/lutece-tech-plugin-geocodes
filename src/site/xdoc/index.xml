@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Plugin geocodes</title>
+    </properties>
+    <head>
+        <!-- Keywords example : "cms, authentication, cms, workflow, seo, collaborative, ..." 
+             Use the language of this xdoc -->
+        <meta name="keywords" content="city, country, codification, INSEE" />
+    </head>
+    <body>
+        <section name="Plugin geocodes">
+            <!--
+            <p>
+                <img src="images/geocodes.png" />
+            </p>
+            -->
+            <subsection name="Introduction">
+               <p>The purpose of this plug-in is to provide a service to: </p>
+                 <p> - find a city or country label according to its INSEE code,</p>
+                 <p> - search for countries or communes on their wording (minimum 3 first letters), to obtain their INSEE codes</p>
+            </subsection>
+            <subsection name="Configuration">
+                <p></p>
+            </subsection>
+            <subsection name="Usage">
+                <p>The data is accessible through two channels: </p>
+                 <p> - a GeoCodesService java class</p>
+                 <p> - a REST service (see swagger documentation, available with the swaggerui plugin) : </p>
+                    <ul>
+				   <li>GET /rest/geocodes/api/v1/cities/{id}</li>
+				   <li>GET /rest/geocodes/api/v1/cities/search/{str}</li>
+				   <li>GET /rest/geocodes/api/v1/countries</li>
+				   <li>GET /rest/geocodes/api/v1/countries/{id}</li>
+				   <li>GET /rest/geocodes/api/v1/countries/search/{str}</li>
+				   </ul>
+            </subsection>
+        </section>
+    </body>
+</document>
+

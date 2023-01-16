@@ -1,0 +1,50 @@
+<#include "managegeocodes_tabs.html" />
+<@tabs2 tab="city" />
+
+<@box>
+	<@boxHeader title='#i18n{geocodes.manage_city.title}' boxTools=true>
+		<@tform class='form-inline pull-right' name='manage_city' action='jsp/admin/plugins/geocodes/ManageCities.jsp'>
+			<@button type='submit' name='view_createCity' buttonIcon='plus' title='#i18n{geocodes.manage_cities.buttonAdd}' />
+		</@tform>
+	</@boxHeader>
+	<@boxBody>    
+    <@messages infos=infos />
+    <@paginationAdmin paginator=paginator combo=1 />
+    <div class="clearfix"></div>
+    <@table>
+        <tr>
+            <th>#i18n{geocodes.manage_cities.columnCodeCountry}</th>
+            <th>#i18n{geocodes.manage_cities.columnCode}</th>
+            <th>#i18n{geocodes.manage_cities.columnValue}</th>
+            <th>#i18n{geocodes.manage_cities.columnCodeZone}</th>
+            <th>#i18n{portal.util.labelActions}</th>
+        </tr>
+        <@tableHeadBodySeparator />
+        <#list city_list as city >
+        <tr>
+            <td>
+				${city.codeCountry}
+			</td>
+            <td>
+				${city.code}
+			</td>
+            <td>
+				${city.value}
+			</td>
+            <td>
+				${city.codeZone}
+			</td>
+        	<td>
+				<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?view=modifyCity&id=${city.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
+						
+				<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=confirmRemoveCity&id=${city.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+
+	        </td>
+        </tr>
+        </#list>
+    </@table>
+
+    <@paginationAdmin paginator=paginator />
+
+  </@boxBody>
+</@box>

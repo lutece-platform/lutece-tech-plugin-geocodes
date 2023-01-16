@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plug-in>
+    <name>geocodes</name>
+    <class>fr.paris.lutece.portal.service.plugin.PluginDefaultImplementation</class>
+    <version>1.0.0-SNAPSHOT</version>
+    <documentation></documentation>
+    <installation></installation>
+    <changes></changes>
+    <user-guide></user-guide>
+    <description>geocodes.plugin.description</description>
+    <provider>geocodes.plugin.provider</provider>
+    <provider-url>https://lutece.paris.fr</provider-url>
+    <icon-url>images/admin/skin/plugins/geocodes/globe.pngs</icon-url>
+    <copyright>(c) mdp 2023</copyright>
+    <db-pool-required>1</db-pool-required>
+    
+    <core-version-dependency>
+        <min-core-version>4.1.0</min-core-version>
+        <max-core-version/>
+    </core-version-dependency>
+
+    <!-- Admin features parameters -->
+    <admin-features>
+        <admin-feature>
+            <feature-id>GEOCODES_MANAGEMENT</feature-id>
+            <feature-title>geocodes.adminFeature.ManageGeoCodes.name</feature-title>
+            <feature-description>geocodes.adminFeature.ManageGeoCodes.description</feature-description>
+            <feature-level>1</feature-level>
+            <feature-url>jsp/admin/plugins/geocodes/ManageCities.jsp</feature-url>
+            <feature-icon-url>images/admin/skin/plugins/geocodes/globe.png</feature-icon-url>
+        </admin-feature>
+    </admin-features>
+
+    <!-- XPages parameters -->
+    <applications>
+    </applications>
+
+    <!-- Portlet parameters -->
+    <portlets>
+    </portlets>
+    
+    <!-- Place plugin resources declaration above (remove if unnecessary) -->
+
+    <!-- CSS -->
+    <!--
+    <css-stylesheets>
+        <css-stylesheets-scope>xpage|portal</css-stylesheets-scope>
+        <css-stylesheet>...</css-stylesheet>
+    </css-stylesheets>
+    -->
+
+    <!-- BackOffice CSS -->
+    <!--
+    <admin-css-stylesheets>
+        <admin-css-stylesheet>...</admin-css-stylesheet>
+    </admin-css-stylesheets>
+    -->
+
+    <!-- Freemarker macros -->
+    <!-- 
+    <freemarker-macro-files>
+        <freemarker-macro-file>...</freemarker-macro-file>
+    </freemarker-macro-files>
+    -->
+
+    <!-- Javascript files -->
+    <!--
+    <javascript-files>
+        <javascript-files-scope>xpage|portal</javascript-files-scope>
+        <javascript-file>...</javascript-file>
+    </javascript-files>
+    -->    
+    
+    <!-- RBAC Resources -->
+    <!--
+    <rbac-resource-types>
+        <rbac-resource-type>
+            <rbac-resource-type-class>...</rbac-resource-type-class>
+        </rbac-resource-type>
+    </rbac-resource-types>
+    -->
+
+    <!-- Admin Dashboard components -->
+    <!-- 
+    <admindashboard-components>
+        <admindashboard-component>
+            <dashboard-component-name>...</dashboard-component-name>
+            <dashboard-component-class>...</dashboard-component-class>
+        </admindashboard-component>
+    </admindashboard-components>
+    -->
+    
+    <!-- Dashboard components -->
+    <!--
+    <dashboard-components>
+        <dashboard-component>
+            <dashboard-component-name>...</dashboard-component-name>
+            <dashboard-component-class>...</dashboard-component-class>
+            <dashboard-feature-right>...</dashboard-feature-right>
+        </dashboard-component>
+    </dashboard-components>
+    -->
+
+    <!-- Daemons -->
+    <!-- 
+    <daemons>
+        <daemon>
+            <daemon-id>...</daemon-id>
+            <daemon-name>...</daemon-name>
+            <daemon-description>...</daemon-description>
+            <daemon-class>...</daemon-class>
+        </daemon>
+    </daemons>
+    -->
+    
+   
+    <!-- Other services -->
+    <!-- * servlets -->
+    <!-- * Listeners -->
+    <!-- * Portlets -->
+    <!-- * params -->
+    <!-- * search-indexers -->
+    <!-- * link-service -->
+    <!-- * html-service -->
+    <!-- * content-service -->
+    <!-- * insert-services -->
+    <!-- * page-include-services -->
+    
+    <!-- see  lutece-core/webapp/WEB-INF/plugins/plugin_*.dtd -->
+
+</plug-in>
