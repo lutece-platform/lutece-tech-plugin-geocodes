@@ -1,0 +1,300 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Plugin geocodes",
+    "description": "Geocodes API"
+  },
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/rest/geocodes/api/v1/cities/search/{str}": {
+      "get": {
+        "description": "Search City name  beginning by {str} ",
+        "tags": [
+          "City"
+        ],
+        "parameters": [
+          {
+            "name": "str",
+            "in": "path",
+            "description": "Name of the city (at least 3 chars)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the City list",
+            "schema": {
+              "$ref": "#/definitions/CityListResult"
+            }
+          },
+          "204": {
+            "description": "No content",
+            "schema": {
+              "$ref": "#/definitions/NoContent"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/rest/geocodes/api/v1/cities/{id}": {
+      "get": {
+        "description": "Get City",
+        "tags": [
+          "City"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the City",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the City",
+            "schema": {
+              "$ref": "#/definitions/CityResult"
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/rest/geocodes/api/v1/countries": {
+      "get": {
+        "description": "Get Country list",
+        "tags": [
+          "Country"
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the Country list",
+            "schema": {
+              "$ref": "#/definitions/CountryListResult"
+            }
+          },
+          "204": {
+            "description": "No content",
+            "schema": {
+              "$ref": "#/definitions/NoContent"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/rest/geocodes/api/v1/countries/search/{str}": {
+      "get": {
+        "description": "Search Country",
+        "tags": [
+          "Country"
+        ],
+        "parameters": [
+          {
+            "name": "str",
+            "in": "path",
+            "description": "Name of the city (at least 3 chars)",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the Country list",
+            "schema": {
+              "$ref": "#/definitions/CountryListResult"
+            }
+          },
+          "204": {
+            "description": "No content",
+            "schema": {
+              "$ref": "#/definitions/NoContent"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/rest/geocodes/api/v1/countries/{id}": {
+      "get": {
+        "description": "Get Country",
+        "tags": [
+          "Country"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of the Country",
+            "required": true,
+            "type": "integer"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the Country",
+            "schema": {
+              "$ref": "#/definitions/CountryResult"
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "NoContent": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
+        },
+        "errorCode": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "CityListResult": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/City"
+          }
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "CityResult": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/City"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "City": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "code_country": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "code_zone": {
+          "type": "string"
+        }
+      }
+    },
+    "CountryListResult": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Country"
+          }
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "CountryResult": {
+      "type": "object",
+      "properties": {
+        "result": {
+          "$ref": "#/definitions/Country"
+        },
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "Country": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "code": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

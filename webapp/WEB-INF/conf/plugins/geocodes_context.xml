@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd" >
+
+    <bean id="geocodes.countryDAO" class="fr.paris.lutece.plugins.geocodes.business.CountryDAO" />
+    <bean id="geocodes.countryRest" class="fr.paris.lutece.plugins.geocodes.rs.CountryRest" />
+    <bean id="geocodes.cityDAO" class="fr.paris.lutece.plugins.geocodes.business.CityDAO" />
+    <bean id="geocodes.cityRest" class="fr.paris.lutece.plugins.geocodes.rs.CityRest" />
+
+    <bean id="geocodes.swaggerRest" class="fr.paris.lutece.plugins.geocodes.rs.SwaggerRest" />
+
+</beans>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+    <properties>
+        <title>Plugin geocodes</title>
+    </properties>
+    <head>
+        <!-- Keywords example : "cms, authentication, cms, workflow, seo, collaborative, ..." 
+             Use the language of this xdoc -->
+        <meta name="keywords" content="ville, pays, codification, INSEE" />
+    </head>
+    <body>
+        <section name="Plugin geocodes">
+            <!--
+            <p>
+                <img src="images/geocodes.png" />
+            </p>
+            -->
+            <subsection name="Introduction">
+                <p>L'objectif de ce plug-in est fournir un service permettant de : </p>
+                <p> - retrouver un libellé de commune ou de pays en fonction de son code INSEE,</p>
+                <p> - faire une recherche de pays ou commune sur leur libellé (3 première lettres minimum), pour obtenir leurs codes INSEE</p>
+            </subsection>
+            <subsection name="Configuration">
+                <p>s/o</p>
+            </subsection>
+            <subsection name="Usage">
+                <p>Les données sont accessibles via deux canaux : </p>
+                <p> - une classe java GeoCodesService</p>
+                <p> - un service REST (cf documentation swagger): </p>
+                    <ul>
+				   <li>GET /rest/geocodes/api/v1/cities/{id}</li>
+				   <li>GET /rest/geocodes/api/v1/cities/search/{str}</li>
+				   <li>GET /rest/geocodes/api/v1/countries</li>
+				   <li>GET /rest/geocodes/api/v1/countries/{id}</li>
+				   <li>GET /rest/geocodes/api/v1/countries/search/{str}</li>
+				   </ul>
+            </subsection>
+        </section>
+    </body>
+</document>
+
