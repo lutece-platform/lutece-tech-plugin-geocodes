@@ -1,13 +1,6 @@
-<#macro tabs2 tab >
-<@tabs>
-	<@tabList>
-			<li <#if tab="city">class="active"</#if>>
-				<@aButton href="jsp/admin/plugins/geocodes/ManageCities.jsp">#i18n{geocodes.manage_cities.pageTitle}</@aButton>
-			</li>
-			<li <#if tab="country">class="active"</#if>>
-				<@aButton href="jsp/admin/plugins/geocodes/ManageCountries.jsp">#i18n{geocodes.manage_countries.pageTitle}</@aButton>
-			</li>
-	</@tabList>
-</@tabs>
-
+<#macro tabsList2 tab>
+        <@tabList>
+            <@tabLink active=(tab == "city") href='jsp/admin/plugins/geocodes/ManageCities.jsp' title='#i18n{geocodes.manage_cities.pageTitle}'/>
+            <@tabLink active=(tab == "country") href='jsp/admin/plugins/geocodes/ManageCountries.jsp' title='#i18n{geocodes.manage_countries.pageTitle}'/>
+        </@tabList>
 </#macro>

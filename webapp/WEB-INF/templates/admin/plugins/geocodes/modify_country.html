@@ -1,22 +1,23 @@
 <#include "managegeocodes_tabs.html" />
-<@tabs2 tab="country" />
-
-
-<@box>
-	<@boxHeader title='#i18n{geocodes.modify_country.title}' />
-	<@boxBody>
-    <@tform class="form-horizontal" method="post" name="modify_country" action="jsp/admin/plugins/geocodes/ManageCountrys.jsp" >
-			<@messages errors=errors />
-			<@input type="hidden" id="id" name="id" value="${country.id}"/>
-			<@input type="hidden" value="${token}" name="token" />
-			
-			<@formGroup labelFor='code' labelKey='#i18n{geocodes.modify_country.labelCode}' mandatory=true>
-				<@input type='text' id='code' name='code'  maxlength=255 value='${country.code!\'\'}' tabIndex='0' />
-			</@formGroup>
-			<@formGroup labelFor='value' labelKey='#i18n{geocodes.modify_country.labelValue}' mandatory=true>
-				<@input type='text' id='value' name='value'  maxlength=255 value='${country.value!\'\'}' tabIndex='1' />
-			</@formGroup>
-        <@actionButtons button1Name="action_modifyCountry" button2Name="view_manageCountry"/>
-    </@tform>
-	</@boxBody>
-</@box>
+<@pageContainer>
+    <@pageColumn>
+        <@pageHeader title="#i18n{geocodes.modify_country.title}" />
+        <@messages errors=errors />
+        <@tabs> 
+            <@tabsList2 tab="country" />
+            <@tabContent>
+                <@tform class="form-horizontal" method="post" name="modify_country" id="modify-country-form" action="jsp/admin/plugins/geocodes/ManageCountries.jsp" >
+                    <@input type="hidden" id="id" name="id" value="${country.id}"/>
+                    <@input type="hidden" value="${token}" name="token" />
+                    <@formGroup labelFor='code' labelKey='#i18n{geocodes.modify_country.labelCode}' mandatory=true>
+                        <@input type='text' id='code' name='code'  maxlength=255 value='${country.code!\'\'}' tabIndex='0' />
+                    </@formGroup>
+                    <@formGroup labelFor='value' labelKey='#i18n{geocodes.modify_country.labelValue}' mandatory=true>
+                        <@input type='text' id='value' name='value'  maxlength=255 value='${country.value!\'\'}' tabIndex='1' />
+                    </@formGroup>
+                    <@actionButtons button1Name="action_modifyCountry" button2Name="view_manageCountry"/>
+                </@tform>
+            </@tabContent>
+        </@tabs>
+    </@pageColumn>
+</@pageContainer>

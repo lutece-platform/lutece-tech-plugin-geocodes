@@ -1,42 +1,37 @@
 <#include "managegeocodes_tabs.html" />
-<@tabs2 tab="country" />
-
-<@box>
-	<@boxHeader title='#i18n{geocodes.manage_country.title}' boxTools=true>
-		<@tform class='form-inline pull-right' name='manage_country' action='jsp/admin/plugins/geocodes/ManageCountries.jsp'>
-			<@button type='submit' name='view_createCountry' buttonIcon='plus' title='#i18n{geocodes.manage_countries.buttonAdd}' />
-		</@tform>
-	</@boxHeader>
-	<@boxBody>    
-    <@messages infos=infos />
-    <@paginationAdmin paginator=paginator combo=1 />
-    <div class="clearfix"></div>
-    <@table>
-        <tr>
-            <th>#i18n{geocodes.manage_countries.columnCode}</th>
-            <th>#i18n{geocodes.manage_countries.columnValue}</th>
-            <th>#i18n{portal.util.labelActions}</th>
-        </tr>
-        <@tableHeadBodySeparator />
-        <#list country_list as country >
-        <tr>
-            <td>
-				${country.code}
-			</td>
-            <td>
-				${country.value}
-			</td>
-        	<td>
-				<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?view=modifyCountry&id=${country.id}' title='#i18n{portal.util.labelModify}' hideTitle=['all'] buttonIcon='pencil' />
-						
-				<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?action=confirmRemoveCountry&id=${country.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
-
-	        </td>
-        </tr>
-        </#list>
-    </@table>
-
-    <@paginationAdmin paginator=paginator />
-
-  </@boxBody>
-</@box>
+<@pageContainer>
+	<@pageColumn>
+		<@pageHeader title='#i18n{geocodes.manage_countries.title}'>
+			<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view_createCountry" targetElement="#create-country-form" redirectForm=false id="create-country" title="#i18n{geocodes.create_country.title}" btnTitle="#i18n{geocodes.manage_countries.buttonAdd}" btnIcon="plus" position="end" />
+		</@pageHeader>
+		<@messages infos=infos />
+		<@tabs> 
+			<@tabsList2 tab="country" />
+			<@tabContent>
+				<@table>
+					<@tr>
+						<@th>#i18n{geocodes.manage_countries.columnCode}</@th>
+						<@th>#i18n{geocodes.manage_countries.columnValue}</@th>
+						<@th>#i18n{portal.util.labelActions}</@th>
+					</@tr>
+					<@tableHeadBodySeparator />
+					<#list country_list as country >
+						<@tr>
+							<@td>
+								${country.code}
+							</@td>
+							<@td>
+								${country.value}
+							</@td>
+							<@td>
+								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view=modifyCountry&id=${country.id}" targetElement="#modify-country-form" redirectForm=false id="modify-country-${country.id}" title="#i18n{geocodes.modify_country.title}" btnIcon="edit" position="end" />
+								<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?action=confirmRemoveCountry&id=${country.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+							</@td>
+						</@tr>
+					</#list>
+				</@table>
+			</@tabContent>
+		</@tabs>
+		<@paginationAdmin paginator=paginator combo=1 />
+	</@pageColumn>
+</@pageContainer>
