@@ -7,7 +7,6 @@
 			<@tabsList2 tab="city" />
 			<@tabContent>
 				<@tform name='create_city' id="create-city-form" action='jsp/admin/plugins/geocodes/ManageCities.jsp'>
-					<@messages errors=errors />
 					<@input type="hidden" id="id" name="id"/>
 					<@input type="hidden" value="${token}" name="token" />
 					<@formGroup labelFor='code_country' labelKey='#i18n{geocodes.modify_city.labelCodeCountry}' mandatory=true>
