@@ -1,28 +1,30 @@
 <#include "managegeocodes_tabs.html" />
-<@tabs2 tab="city" />
-
-
-<@box>
-	<@boxHeader title='#i18n{geocodes.modify_city.title}' />
-	<@boxBody>
-    <@tform class="form-horizontal" method="post" name="modify_city" action="jsp/admin/plugins/geocodes/ManageCities.jsp" >
-			<@messages errors=errors />
-			<@input type="hidden" id="id" name="id" value="${city.id}"/>
-			<@input type="hidden" value="${token}" name="token" />
-			
-			<@formGroup labelFor='code_country' labelKey='#i18n{geocodes.modify_city.labelCodeCountry}' mandatory=true>
-				<@input type='text' id='code_country' name='code_country'  maxlength=255 value='${city.codeCountry!\'\'}' tabIndex='0' />
-			</@formGroup>
-			<@formGroup labelFor='code' labelKey='#i18n{geocodes.modify_city.labelCode}' mandatory=true>
-				<@input type='text' id='code' name='code'  maxlength=255 value='${city.code!\'\'}' tabIndex='1' />
-			</@formGroup>
-			<@formGroup labelFor='value' labelKey='#i18n{geocodes.modify_city.labelValue}' mandatory=true>
-				<@input type='text' id='value' name='value'  maxlength=255 value='${city.value!\'\'}' tabIndex='2' />
-			</@formGroup>
-			<@formGroup labelFor='code_zone' labelKey='#i18n{geocodes.modify_city.labelCodeZone}' mandatory=true>
-				<@input type='text' id='code_zone' name='code_zone'  maxlength=50 value='${city.codeZone!\'\'}' tabIndex='3' />
-			</@formGroup>
-        <@actionButtons button1Name="action_modifyCity" button2Name="view_manageCity"/>
-    </@tform>
-	</@boxBody>
-</@box>
+<@pageContainer>
+	<@pageColumn>
+		<@pageHeader title="#i18n{geocodes.modify_city.title}" />
+		<@messages errors=errors />
+		<@tabs> 
+			<@tabsList2 tab="city" />
+			<@tabContent>
+				<@boxHeader title='#i18n{geocodes.modify_city.title}' />
+				<@tform class="form-horizontal" id="modify-city-form" method="post" name="modify_city" action="jsp/admin/plugins/geocodes/ManageCities.jsp" >
+					<@input type="hidden" id="id" name="id" value="${city.id}"/>
+					<@input type="hidden" value="${token}" name="token" />
+					<@formGroup labelFor='code_country' labelKey='#i18n{geocodes.modify_city.labelCodeCountry}' mandatory=true>
+						<@input type='text' id='code_country' name='code_country'  maxlength=255 value='${city.codeCountry!\'\'}' tabIndex='0' />
+					</@formGroup>
+					<@formGroup labelFor='code' labelKey='#i18n{geocodes.modify_city.labelCode}' mandatory=true>
+						<@input type='text' id='code' name='code'  maxlength=255 value='${city.code!\'\'}' tabIndex='1' />
+					</@formGroup>
+					<@formGroup labelFor='value' labelKey='#i18n{geocodes.modify_city.labelValue}' mandatory=true>
+						<@input type='text' id='value' name='value'  maxlength=255 value='${city.value!\'\'}' tabIndex='2' />
+					</@formGroup>
+					<@formGroup labelFor='code_zone' labelKey='#i18n{geocodes.modify_city.labelCodeZone}' mandatory=true>
+						<@input type='text' id='code_zone' name='code_zone'  maxlength=50 value='${city.codeZone!\'\'}' tabIndex='3' />
+					</@formGroup>
+					<@actionButtons button1Name="action_modifyCity" button2Name="view_manageCity"/>
+				</@tform>
+			</@tabContent>
+		</@tabs>
+	</@pageColumn>
+</@pageContainer>
