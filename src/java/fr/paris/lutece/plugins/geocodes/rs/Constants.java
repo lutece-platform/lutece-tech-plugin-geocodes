@@ -74,6 +74,8 @@ public final class Constants
     public static final String ID_PROVIDER_GEOCODE_LOCAL = "geocodes.geoCodeProviderLocal";
     public static final String ID_PROVIDER_GEOCODE_INSEE = "geocodes.geoCodeProviderINSEE";
     
+    public static final String CONST_DATE_MIN = "1943-01-01";
+    
     /**
      * Private constructor
      */
