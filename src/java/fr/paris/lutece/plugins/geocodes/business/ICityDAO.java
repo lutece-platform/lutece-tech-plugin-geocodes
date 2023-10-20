@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.geocodes.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
+
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -119,4 +121,29 @@ public interface ICityDAO
      * @return The list which contains the data of all the avant objects
      */
 	List<City> selectCitiesListByIds( Plugin _plugin, List<Integer> listIds );
+
+	/**
+     * Load the data from the table
+     * @param strCode The identifier of the city
+     * @param dateCode the date of avaibility
+     * @param plugin the Plugin
+     * @return The instance of the city
+     */
+	Optional<City> loadByDateAndCode( Date dateCode, String strCode, Plugin plugin);
+
+	/**
+     * Load the data of all the city objects and returns them as a list
+     * @param plugin the Plugin
+     * @param dateCity date of the city
+     * @param strVal name of the city
+     * @return The list which contains the data of all the city objects
+     */
+	List<City> selectCitiesListByValueAndDate(String strVal, Date dateCity, Plugin plugin);
+
+	/**
+     * Load the data of all the city objects by last date update and returns them as a referenceList
+     * @param plugin the Plugin
+     * @return The list<City> which contains the data of all the city objects
+     */
+	List<City> selectCitiesListByLastDate(Plugin plugin);
 }

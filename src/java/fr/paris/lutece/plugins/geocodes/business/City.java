@@ -34,17 +34,30 @@
 package fr.paris.lutece.plugins.geocodes.business;
 
 import javax.validation.constraints.Size;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.sql.Date;
 /**
  * This is the business class for the object City
  */ 
+@JsonAutoDetect( creatorVisibility = Visibility.NONE, fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE )
 public class City implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
     // Variables declarations 
     private int _nId;
+    
+    public static final String PATH_CODE = "code";
+    public static final String PATH_DATE_CREATION = "dateCreation";
+    public static final String PATH_DATE_END = "dateSuppression";
+    public static final String PATH_INTITULE_SANS_ARTICLE = "intituleSansArticle";
+    public static final String PATH_INTITULE = "intitule";
     
     @NotEmpty( message = "#i18n{geocodes.validation.city.CodeCountry.notEmpty}" )
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeCountry.size}" ) 
@@ -60,6 +73,16 @@ public class City implements Serializable
     
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeZone.size}" ) 
     private String _strCodeZone;
+    
+    private Date _dateValidityStart;
+    
+    private Date _dateValidityEnd;
+    
+    private String _strValueMin;
+    
+    private String _strValueMinComplete;
+    
+    private Date _dateLastUpdate;
 
     /**
      * Returns the Id
@@ -102,6 +125,7 @@ public class City implements Serializable
      * Returns the Code
      * @return The Code
      */
+    @JsonProperty( PATH_CODE )
     public String getCode( )
     {
         return _strCode;
@@ -111,6 +135,7 @@ public class City implements Serializable
      * Sets the Code
      * @param strCode The Code
      */ 
+    @JsonProperty( PATH_CODE )
     public void setCode( String strCode )
     {
         _strCode = strCode;
@@ -153,5 +178,110 @@ public class City implements Serializable
     {
         _strCodeZone = strCodeZone;
     }
+
+    /**
+     * Returns the dateValidityStart
+     * @return The dateValidityStart
+     */
+	public Date getDateValidityStart( ) {
+		return _dateValidityStart;
+	}
+    
+	/**
+     * Returns the dateValidityStart
+     * @return The dateValidityStart
+     */
+	@JsonProperty( PATH_DATE_CREATION )
+    public String getDateValidityStartToString( ) {
+		return _dateValidityStart.toString( );
+	}
+
+
+	/**
+     * Sets the dateValidityStart
+     * @param dateValidityStart The dateValidityStart
+     */ 
+    @JsonProperty( PATH_DATE_CREATION )
+	public void setDateValidityStart(Date dateValidityStart) {
+		this._dateValidityStart = dateValidityStart;
+	}
+
+	/**
+     * Returns the dateValidityEnd
+     * @return The dateValidityEnd
+     */
+	public Date getDateValidityEnd() {
+		return _dateValidityEnd;
+	}
+    
+    /**
+     * Returns the dateValidityStart
+     * @return The dateValidityStart
+     */
+	@JsonProperty( PATH_DATE_END )
+    public String getDateValidityEndToString( ) {
+		return _dateValidityEnd.toString( );
+	}
+
+	/**
+     * Sets the dateValidityEnd
+     * @param dateValidityEnd The dateValidityEnd
+     */ 
+    @JsonProperty( PATH_DATE_END )
+	public void setDateValidityEnd( Date dateValidityEnd ) {
+		this._dateValidityEnd = dateValidityEnd;
+	}
+
+	/**
+     * Returns the ValueMin
+     * @return The ValueMin
+     */
+	@JsonProperty( PATH_INTITULE_SANS_ARTICLE )
+	public String getValueMin( ) {
+		return _strValueMin;
+	}
+
+	/**
+     * Sets the strValueMin
+     * @param strValueMin The strValueMin
+     */
+	@JsonProperty( PATH_INTITULE_SANS_ARTICLE )
+	public void setValueMin( String strValueMin ) {
+		this._strValueMin = strValueMin;
+	}
+
+	/**
+     * Returns the ValueMinComplete
+     * @return The ValueMinComplete
+     */
+	@JsonProperty( PATH_INTITULE )
+	public String getValueMinComplete( ) {
+		return _strValueMinComplete;
+	}
+
+	/**
+     * Sets the strValueMinComplete
+     * @param strValueMinComplete The strValueMinComplete
+     */
+	@JsonProperty( PATH_INTITULE )
+	public void setValueMinComplete( String strValueMinComplete ) {
+		this._strValueMinComplete = strValueMinComplete;
+	}
+
+	/**
+     * Returns the dateLastUpdate
+     * @return The dateLastUpdate
+     */
+	public Date getDateLastUpdate() {
+		return _dateLastUpdate;
+	}
+
+	/**
+     * Sets the dateLastUpdate
+     * @param dateLastUpdate The dateLastUpdate
+     */
+	public void setDateLastUpdate(Date dateLastUpdate) {
+		this._dateLastUpdate = dateLastUpdate;
+	}
     
 }

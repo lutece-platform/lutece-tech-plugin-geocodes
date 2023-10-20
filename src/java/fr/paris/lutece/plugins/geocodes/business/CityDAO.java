@@ -38,6 +38,8 @@ package fr.paris.lutece.plugins.geocodes.business;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
+
+import java.sql.Date;
 import java.sql.Statement;
 
 import java.util.ArrayList;
@@ -50,16 +52,19 @@ import java.util.Optional;
 public final class CityDAO implements ICityDAO
 {
     // Constants
-	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_city, code_country, code, value, code_zone FROM geocodes_city WHERE id_city = ?";
-	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_city, code_country, code, value, code_zone FROM geocodes_city WHERE code = ?  ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone FROM geocodes_city WHERE value like ? order by value ";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_city ( code_country, code, value, code_zone ) VALUES ( ?, ?, ?, ? ) ";
+	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE id_city = ?";
+	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE code = ? AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) ";
+	private static final String SQL_QUERY_SELECT_BETWEEN_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE date_validity_start <= ? AND date_validity_end >= ? and code = ? ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE value like ? AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE value like ? AND date_validity_start <= ? AND date_validity_end >= ? order by value ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_city ( code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_city WHERE id_city = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_city SET code_country = ?, code = ?, value = ?, code_zone = ? WHERE id_city = ?";
-    private static final String SQL_QUERY_SELECTALL = "SELECT id_city, code_country, code, value, code_zone FROM geocodes_city";
+    private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_city SET code_country = ?, code = ?, value = ?, code_zone = ?, date_validity_start = ?, date_validity_end = ?, value_min = ?, value_min_complete = ?, date_last_update = ? WHERE id_city = ?";
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_city FROM geocodes_city";
-    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_city, code_country, code, value, code_zone FROM geocodes_city WHERE id_city IN (  ";
-
+    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE id_city IN (  ";
+    private static final String SQL_QUERY_SELECTALL_BY_LAST_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city order by date_last_update, code limit 5";
+    
     /**
      * {@inheritDoc }
      */
@@ -73,6 +78,11 @@ public final class CityDAO implements ICityDAO
             daoUtil.setString( nIndex++ , city.getCode( ) );
             daoUtil.setString( nIndex++ , city.getValue( ) );
             daoUtil.setString( nIndex++ , city.getCodeZone( ) );
+            daoUtil.setDate( nIndex++, city.getDateValidityStart( ) );
+            daoUtil.setDate( nIndex++, city.getDateValidityEnd( ) );
+            daoUtil.setString( nIndex++ , city.getValueMin( ) );
+            daoUtil.setString( nIndex++ , city.getValueMinComplete( ) );
+            daoUtil.setDate( nIndex++, city.getDateLastUpdate( ) );
             
             daoUtil.executeUpdate( );
             if ( daoUtil.nextGeneratedKey( ) ) 
@@ -104,7 +114,12 @@ public final class CityDAO implements ICityDAO
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
-			    city.setCodeZone( daoUtil.getString( nIndex ) );
+			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setValueMin( daoUtil.getString( nIndex++ ) );
+			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 	        }
 	
 	        return Optional.ofNullable( city );
@@ -132,7 +147,47 @@ public final class CityDAO implements ICityDAO
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
-			    city.setCodeZone( daoUtil.getString( nIndex ) );
+			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setValueMin( daoUtil.getString( nIndex++ ) );
+			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+	        }
+	
+	        return Optional.ofNullable( city );
+        }
+    }
+    
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Optional<City> loadByDateAndCode( Date dateCode, String strCode, Plugin plugin )
+    {
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BETWEEN_DATE, plugin ) )
+        {
+	        daoUtil.setDate( 1 , dateCode );
+	        daoUtil.setDate( 2 , dateCode );
+	        daoUtil.setString( 3, strCode );
+	        daoUtil.executeQuery( );
+	        City city = null;
+	
+	        if ( daoUtil.next( ) )
+	        {
+	            city = new City();
+	            int nIndex = 1;
+	            
+	            city.setId( daoUtil.getInt( nIndex++ ) );
+			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
+			    city.setCode( daoUtil.getString( nIndex++ ) );
+			    city.setValue( daoUtil.getString( nIndex++ ) );
+			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setValueMin( daoUtil.getString( nIndex++ ) );
+			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 	        }
 	
 	        return Optional.ofNullable( city );
@@ -166,6 +221,11 @@ public final class CityDAO implements ICityDAO
         	daoUtil.setString( nIndex++ , city.getCode( ) );
         	daoUtil.setString( nIndex++ , city.getValue( ) );
         	daoUtil.setString( nIndex++ , city.getCodeZone( ) );
+        	daoUtil.setDate( nIndex++, city.getDateValidityStart( ) );
+            daoUtil.setDate( nIndex++, city.getDateValidityEnd( ) );
+            daoUtil.setString( nIndex++ , city.getValueMin( ) );
+            daoUtil.setString( nIndex++ , city.getValueMinComplete() );
+            daoUtil.setDate( nIndex++, city.getDateLastUpdate( ) );
 	        daoUtil.setInt( nIndex , city.getId( ) );
 	
 	        daoUtil.executeUpdate( );
@@ -192,7 +252,12 @@ public final class CityDAO implements ICityDAO
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
-			    city.setCodeZone( daoUtil.getString( nIndex ) );
+			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setValueMin( daoUtil.getString( nIndex++ ) );
+			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 	
 	            cityList.add( city );
 	        }
@@ -223,7 +288,12 @@ public final class CityDAO implements ICityDAO
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
-			    city.setCodeZone( daoUtil.getString( nIndex ) );
+			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setValueMin( daoUtil.getString( nIndex++ ) );
+			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 	
 	            cityList.add( city );
 	        }
@@ -232,6 +302,43 @@ public final class CityDAO implements ICityDAO
         }
     }
  
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<City> selectCitiesListByValueAndDate( String strVal, Date dateCity, Plugin plugin )
+    {
+        List<City> cityList = new ArrayList<>(  );
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE_AND_DATE, plugin ) )
+        {
+        	daoUtil.setString( 1 , strVal + "%"  );
+        	daoUtil.setDate( 2, dateCity );
+        	daoUtil.setDate( 3, dateCity );
+        	
+	        daoUtil.executeQuery(  );
+	
+	        while ( daoUtil.next(  ) )
+	        {
+	            City city = new City(  );
+	            int nIndex = 1;
+	            
+	            city.setId( daoUtil.getInt( nIndex++ ) );
+			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
+			    city.setCode( daoUtil.getString( nIndex++ ) );
+			    city.setValue( daoUtil.getString( nIndex++ ) );
+			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setValueMin( daoUtil.getString( nIndex++ ) );
+			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+	
+	            cityList.add( city );
+	        }
+	
+	        return cityList;
+        }
+    }
     
     /**
      * {@inheritDoc }
@@ -309,7 +416,12 @@ public final class CityDAO implements ICityDAO
 				    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 				    city.setCode( daoUtil.getString( nIndex++ ) );
 				    city.setValue( daoUtil.getString( nIndex++ ) );
-				    city.setCodeZone( daoUtil.getString( nIndex ) );
+				    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+				    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+				    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+				    city.setValueMin( daoUtil.getString( nIndex++ ) );
+				    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+				    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 		            
 		            cityList.add( city );
 		        }
@@ -321,4 +433,38 @@ public final class CityDAO implements ICityDAO
 		return cityList;
 		
 	}
+	
+	/**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<City> selectCitiesListByLastDate( Plugin plugin )
+    {
+        List<City> cityList = new ArrayList<>(  );
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_BY_LAST_DATE, plugin ) )
+        {
+	        daoUtil.executeQuery(  );
+	
+	        while ( daoUtil.next(  ) )
+	        {
+	            City city = new City(  );
+	            int nIndex = 1;
+	            
+	            city.setId( daoUtil.getInt( nIndex++ ) );
+			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
+			    city.setCode( daoUtil.getString( nIndex++ ) );
+			    city.setValue( daoUtil.getString( nIndex++ ) );
+			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setValueMin( daoUtil.getString( nIndex++ ) );
+			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+	
+	            cityList.add( city );
+	        }
+	
+	        return cityList;
+        }
+    }
 }
