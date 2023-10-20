@@ -1,5 +1,7 @@
 package fr.paris.lutece.plugins.geocodes.service;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +9,9 @@ import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.business.CityHome;
 import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.business.CountryHome;
+import fr.paris.lutece.plugins.geocodes.provider.GeoCodeProviderService;
+import fr.paris.lutece.plugins.geocodes.provider.IGeoCodeProvider;
+import fr.paris.lutece.plugins.geocodes.rs.Constants;
 
 public class GeoCodesService 
 {
@@ -34,6 +39,23 @@ public class GeoCodesService
 	}
 	
 	/**
+	 * search cities by name beginning with a string and a date
+	 * 
+	 * @param strSearchBeginningVal
+	 * @param dateCity
+	 * @return the list
+	 */
+	public static List<City> getCitiesListByNameAndDate( String strSearchBeginningVal, Date dateCity )
+	{
+		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+    	List<City> lstCities = new ArrayList<>( );
+        
+    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+    	lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
+    	return lstCities;
+	}
+	
+	/**
 	 * get country by code
 	 * 
 	 * @param strCode
@@ -55,5 +77,47 @@ public class GeoCodesService
 		return  CountryHome.getCountriesListByName( strSearchBeginningVal );
 	}
 	
+	/**
+	 * get city by code and date
+	 * 
+	 * @param strCodel
+	 * @param dateCity
+	 * @return the city (as Optional)
+	 */
+	public static Optional<City> getCityByDateAndCode( Date dateCity, String strCode )
+	{
+		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+		return geoCodeLocal.getCityByDateAndCode( dateCity, strCode );
+	}
 	
+	/**
+	 * search cities by name beginning with a string
+	 * 
+	 * @return the list
+	 */
+	public static List<City> getCitiesListByLastDateUpdate( )
+	{
+		return  CityHome.getCitiesListByLastDate( );
+	}
+	
+	/**
+	 * update the city informations
+	 * 
+	 * @param cityUpdate : the city to update
+	 */
+	public static void updateCity( City cityUpdate )
+	{
+		CityHome.update( cityUpdate );
+	}
+	
+	/**
+	 * create the new city
+	 * 
+	 * @param cityNew : the city to create
+	 */
+	public static void createCity( City cityNew )
+	{
+		CityHome.create( cityNew );
+	}
 }

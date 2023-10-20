@@ -40,7 +40,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
 
-
+import java.sql.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -158,6 +158,37 @@ public final class CityHome
     public static List<City> getCitiesListByIds( List<Integer> listIds )
     {
         return _dao.selectCitiesListByIds( _plugin, listIds );
+    }
+    
+    /**
+     * Returns an instance of a city whose identifier is specified in parameter
+     * @param strCode The city primary key
+     * @param dateCity date of city
+     * @return an instance of City
+     */
+    public static Optional<City> findByDateAndCode( Date dateCity, String strCode )
+    {
+        return _dao.loadByDateAndCode( dateCity, strCode, _plugin );
+    }
+    
+    /**
+     * Load the data of all the city objects and returns them as a list
+     * @param strVal The city name
+     * @param dateCity date of city
+     * @return the list which contains the data of all the city objects
+     */
+    public static List<City> getCitiesListByNameAndDate( String strVal, Date dateCity )
+    {
+        return _dao.selectCitiesListByValueAndDate( strVal, dateCity, _plugin );
+    }
+    
+    /**
+     * Load the data of all the city objects by last date update and returns them as a list
+     * @return the list which contains the data of all the city objects by last date update
+     */
+    public static List<City> getCitiesListByLastDate( )
+    {
+        return _dao.selectCitiesListByLastDate( _plugin );
     }
 
 }
