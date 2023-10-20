@@ -47,6 +47,7 @@ public class GeoCodesService
 	 */
 	public static List<City> getCitiesListByNameAndDate( String strSearchBeginningVal, Date dateCity )
 	{
+		dateCity = checkDateValidityStart( dateCity );
 		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
     	List<City> lstCities = new ArrayList<>( );
         
@@ -86,6 +87,7 @@ public class GeoCodesService
 	 */
 	public static Optional<City> getCityByDateAndCode( Date dateCity, String strCode )
 	{
+		dateCity = checkDateValidityStart( dateCity );
 		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
 		IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 		return geoCodeLocal.getCityByDateAndCode( dateCity, strCode );
@@ -119,5 +121,15 @@ public class GeoCodesService
 	public static void createCity( City cityNew )
 	{
 		CityHome.create( cityNew );
+	}
+	
+	public static Date checkDateValidityStart( Date dateCheck )
+	{
+		Date dateMin = Date.valueOf( Constants.CONST_DATE_MIN );
+		if ( dateCheck.before( dateMin ) )
+		{
+			return dateMin;
+		}
+		return dateCheck;
 	}
 }
