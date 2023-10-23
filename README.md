@@ -9,9 +9,9 @@
 
 The purpose of this plug-in is to provide a service to:
 
-- find a city or country label according to its INSEE code and a validity date,
+- find a city or a country label according to its INSEE code and a validity date,
 
-- search for countries or communes on their wording (minimum 3 first letters), to obtain their INSEE codes
+- search for communes or a country on their wording (minimum 3 first letters) and a validity date, to obtain their INSEE codes
 
 ## Configuration
 
@@ -26,8 +26,8 @@ The data is accessible through two channels:
 - a REST service (see swagger documentation, available with the swaggerui plugin) :
 
  
-* GET /rest/geocodes/api/v1/cities/searchdate/{id}/{date}
-* GET /rest/geocodes/api/v1/cities/codeanddate/{code}/{date}
+* GET /rest/geocodes/api/v1/cities?search={name}&dateref={dateref}
+* GET /rest/geocodes/api/v1/cities/{code}&dateref={dateref}
 * GET /rest/geocodes/api/v1/countries
 * GET /rest/geocodes/api/v1/countries/{id}
 * GET /rest/geocodes/api/v1/countries/search/{str}

@@ -70,10 +70,9 @@ public class CityRest
      * @return the City List
      */
     @GET
-    @Path( Constants.SEARCH_DATE_PATH )
     @Produces( MediaType.APPLICATION_JSON )
     public Response getCityListByDate( @PathParam( Constants.VERSION ) Integer nVersion,
-    							@PathParam( Constants.SEARCHED_STRING ) String strVal,
+    							@QueryParam( Constants.SEARCHED_STRING ) String strVal,
     							@QueryParam( Constants.DATE ) Date dateCity ) 
     {
         if ( nVersion == VERSION_1 )

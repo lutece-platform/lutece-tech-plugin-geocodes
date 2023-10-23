@@ -11,7 +11,7 @@ L'objectif de ce plug-in est fournir un service permettant de :
 
 - retrouver un libellé de commune ou de pays en fonction de son code INSEE et d'une date de validité,
 
-- faire une recherche de pays ou commune sur leur libellé (3 première lettres minimum), pour obtenir leurs codes INSEE
+- faire une recherche de pays ou commune sur leur libellé (3 première lettres minimum) et une date de validité, pour obtenir leurs codes INSEE
 
 ## Configuration
 
@@ -26,8 +26,8 @@ Les données sont accessibles via deux canaux :
 - un service REST (cf documentation swagger):
 
  
-* GET /rest/geocodes/api/v1/cities/searchdate/{id}/{date}
-* GET /rest/geocodes/api/v1/cities/codeanddate/{code}/{date}
+* GET /rest/geocodes/api/v1/cities?search={name}&dateref={dateref}
+* GET /rest/geocodes/api/v1/cities/{code}&dateref={dateref}
 * GET /rest/geocodes/api/v1/countries
 * GET /rest/geocodes/api/v1/countries/{id}
 * GET /rest/geocodes/api/v1/countries/search/{str}

@@ -9,26 +9,33 @@
     "application/json"
   ],
   "paths": {
-    "/rest/geocodes/api/v1/cities/search/{str}": {
+    "/rest/geocodes/api/v1/cities/{id}": {
       "get": {
-        "description": "Search City name  beginning by {str} ",
+        "description": "Search City with code {id} and {dateref} of validity",
         "tags": [
           "City"
         ],
         "parameters": [
           {
-            "name": "str",
+            "name": "id",
             "in": "path",
-            "description": "Name of the city (at least 3 chars)",
+            "description": "ID of the City",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "dateref",
+            "in": "query",
+            "description": "Date of validity",
+            "required": true,
+            "type": "date"
           }
         ],
         "responses": {
           "200": {
-            "description": "Return the City list",
+            "description": "Return the City Result",
             "schema": {
-              "$ref": "#/definitions/CityListResult"
+              "$ref": "#/definitions/CityResult"
             }
           },
           "204": {
@@ -46,26 +53,33 @@
         }
       }
     },
-    "/rest/geocodes/api/v1/cities/{id}": {
+    "/rest/geocodes/api/v1/cities": {
       "get": {
-        "description": "Get City",
+        "description": "Search City name  beginning by {search} and {dateref} of validity",
         "tags": [
           "City"
         ],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of the City",
+            "name": "search",
+            "in": "query",
+            "description": "Name of the City",
             "required": true,
-            "type": "integer"
+            "type": "string"
+          },
+          {
+            "name": "dateref",
+            "in": "query",
+            "description": "Date of validity",
+            "required": true,
+            "type": "date"
           }
         ],
         "responses": {
           "200": {
-            "description": "Return the City",
+            "description": "Return the list of Cities",
             "schema": {
-              "$ref": "#/definitions/CityResult"
+              "$ref": "#/definitions/CityListResult"
             }
           },
           "404": {
@@ -240,19 +254,19 @@
     "City": {
       "type": "object",
       "properties": {
-        "id": {
-          "type": "integer"
-        },
-        "code_country": {
-          "type": "string"
-        },
         "code": {
           "type": "string"
         },
-        "value": {
+        "intitule": {
           "type": "string"
         },
-        "code_zone": {
+        "intituleSansArticle": {
+          "type": "string"
+        },
+        "dateCreation": {
+          "type": "string"
+        },
+        "dateSuppression": {
           "type": "string"
         }
       }
