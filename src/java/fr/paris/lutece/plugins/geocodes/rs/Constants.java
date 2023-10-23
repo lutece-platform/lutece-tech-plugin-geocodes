@@ -45,9 +45,9 @@ public final class Constants
     public static final String ID = "id";
     public static final String SEARCH_PATH = "/search/{" + Constants.SEARCHED_STRING + "}";
     public static final String SEARCH_DATE_PATH = "/searchdate/{" + Constants.SEARCHED_STRING + "}";
-    public static final String SEARCHED_STRING = "searched_string";
-    public static final String DATE = "date";
-    public static final String SEARCH_DATE_AND_CODE = "/codeanddate/{" + Constants.ID + "}";
+    public static final String SEARCHED_STRING = "search";
+    public static final String DATE = "dateref";
+    public static final String SEARCH_DATE_AND_CODE = "/{" + Constants.ID + "}";
     
     public static final String SWAGGER_DIRECTORY_PATH = "/plugins/";
     public static final String SWAGGER_PATH = "/swagger";
