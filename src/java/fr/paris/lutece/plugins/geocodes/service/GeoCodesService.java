@@ -12,9 +12,40 @@ import fr.paris.lutece.plugins.geocodes.business.CountryHome;
 import fr.paris.lutece.plugins.geocodes.provider.GeoCodeProviderService;
 import fr.paris.lutece.plugins.geocodes.provider.IGeoCodeProvider;
 import fr.paris.lutece.plugins.geocodes.rs.Constants;
+import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheService;
 
 public class GeoCodesService 
 {
+	private GeoCodeCacheService _cacheGeoCode = GeoCodeCacheService.getInstance( );
+	private static GeoCodesService _singleton;
+	
+	
+	/** Creates a new instance of CalendarService */
+    public GeoCodesService( )
+    {
+        init( );
+    }
+    
+    /**
+     * Initialize the CalendarService
+     */
+    private void init( )
+    {
+        _cacheGeoCode.initCache( );
+    }
+    
+    /**
+     * Get the instance of GeoCodeService
+     * @return an instance of GeoCodeService
+     */
+    public static GeoCodesService getInstance(  )
+    {
+    	if ( _singleton == null )
+    	{
+    		_singleton = new GeoCodesService(  );
+    	}
+    	return _singleton;
+    }
 	
 	/**
 	 * get city by code
@@ -45,15 +76,22 @@ public class GeoCodesService
 	 * @param dateCity
 	 * @return the list
 	 */
-	public static List<City> getCitiesListByNameAndDate( String strSearchBeginningVal, Date dateCity )
+	public List<City> getCitiesListByNameAndDate( String strSearchBeginningVal, Date dateCity )
 	{
 		dateCity = checkDateValidityStart( dateCity );
-		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
-    	List<City> lstCities = new ArrayList<>( );
-        
-    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
-    	lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
-    	return lstCities;
+		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCache( strSearchBeginningVal + dateCity);
+		
+		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
+		{
+			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+	    	List<City> lstCities = new ArrayList<>( );
+	        
+	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+	    	lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
+	    	_cacheGeoCode.putInCache( strSearchBeginningVal + dateCity, lstCities );
+	    	return lstCities;
+		}
+		return lstCitiesCache;
 	}
 	
 	/**
@@ -85,12 +123,20 @@ public class GeoCodesService
 	 * @param dateCity
 	 * @return the city (as Optional)
 	 */
-	public static Optional<City> getCityByDateAndCode( Date dateCity, String strCode )
+	public Optional<City> getCityByDateAndCode( Date dateCity, String strCode )
 	{
 		dateCity = checkDateValidityStart( dateCity );
-		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
-		IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
-		return geoCodeLocal.getCityByDateAndCode( dateCity, strCode );
+		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCache( strCode + dateCity );
+		
+		if ( cityCache == null || cityCache.isEmpty( ) )
+		{
+			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+			Optional<City> city = geoCodeLocal.getCityByDateAndCode( dateCity, strCode );
+			_cacheGeoCode.putInCache( strCode + dateCity, city );
+			return city;
+		}
+		else return cityCache;
 	}
 	
 	/**
@@ -132,4 +178,5 @@ public class GeoCodesService
 		}
 		return dateCheck;
 	}
+	
 }
