@@ -43,6 +43,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -73,7 +74,7 @@ public class CityRest
     @Produces( MediaType.APPLICATION_JSON )
     public Response getCityListByDate( @PathParam( Constants.VERSION ) Integer nVersion,
     							@PathParam( Constants.SEARCHED_STRING ) String strVal,
-    							@PathParam( Constants.DATE ) Date dateCity ) 
+    							@QueryParam( Constants.DATE ) Date dateCity ) 
     {
         if ( nVersion == VERSION_1 )
         {
@@ -126,7 +127,7 @@ public class CityRest
     public Response getCityByDate(
     @PathParam( Constants.VERSION ) Integer nVersion,
     @PathParam( Constants.ID ) String code,
-    @PathParam( Constants.DATE ) Date dateCity )
+    @QueryParam( Constants.DATE ) Date dateCity )
     {
         if ( nVersion == VERSION_1 )
         {
