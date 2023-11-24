@@ -146,4 +146,20 @@ public interface ICityDAO
      * @return The list<City> which contains the data of all the city objects
      */
 	List<City> selectCitiesListByLastDate(Plugin plugin);
+
+	/**
+     * Load the data of all the city objects and returns them as a list
+     * @param plugin the Plugin
+     * @param dateCity date of the city
+     * @param strVal name of the city
+     * @return The list which contains the data of all the city objects
+     */
+	List<City> selectCitiesListByValueAndDateLike(String strVal, Date dateCity, Plugin plugin);
+	
+	/**
+     * Load the data of all the city objects and returns them as a list
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the city objects
+     */
+	List<City> selectCitiesListByValueLike( String strVal, Plugin plugin );
 }
