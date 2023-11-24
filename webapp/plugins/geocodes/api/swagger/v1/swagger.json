@@ -55,6 +55,50 @@
     },
     "/rest/geocodes/api/v1/cities": {
       "get": {
+        "description": "Search City with exact name {search} and {dateref} of validity",
+        "tags": [
+          "City"
+        ],
+        "parameters": [
+          {
+            "name": "search",
+            "in": "query",
+            "description": "Name of the City",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "dateref",
+            "in": "query",
+            "description": "Date of validity",
+            "required": true,
+            "type": "date"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Return the list of Cities",
+            "schema": {
+              "$ref": "#/definitions/CityListResult"
+            }
+          },
+          "404": {
+            "description": "Resource not found",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "default": {
+            "description": "Unexpected error",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/rest/geocodes/api/v1/cities/list": {
+      "get": {
         "description": "Search City name  beginning by {search} and {dateref} of validity",
         "tags": [
           "City"

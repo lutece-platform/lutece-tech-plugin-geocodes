@@ -17,6 +17,7 @@ import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheService;
 public class GeoCodesService 
 {
 	private GeoCodeCacheService _cacheGeoCode = GeoCodeCacheService.getInstance( );
+	private GeoCodeCacheService _cacheGeoCodeLike = GeoCodeCacheService.getInstance( );
 	private static GeoCodesService _singleton;
 	
 	
@@ -53,9 +54,19 @@ public class GeoCodesService
 	 * @param strCodel
 	 * @return the city (as Optional)
 	 */
-	public static Optional<City> getCityByCode( String strCode )
+	public Optional<City> getCityByCode( String strCode )
 	{
-		return  CityHome.findByCode( strCode );
+		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCache( strCode );
+		
+		if ( cityCache == null || cityCache.isEmpty( ) )
+		{
+			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+			Optional<City> city = geoCodeLocal.getCityByCode( strCode );
+			_cacheGeoCode.putInCache( strCode , city );
+			return city;
+		}
+		else return cityCache;
 	}
 	
 	/**
@@ -64,9 +75,44 @@ public class GeoCodesService
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
-	public static List<City> getCitiesListByName( String strSearchBeginningVal )
+	public List<City> getCitiesListByName( String strSearchBeginningVal )
 	{
-		return  CityHome.getCitiesListByName( strSearchBeginningVal );
+		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCache( strSearchBeginningVal );
+		
+		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
+		{
+			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+	    	List<City> lstCities = new ArrayList<>( );
+	        
+	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+	    	lstCities = geoCodeLocal.getCitiesListByName( strSearchBeginningVal );
+	    	_cacheGeoCodeLike.putInCache( strSearchBeginningVal, lstCities );
+	    	return lstCities;
+		}
+		return lstCitiesCache;
+	}
+	
+	/**
+	 * search cities by name beginning with a string
+	 * 
+	 * @param strSearchBeginningVal
+	 * @return the list
+	 */
+	public List<City> getCitiesListByNameLike( String strSearchBeginningVal )
+	{
+		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCodeLike.getFromCache( strSearchBeginningVal );
+		
+		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
+		{
+			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+	    	List<City> lstCities = new ArrayList<>( );
+	        
+	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+	    	lstCities = geoCodeLocal.getCitiesListByNameLike( strSearchBeginningVal );
+	    	_cacheGeoCodeLike.putInCache( strSearchBeginningVal, lstCities );
+	    	return lstCities;
+		}
+		return lstCitiesCache;
 	}
 	
 	/**
@@ -89,6 +135,31 @@ public class GeoCodesService
 	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 	    	lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
 	    	_cacheGeoCode.putInCache( strSearchBeginningVal + dateCity, lstCities );
+	    	return lstCities;
+		}
+		return lstCitiesCache;
+	}
+	
+	/**
+	 * search cities by name beginning with a string and a date
+	 * 
+	 * @param strSearchBeginningVal
+	 * @param dateCity
+	 * @return the list
+	 */
+	public List<City> getCitiesListByNameAndDateLike( String strSearchBeginningVal, Date dateCity )
+	{
+		dateCity = checkDateValidityStart( dateCity );
+		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCodeLike.getFromCache( strSearchBeginningVal + dateCity);
+		
+		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
+		{
+			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+	    	List<City> lstCities = new ArrayList<>( );
+	        
+	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+	    	lstCities = geoCodeLocal.getCitiesListByNameAndDateLike( strSearchBeginningVal, dateCity );
+	    	_cacheGeoCodeLike.putInCache( strSearchBeginningVal + dateCity, lstCities );
 	    	return lstCities;
 		}
 		return lstCitiesCache;

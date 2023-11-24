@@ -132,6 +132,15 @@ public final class CityHome
     }
     
     /**
+     * Load the data of all the city objects and returns them as a list
+     * @return the list which contains the data of all the city objects
+     */
+    public static List<City> getCitiesListByNameLike( String strVal )
+    {
+        return _dao.selectCitiesListByValueLike( strVal, _plugin );
+    }
+    
+    /**
      * Load the id of all the city objects and returns them as a list
      * @return the list which contains the id of all the city objects
      */
@@ -180,6 +189,17 @@ public final class CityHome
     public static List<City> getCitiesListByNameAndDate( String strVal, Date dateCity )
     {
         return _dao.selectCitiesListByValueAndDate( strVal, dateCity, _plugin );
+    }
+    
+    /**
+     * Load the data of all the city objects and returns them as a list
+     * @param strVal The city name
+     * @param dateCity date of city
+     * @return the list which contains the data of all the city objects
+     */
+    public static List<City> getCitiesListByNameAndDateLike( String strVal, Date dateCity )
+    {
+        return _dao.selectCitiesListByValueAndDateLike( strVal, dateCity, _plugin );
     }
     
     /**

@@ -27,6 +27,7 @@ Les données sont accessibles via deux canaux :
 
  
 * GET /rest/geocodes/api/v1/cities?search={name}&dateref={dateref}
+* GET /rest/geocodes/api/v1/cities/list?search={name}&dateref={dateref}
 * GET /rest/geocodes/api/v1/cities/{code}&dateref={dateref}
 * GET /rest/geocodes/api/v1/countries
 * GET /rest/geocodes/api/v1/countries/{id}

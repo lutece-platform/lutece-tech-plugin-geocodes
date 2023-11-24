@@ -101,7 +101,60 @@ public class CityRest
         
         GeoCodesService geoCodesService = GeoCodesService.getInstance( );
         List<City> lstCities = new ArrayList<>( );
+        
         lstCities = geoCodesService.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
+        
+        if ( lstCities.isEmpty( ) )
+        {
+            return Response.status( Response.Status.NO_CONTENT )
+                .entity( JsonUtil.buildJsonResponse( new JsonResponse( Constants.EMPTY_OBJECT ) ) )
+                .build( );
+        }
+        return Response.status( Response.Status.OK )
+                .entity( JsonUtil.buildJsonResponse( new JsonResponse( lstCities ) ) )
+                .build( );
+    }
+    
+    /**
+     * Get City List with date
+     * @param nVersion the API version
+     * @return the City List
+     */
+    @GET
+    @Path( Constants.SEARCH_LIKE )
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response getCityListByDateLike( @PathParam( Constants.VERSION ) Integer nVersion,
+    							@QueryParam( Constants.SEARCHED_STRING ) String strVal,
+    							@QueryParam( Constants.DATE ) Date dateCity ) 
+    {
+        if ( nVersion == VERSION_1 )
+        {
+            return getCityListV1ByNameAndDateLike( strVal, dateCity);
+        }
+        AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
+        return Response.status( Response.Status.NOT_FOUND )
+                .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_NOT_FOUND_VERSION ) ) )
+                .build( );
+    }
+    
+    /**
+     * Get City List V1
+     * @return the City List for the version 1
+     */
+    private Response getCityListV1ByNameAndDateLike( String strSearchBeginningVal, Date dateCity )
+    {
+        if ( strSearchBeginningVal == null || strSearchBeginningVal.length( ) < 3 )
+        {
+            AppLogService.error( Constants.ERROR_SEARCH_STRING );
+            return Response.status( Response.Status.BAD_REQUEST )
+                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.BAD_REQUEST.name( ), Constants.ERROR_SEARCH_STRING ) ) )
+                    .build( );
+        }
+        
+        GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+        List<City> lstCities = new ArrayList<>( );
+        
+        lstCities = geoCodesService.getCitiesListByNameAndDateLike( strSearchBeginningVal, dateCity );
         
         if ( lstCities.isEmpty( ) )
         {
@@ -148,6 +201,7 @@ public class CityRest
     {
     	Optional<City> optCity = Optional.empty();
     	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+    	
     	optCity = geoCodesService.getCityByDateAndCode ( dateCity, strCode );
     	
         if ( !optCity.isPresent( ) )
