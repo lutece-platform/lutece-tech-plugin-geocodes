@@ -13,11 +13,12 @@ import fr.paris.lutece.plugins.geocodes.provider.GeoCodeProviderService;
 import fr.paris.lutece.plugins.geocodes.provider.IGeoCodeProvider;
 import fr.paris.lutece.plugins.geocodes.rs.Constants;
 import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheService;
+import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheServiceLike;
 
 public class GeoCodesService 
 {
 	private GeoCodeCacheService _cacheGeoCode = GeoCodeCacheService.getInstance( );
-	private GeoCodeCacheService _cacheGeoCodeLike = GeoCodeCacheService.getInstance( );
+	private GeoCodeCacheServiceLike _cacheGeoCodeLike = GeoCodeCacheServiceLike.getInstance( );
 	private static GeoCodesService _singleton;
 	
 	
@@ -33,6 +34,7 @@ public class GeoCodesService
     private void init( )
     {
         _cacheGeoCode.initCache( );
+        _cacheGeoCodeLike.initCache( );
     }
     
     /**
