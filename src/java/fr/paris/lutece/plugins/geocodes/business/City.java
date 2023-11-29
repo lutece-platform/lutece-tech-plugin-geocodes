@@ -54,10 +54,13 @@ public class City implements Serializable
     private int _nId;
     
     public static final String PATH_CODE = "code";
-    public static final String PATH_DATE_CREATION = "dateCreation";
-    public static final String PATH_DATE_END = "dateSuppression";
-    public static final String PATH_INTITULE_SANS_ARTICLE = "intituleSansArticle";
-    public static final String PATH_INTITULE = "intitule";
+    public static final String PATH_ID = "id";
+    public static final String PATH_DATE_CREATION = "creationDate";
+    public static final String PATH_DATE_END = "endDate";
+    public static final String PATH_VALUE_WITHOUT_ARTICLE = "valueWithoutArticle";
+    public static final String PATH_VALUE = "value";
+    public static final String PATH_CODE_ZONE = "codeZone";
+    public static final String PATH_CODE_COUNTRY = "codeCountry";
     
     @NotEmpty( message = "#i18n{geocodes.validation.city.CodeCountry.notEmpty}" )
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeCountry.size}" ) 
@@ -88,6 +91,7 @@ public class City implements Serializable
      * Returns the Id
      * @return The Id
      */
+    @JsonProperty( PATH_ID )
     public int getId( )
     {
         return _nId;
@@ -96,7 +100,8 @@ public class City implements Serializable
     /**
      * Sets the Id
      * @param nId The Id
-     */ 
+     */
+    @JsonProperty( PATH_ID )
     public void setId( int nId )
     {
         _nId = nId;
@@ -106,6 +111,7 @@ public class City implements Serializable
      * Returns the CodeCountry
      * @return The CodeCountry
      */
+    @JsonProperty( PATH_CODE_COUNTRY )
     public String getCodeCountry( )
     {
         return _strCodeCountry;
@@ -115,6 +121,7 @@ public class City implements Serializable
      * Sets the CodeCountry
      * @param strCodeCountry The CodeCountry
      */ 
+    @JsonProperty( PATH_CODE_COUNTRY )
     public void setCodeCountry( String strCodeCountry )
     {
         _strCodeCountry = strCodeCountry;
@@ -165,6 +172,7 @@ public class City implements Serializable
      * Returns the CodeZone
      * @return The CodeZone
      */
+    @JsonProperty( PATH_CODE_ZONE )
     public String getCodeZone( )
     {
         return _strCodeZone;
@@ -173,7 +181,8 @@ public class City implements Serializable
     /**
      * Sets the CodeZone
      * @param strCodeZone The CodeZone
-     */ 
+     */
+    @JsonProperty( PATH_CODE_ZONE )
     public void setCodeZone( String strCodeZone )
     {
         _strCodeZone = strCodeZone;
@@ -236,7 +245,7 @@ public class City implements Serializable
      * Returns the ValueMin
      * @return The ValueMin
      */
-	@JsonProperty( PATH_INTITULE_SANS_ARTICLE )
+	@JsonProperty( PATH_VALUE_WITHOUT_ARTICLE )
 	public String getValueMin( ) {
 		return _strValueMin;
 	}
@@ -245,7 +254,7 @@ public class City implements Serializable
      * Sets the strValueMin
      * @param strValueMin The strValueMin
      */
-	@JsonProperty( PATH_INTITULE_SANS_ARTICLE )
+	@JsonProperty( PATH_VALUE_WITHOUT_ARTICLE )
 	public void setValueMin( String strValueMin ) {
 		this._strValueMin = strValueMin;
 	}
@@ -254,7 +263,7 @@ public class City implements Serializable
      * Returns the ValueMinComplete
      * @return The ValueMinComplete
      */
-	@JsonProperty( PATH_INTITULE )
+	@JsonProperty( PATH_VALUE )
 	public String getValueMinComplete( ) {
 		return _strValueMinComplete;
 	}
@@ -263,7 +272,7 @@ public class City implements Serializable
      * Sets the strValueMinComplete
      * @param strValueMinComplete The strValueMinComplete
      */
-	@JsonProperty( PATH_INTITULE )
+	@JsonProperty( PATH_VALUE )
 	public void setValueMinComplete( String strValueMinComplete ) {
 		this._strValueMinComplete = strValueMinComplete;
 	}
