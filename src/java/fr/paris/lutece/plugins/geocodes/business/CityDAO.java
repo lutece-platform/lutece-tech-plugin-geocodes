@@ -56,9 +56,9 @@ public final class CityDAO implements ICityDAO
 	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE code = ? AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) ";
 	private static final String SQL_QUERY_SELECT_BETWEEN_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE date_validity_start <= ? AND date_validity_end >= ? and code = ? ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE value = ? AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) order by value ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE value like ? AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE ( value_min like ? OR value_min_complete like ? ) AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) order by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE value = ? AND date_validity_start <= ? AND date_validity_end >= ? order by value ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE value like ? AND date_validity_start <= ? AND date_validity_end >= ? order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE ( value_min like ? OR value_min_complete like ? ) AND date_validity_start <= ? AND date_validity_end >= ? order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_city ( code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_city WHERE id_city = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_city SET code_country = ?, code = ?, value = ?, code_zone = ?, date_validity_start = ?, date_validity_end = ?, value_min = ?, value_min_complete = ?, date_last_update = ? WHERE id_city = ?";
@@ -314,6 +314,7 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE_LIKE, plugin ) )
         {
         	daoUtil.setString( 1 , strVal + "%"  );
+        	daoUtil.setString( 2 , strVal + "%"  );
         	
 	        daoUtil.executeQuery(  );
 	
@@ -388,8 +389,9 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE_LIKE_AND_DATE, plugin ) )
         {
         	daoUtil.setString( 1 , strVal + "%"  );
-        	daoUtil.setDate( 2, dateCity );
+        	daoUtil.setString( 2 , strVal + "%"  );
         	daoUtil.setDate( 3, dateCity );
+        	daoUtil.setDate( 4, dateCity );
         	
 	        daoUtil.executeQuery(  );
 	
