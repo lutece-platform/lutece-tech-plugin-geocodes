@@ -53,14 +53,14 @@ public class City implements Serializable
     // Variables declarations 
     private int _nId;
     
-    public static final String PATH_CODE = "code";
-    public static final String PATH_ID = "id";
-    public static final String PATH_DATE_CREATION = "creationDate";
-    public static final String PATH_DATE_END = "endDate";
-    public static final String PATH_VALUE_WITHOUT_ARTICLE = "valueWithoutArticle";
-    public static final String PATH_VALUE = "value";
-    public static final String PATH_CODE_ZONE = "codeZone";
-    public static final String PATH_CODE_COUNTRY = "codeCountry";
+    public static final String ATTR_CODE = "code";
+    public static final String ATTR_ID = "id";
+    public static final String ATTR_DATE_CREATION = "creationDate";
+    public static final String ATTR_DATE_END = "endDate";
+    public static final String ATTR_VALUE_WITHOUT_ARTICLE = "valueWithoutArticle";
+    public static final String ATTR_VALUE = "value";
+    public static final String ATTR_CODE_ZONE = "codeZone";
+    public static final String ATTR_CODE_COUNTRY = "codeCountry";
     
     @NotEmpty( message = "#i18n{geocodes.validation.city.CodeCountry.notEmpty}" )
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeCountry.size}" ) 
@@ -91,7 +91,7 @@ public class City implements Serializable
      * Returns the Id
      * @return The Id
      */
-    @JsonProperty( PATH_ID )
+    @JsonProperty( ATTR_ID )
     public int getId( )
     {
         return _nId;
@@ -101,7 +101,7 @@ public class City implements Serializable
      * Sets the Id
      * @param nId The Id
      */
-    @JsonProperty( PATH_ID )
+    @JsonProperty( ATTR_ID )
     public void setId( int nId )
     {
         _nId = nId;
@@ -111,7 +111,7 @@ public class City implements Serializable
      * Returns the CodeCountry
      * @return The CodeCountry
      */
-    @JsonProperty( PATH_CODE_COUNTRY )
+    @JsonProperty( ATTR_CODE_COUNTRY )
     public String getCodeCountry( )
     {
         return _strCodeCountry;
@@ -121,7 +121,7 @@ public class City implements Serializable
      * Sets the CodeCountry
      * @param strCodeCountry The CodeCountry
      */ 
-    @JsonProperty( PATH_CODE_COUNTRY )
+    @JsonProperty( ATTR_CODE_COUNTRY )
     public void setCodeCountry( String strCodeCountry )
     {
         _strCodeCountry = strCodeCountry;
@@ -132,7 +132,7 @@ public class City implements Serializable
      * Returns the Code
      * @return The Code
      */
-    @JsonProperty( PATH_CODE )
+    @JsonProperty( ATTR_CODE )
     public String getCode( )
     {
         return _strCode;
@@ -142,7 +142,7 @@ public class City implements Serializable
      * Sets the Code
      * @param strCode The Code
      */ 
-    @JsonProperty( PATH_CODE )
+    @JsonProperty( ATTR_CODE )
     public void setCode( String strCode )
     {
         _strCode = strCode;
@@ -172,7 +172,7 @@ public class City implements Serializable
      * Returns the CodeZone
      * @return The CodeZone
      */
-    @JsonProperty( PATH_CODE_ZONE )
+    @JsonProperty( ATTR_CODE_ZONE )
     public String getCodeZone( )
     {
         return _strCodeZone;
@@ -182,7 +182,7 @@ public class City implements Serializable
      * Sets the CodeZone
      * @param strCodeZone The CodeZone
      */
-    @JsonProperty( PATH_CODE_ZONE )
+    @JsonProperty( ATTR_CODE_ZONE )
     public void setCodeZone( String strCodeZone )
     {
         _strCodeZone = strCodeZone;
@@ -200,7 +200,7 @@ public class City implements Serializable
      * Returns the dateValidityStart
      * @return The dateValidityStart
      */
-	@JsonProperty( PATH_DATE_CREATION )
+	@JsonProperty( ATTR_DATE_CREATION )
     public String getDateValidityStartToString( ) {
 		return _dateValidityStart.toString( );
 	}
@@ -210,7 +210,7 @@ public class City implements Serializable
      * Sets the dateValidityStart
      * @param dateValidityStart The dateValidityStart
      */ 
-    @JsonProperty( PATH_DATE_CREATION )
+    @JsonProperty( ATTR_DATE_CREATION )
 	public void setDateValidityStart(Date dateValidityStart) {
 		this._dateValidityStart = dateValidityStart;
 	}
@@ -227,7 +227,7 @@ public class City implements Serializable
      * Returns the dateValidityStart
      * @return The dateValidityStart
      */
-	@JsonProperty( PATH_DATE_END )
+	@JsonProperty( ATTR_DATE_END )
     public String getDateValidityEndToString( ) {
 		return _dateValidityEnd.toString( );
 	}
@@ -236,7 +236,7 @@ public class City implements Serializable
      * Sets the dateValidityEnd
      * @param dateValidityEnd The dateValidityEnd
      */ 
-    @JsonProperty( PATH_DATE_END )
+    @JsonProperty( ATTR_DATE_END )
 	public void setDateValidityEnd( Date dateValidityEnd ) {
 		this._dateValidityEnd = dateValidityEnd;
 	}
@@ -245,7 +245,7 @@ public class City implements Serializable
      * Returns the ValueMin
      * @return The ValueMin
      */
-	@JsonProperty( PATH_VALUE_WITHOUT_ARTICLE )
+	@JsonProperty( ATTR_VALUE_WITHOUT_ARTICLE )
 	public String getValueMin( ) {
 		return _strValueMin;
 	}
@@ -254,7 +254,7 @@ public class City implements Serializable
      * Sets the strValueMin
      * @param strValueMin The strValueMin
      */
-	@JsonProperty( PATH_VALUE_WITHOUT_ARTICLE )
+	@JsonProperty( ATTR_VALUE_WITHOUT_ARTICLE )
 	public void setValueMin( String strValueMin ) {
 		this._strValueMin = strValueMin;
 	}
@@ -263,7 +263,7 @@ public class City implements Serializable
      * Returns the ValueMinComplete
      * @return The ValueMinComplete
      */
-	@JsonProperty( PATH_VALUE )
+	@JsonProperty( ATTR_VALUE )
 	public String getValueMinComplete( ) {
 		return _strValueMinComplete;
 	}
@@ -272,7 +272,7 @@ public class City implements Serializable
      * Sets the strValueMinComplete
      * @param strValueMinComplete The strValueMinComplete
      */
-	@JsonProperty( PATH_VALUE )
+	@JsonProperty( ATTR_VALUE )
 	public void setValueMinComplete( String strValueMinComplete ) {
 		this._strValueMinComplete = strValueMinComplete;
 	}
