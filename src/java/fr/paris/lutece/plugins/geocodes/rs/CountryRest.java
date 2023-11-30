@@ -88,7 +88,8 @@ public class CountryRest
      */
     private Response getCountryListV1( )
     {
-        List<Country> listCountrys = GeoCodesService.getCountriesListByName( "%" );
+    	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+    	List<Country> listCountrys = geoCodesService.getCountriesListByName( "%" );
         
         if ( listCountrys.isEmpty( ) )
         {
@@ -132,7 +133,8 @@ public class CountryRest
      */
     private Response getCountryV1( String code )
     {
-        Optional<Country> optCountry = GeoCodesService.getCountryByCode( code );
+    	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+        Optional<Country> optCountry = geoCodesService.getCountryByCode( code );
         if ( !optCountry.isPresent( ) )
         {
             AppLogService.error( Constants.ERROR_NOT_FOUND_RESOURCE );
@@ -184,7 +186,8 @@ public class CountryRest
                     .build( );
         }
         
-        List<Country> listCountries = GeoCodesService.getCountriesListByName( strSearchBeginningVal );
+        GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+        List<Country> listCountries = geoCodesService.getCountriesListByName( strSearchBeginningVal );
         if ( listCountries.isEmpty() )
         {
             AppLogService.error( Constants.ERROR_NOT_FOUND_RESOURCE );
