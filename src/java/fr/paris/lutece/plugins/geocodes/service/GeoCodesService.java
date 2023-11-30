@@ -58,14 +58,14 @@ public class GeoCodesService
 	 */
 	public Optional<City> getCityByCode( String strCode )
 	{
-		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCache( strCode );
+		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCityCache( strCode );
 		
 		if ( cityCache == null || cityCache.isEmpty( ) )
 		{
 			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
 			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 			Optional<City> city = geoCodeLocal.getCityByCode( strCode );
-			_cacheGeoCode.putInCache( strCode , city );
+			_cacheGeoCode.putCityInCache( strCode , city );
 			return city;
 		}
 		else return cityCache;
@@ -79,7 +79,7 @@ public class GeoCodesService
 	 */
 	public List<City> getCitiesListByName( String strSearchBeginningVal )
 	{
-		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCache( strSearchBeginningVal );
+		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCityCache( strSearchBeginningVal );
 		
 		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
 		{
@@ -88,7 +88,7 @@ public class GeoCodesService
 	        
 	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 	    	lstCities = geoCodeLocal.getCitiesListByName( strSearchBeginningVal );
-	    	_cacheGeoCodeLike.putInCache( strSearchBeginningVal, lstCities );
+	    	_cacheGeoCode.putCityInCache( strSearchBeginningVal, lstCitiesCache );
 	    	return lstCities;
 		}
 		return lstCitiesCache;
@@ -127,7 +127,7 @@ public class GeoCodesService
 	public List<City> getCitiesListByNameAndDate( String strSearchBeginningVal, Date dateCity )
 	{
 		dateCity = checkDateValidityStart( dateCity );
-		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCache( strSearchBeginningVal + dateCity);
+		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCityCache( strSearchBeginningVal + dateCity);
 		
 		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
 		{
@@ -136,7 +136,7 @@ public class GeoCodesService
 	        
 	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 	    	lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
-	    	_cacheGeoCode.putInCache( strSearchBeginningVal + dateCity, lstCities );
+	    	_cacheGeoCode.putCityInCache( strSearchBeginningVal + dateCity, lstCities );
 	    	return lstCities;
 		}
 		return lstCitiesCache;
@@ -173,9 +173,17 @@ public class GeoCodesService
 	 * @param strCode
 	 * @return  the country (as Optional)
 	 */
-	public static Optional<Country> getCountryByCode( String strCode )
+	public Optional<Country> getCountryByCode( String strCode )
 	{
-		return  CountryHome.findByCode( strCode );
+		Optional<Country> country = ( Optional<Country> ) _cacheGeoCode.getFromCountryCache( strCode );
+		
+		if ( country == null || country.isEmpty( ) )
+		{
+			country =  CountryHome.findByCode( strCode );
+			_cacheGeoCode.putCountryInCache( strCode, country );
+		}
+		
+		return country;
 	}
 	
 	/**
@@ -184,9 +192,17 @@ public class GeoCodesService
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
-	public static List<Country> getCountriesListByName( String strSearchBeginningVal )
+	public List<Country> getCountriesListByName( String strSearchBeginningVal )
 	{
-		return  CountryHome.getCountriesListByName( strSearchBeginningVal );
+		List<Country> lstCountries = ( List<Country> ) _cacheGeoCode.getFromCountryCache( strSearchBeginningVal );
+		
+		if ( lstCountries == null || lstCountries.isEmpty( ) )
+		{
+			lstCountries =  CountryHome.getCountriesListByName( strSearchBeginningVal );
+			_cacheGeoCode.putCountryInCache( strSearchBeginningVal, lstCountries );
+		}
+		
+		return lstCountries;
 	}
 	
 	/**
@@ -199,14 +215,14 @@ public class GeoCodesService
 	public Optional<City> getCityByDateAndCode( Date dateCity, String strCode )
 	{
 		dateCity = checkDateValidityStart( dateCity );
-		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCache( strCode + dateCity );
+		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCityCache( strCode + dateCity );
 		
 		if ( cityCache == null || cityCache.isEmpty( ) )
 		{
 			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
 			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 			Optional<City> city = geoCodeLocal.getCityByDateAndCode( dateCity, strCode );
-			_cacheGeoCode.putInCache( strCode + dateCity, city );
+			_cacheGeoCode.putCityInCache( strCode + dateCity, city );
 			return city;
 		}
 		else return cityCache;
