@@ -23,7 +23,7 @@ public class GeoCodesService
 	
 	
 	/** Creates a new instance of CalendarService */
-    public GeoCodesService( )
+    private GeoCodesService( )
     {
         init( );
     }
