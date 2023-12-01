@@ -34,7 +34,10 @@
 
 package fr.paris.lutece.plugins.geocodes.rs;
 
-import java.sql.Date;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,6 +54,7 @@ import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.service.GeoCodesService;
 import fr.paris.lutece.plugins.rest.service.RestConstants;
 import fr.paris.lutece.portal.service.util.AppLogService;
+import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonResponse;
 import fr.paris.lutece.util.json.JsonUtil;
@@ -73,11 +77,21 @@ public class CityRest
     @Produces( MediaType.APPLICATION_JSON )
     public Response getCityListByDate( @PathParam( Constants.VERSION ) Integer nVersion,
     							@QueryParam( Constants.SEARCHED_STRING ) String strVal,
-    							@QueryParam( Constants.DATE ) Date dateCity ) 
+    							@QueryParam( Constants.DATE ) String strDateCity ) 
     {
         if ( nVersion == VERSION_1 )
         {
-            return getCityListV1ByNameAndDate( strVal, dateCity);
+        	DateFormat formatter = new SimpleDateFormat( "yyyy-MM-DD" ); 
+        	Date dateref = new Date( );
+			try {
+				dateref = (Date)formatter.parse( strDateCity );
+			} catch (ParseException e) {
+				AppLogService.error( Constants.ERROR_FORMAT_DATE_RESOURCE );
+	            return Response.status( Response.Status.NOT_FOUND )
+	                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
+	                    .build( );
+			}
+        	return getCityListV1ByNameAndDate( strVal, dateref);
         }
         AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
         return Response.status( Response.Status.NOT_FOUND )
@@ -125,11 +139,21 @@ public class CityRest
     @Produces( MediaType.APPLICATION_JSON )
     public Response getCityListByDateLike( @PathParam( Constants.VERSION ) Integer nVersion,
     							@QueryParam( Constants.SEARCHED_STRING ) String strVal,
-    							@QueryParam( Constants.DATE ) Date dateCity ) 
+    							@QueryParam( Constants.DATE ) String strDateCity ) 
     {
         if ( nVersion == VERSION_1 )
         {
-            return getCityListV1ByNameAndDateLike( strVal, dateCity);
+        	DateFormat formatter = new SimpleDateFormat("yyyy-MM-DD"); 
+        	Date dateref = new Date( );
+			try {
+				dateref = (Date)formatter.parse(strDateCity);
+			} catch (ParseException e) {
+				AppLogService.error( Constants.ERROR_FORMAT_DATE_RESOURCE );
+	            return Response.status( Response.Status.NOT_FOUND )
+	                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
+	                    .build( );
+			}
+        	return getCityListV1ByNameAndDateLike( strVal, dateref);
         }
         AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
         return Response.status( Response.Status.NOT_FOUND )
@@ -179,11 +203,21 @@ public class CityRest
     public Response getCityByDate(
     @PathParam( Constants.VERSION ) Integer nVersion,
     @PathParam( Constants.ID ) String code,
-    @QueryParam( Constants.DATE ) Date dateCity )
+    @QueryParam( Constants.DATE ) String strDateCity )
     {
         if ( nVersion == VERSION_1 )
         {
-            return getCityByDateAndCodeV1( dateCity, code );
+        	DateFormat formatter = new SimpleDateFormat("yyyy-MM-DD"); 
+        	Date dateref = new Date( );
+			try {
+				dateref = (Date)formatter.parse(strDateCity);
+			} catch (ParseException e) {
+				AppLogService.error( Constants.ERROR_FORMAT_DATE_RESOURCE );
+	            return Response.status( Response.Status.NOT_FOUND )
+	                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
+	                    .build( );
+			}
+            return getCityByDateAndCodeV1( dateref, code );
         }
         AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
         return Response.status( Response.Status.NOT_FOUND )

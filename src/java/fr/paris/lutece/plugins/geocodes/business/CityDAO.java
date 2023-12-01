@@ -39,7 +39,7 @@ import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
 
-import java.sql.Date;
+import java.util.Date;
 import java.sql.Statement;
 
 import java.util.ArrayList;
@@ -80,11 +80,11 @@ public final class CityDAO implements ICityDAO
             daoUtil.setString( nIndex++ , city.getCode( ) );
             daoUtil.setString( nIndex++ , city.getValue( ) );
             daoUtil.setString( nIndex++ , city.getCodeZone( ) );
-            daoUtil.setDate( nIndex++, city.getDateValidityStart( ) );
-            daoUtil.setDate( nIndex++, city.getDateValidityEnd( ) );
+            daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateValidityStart( ).getTime( ) ) );
+            daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateValidityEnd( ).getTime() ) );
             daoUtil.setString( nIndex++ , city.getValueMin( ) );
             daoUtil.setString( nIndex++ , city.getValueMinComplete( ) );
-            daoUtil.setDate( nIndex++, city.getDateLastUpdate( ) );
+            daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateLastUpdate( ).getTime( ) ) );
             
             daoUtil.executeUpdate( );
             if ( daoUtil.nextGeneratedKey( ) ) 
@@ -169,8 +169,8 @@ public final class CityDAO implements ICityDAO
     {
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BETWEEN_DATE, plugin ) )
         {
-	        daoUtil.setDate( 1 , dateCode );
-	        daoUtil.setDate( 2 , dateCode );
+	        daoUtil.setDate( 1 , new java.sql.Date( dateCode.getTime( ) ) );
+	        daoUtil.setDate( 2 , new java.sql.Date( dateCode.getTime( ) ) );
 	        daoUtil.setString( 3, strCode );
 	        daoUtil.executeQuery( );
 	        City city = null;
@@ -223,11 +223,11 @@ public final class CityDAO implements ICityDAO
         	daoUtil.setString( nIndex++ , city.getCode( ) );
         	daoUtil.setString( nIndex++ , city.getValue( ) );
         	daoUtil.setString( nIndex++ , city.getCodeZone( ) );
-        	daoUtil.setDate( nIndex++, city.getDateValidityStart( ) );
-            daoUtil.setDate( nIndex++, city.getDateValidityEnd( ) );
+        	daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateValidityStart( ).getTime( ) ) );
+            daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateValidityEnd( ).getTime( ) ) );
             daoUtil.setString( nIndex++ , city.getValueMin( ) );
             daoUtil.setString( nIndex++ , city.getValueMinComplete() );
-            daoUtil.setDate( nIndex++, city.getDateLastUpdate( ) );
+            daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateLastUpdate( ).getTime( ) ) );
 	        daoUtil.setInt( nIndex , city.getId( ) );
 	
 	        daoUtil.executeUpdate( );
@@ -351,8 +351,8 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE_AND_DATE, plugin ) )
         {
         	daoUtil.setString( 1 , strVal );
-        	daoUtil.setDate( 2, dateCity );
-        	daoUtil.setDate( 3, dateCity );
+        	daoUtil.setDate( 2, new java.sql.Date( dateCity.getTime( ) ) );
+        	daoUtil.setDate( 3, new java.sql.Date( dateCity.getTime( ) ) );
         	
 	        daoUtil.executeQuery(  );
 	
@@ -390,8 +390,8 @@ public final class CityDAO implements ICityDAO
         {
         	daoUtil.setString( 1 , strVal + "%"  );
         	daoUtil.setString( 2 , strVal + "%"  );
-        	daoUtil.setDate( 3, dateCity );
-        	daoUtil.setDate( 4, dateCity );
+        	daoUtil.setDate( 3, new java.sql.Date( dateCity.getTime( ) ) );
+        	daoUtil.setDate( 4, new java.sql.Date( dateCity.getTime( ) ) );
         	
 	        daoUtil.executeQuery(  );
 	

@@ -47,6 +47,8 @@ public final class Constants
     public static final String SEARCH_DATE_PATH = "/searchdate/{" + Constants.SEARCHED_STRING + "}";
     public static final String SEARCH_LIKE = "/list";
     public static final String SEARCHED_STRING = "search";
+    public static final String SEARCH_PATH_COUNTRY = "/search";
+    public static final String VALUE_STRING = "value";
     public static final String DATE = "dateref";
     public static final String SEARCH_DATE_AND_CODE = "/{" + Constants.ID + "}";
     
@@ -59,6 +61,7 @@ public final class Constants
     public static final String EMPTY_OBJECT = "{}";
     public static final String ERROR_NOT_FOUND_VERSION = "Version not found";
     public static final String ERROR_NOT_FOUND_RESOURCE = "Resource not found";
+    public static final String ERROR_FORMAT_DATE_RESOURCE = "Date not in correct format yyyy-MM-DD";
     public static final String ERROR_SEARCH_STRING = "Search string must contain 3 chars at least";
     public static final String ERROR_BAD_REQUEST_EMPTY_PARAMETER = "Empty parameter";
     

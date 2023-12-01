@@ -1,6 +1,6 @@
 package fr.paris.lutece.plugins.geocodes.service;
 
-import java.sql.Date;
+import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +14,7 @@ import fr.paris.lutece.plugins.geocodes.provider.IGeoCodeProvider;
 import fr.paris.lutece.plugins.geocodes.rs.Constants;
 import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheService;
 import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheServiceLike;
+import fr.paris.lutece.util.date.DateUtil;
 
 public class GeoCodesService 
 {
@@ -260,7 +261,8 @@ public class GeoCodesService
 	
 	public static Date checkDateValidityStart( Date dateCheck )
 	{
-		Date dateMin = Date.valueOf( Constants.CONST_DATE_MIN );
+		//Date dateMin = Date.valueOf( Constants.CONST_DATE_MIN );
+		Date dateMin = DateUtil.parseIsoDate("1943-01-01 00:00:00");
 		if ( dateCheck.before( dateMin ) )
 		{
 			return dateMin;
