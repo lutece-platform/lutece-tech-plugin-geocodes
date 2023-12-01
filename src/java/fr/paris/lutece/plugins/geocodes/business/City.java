@@ -41,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 /**
  * This is the business class for the object City
  */ 
