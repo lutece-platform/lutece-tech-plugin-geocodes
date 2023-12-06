@@ -68,7 +68,6 @@ public class CountryRest
      * @return the Country List
      */
     @GET
-    @Path( StringUtils.EMPTY )
     @Produces( MediaType.APPLICATION_JSON )
     public Response getCountryList( @PathParam( Constants.VERSION ) Integer nVersion )
     {
