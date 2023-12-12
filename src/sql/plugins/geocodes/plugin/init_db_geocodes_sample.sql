@@ -1,5 +1,6 @@
 -- Europe sample
 INSERT INTO geocodes_country (code, value) VALUES 
+('99100', 'FRANCE'),
 ('99125', 'ALBANIE'),
 ('99109', 'ALLEMAGNE'),
 ('99130', 'ANDORRE'),
