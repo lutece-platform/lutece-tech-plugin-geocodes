@@ -42209,6 +42209,7 @@ INSERT INTO geocodes_city ( code_country, code, code_zone, value, date_validity_
 delete from geocodes_country;
 
 INSERT INTO geocodes_country (code, value) VALUES 
+('99100', 'FRANCE'),
 ('99125', 'ALBANIE'),
 ('99109', 'ALLEMAGNE'),
 ('99130', 'ANDORRE'),
