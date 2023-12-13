@@ -52,7 +52,7 @@ public final class CountryDAO implements ICountryDAO
     // Constants
 	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_country, code, value FROM geocodes_country WHERE id_country = ?";
 	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value FROM geocodes_country WHERE code = ?";
-	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value FROM geocodes_country WHERE value like ? order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value FROM geocodes_country WHERE LOWER(value) like LOWER(?) order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value ) VALUES ( ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_country WHERE id_country = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ? WHERE id_country = ?";
