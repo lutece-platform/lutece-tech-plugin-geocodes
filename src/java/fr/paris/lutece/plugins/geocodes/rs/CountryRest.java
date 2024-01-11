@@ -133,7 +133,7 @@ public class CountryRest
     private Response getCountryV1( String code )
     {
     	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
-        Optional<Country> optCountry = geoCodesService.getCountryByCode( code );
+        Optional<Country> optCountry = geoCodesService.getCountryByCode( code, false );
         if ( !optCountry.isPresent( ) )
         {
             AppLogService.error( Constants.ERROR_NOT_FOUND_RESOURCE );

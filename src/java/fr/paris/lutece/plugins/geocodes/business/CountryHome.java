@@ -114,6 +114,17 @@ public final class CountryHome
     }
     
     /**
+     * Returns an instance of a country whose identifier is specified in parameter
+     * @param strCode The country primary key
+     * @param bAttached is the  country attached
+     * @return an instance of Country
+     */
+    public static Optional<Country> findByCode( String strCode, boolean bAttached )
+    {
+        return _dao.loadByCode( strCode, bAttached, _plugin );
+    }
+    
+    /**
      * Load the data of all the country objects and returns them as a list
      * @return the list which contains the data of all the country objects
      */

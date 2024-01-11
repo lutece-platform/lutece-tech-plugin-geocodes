@@ -8,6 +8,7 @@ CREATE TABLE geocodes_country (
 id_country int AUTO_INCREMENT,
 code varchar(10) default '' NOT NULL,
 value varchar(255) default '' NOT NULL,
+is_attached SMALLINT DEFAULT 0,
 PRIMARY KEY (id_country)
 );
 
