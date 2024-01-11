@@ -53,6 +53,8 @@ public class Country implements Serializable
     @NotEmpty( message = "#i18n{geocodes.validation.country.Value.notEmpty}" )
     @Size( max = 255 , message = "#i18n{geocodes.validation.country.Value.size}" ) 
     private String _strValue;
+    
+    private boolean _bAttached;
 
     /**
      * Returns the Id
@@ -108,5 +110,21 @@ public class Country implements Serializable
     {
         _strValue = strValue;
     }
+
+    /**
+     * Returns the boolean attached
+     * @return attached
+     */
+	public boolean isAttached() {
+		return _bAttached;
+	}
+
+	/**
+     * Sets the boolean attached
+     * @param _bAttached The boolean attached
+     */ 
+	public void setAttached(boolean _bAttached) {
+		this._bAttached = _bAttached;
+	}
     
 }

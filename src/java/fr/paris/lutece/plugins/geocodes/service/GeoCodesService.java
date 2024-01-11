@@ -188,6 +188,25 @@ public class GeoCodesService
 	}
 	
 	/**
+	 * get country by code
+	 * 
+	 * @param strCode
+	 * @return  the country (as Optional)
+	 */
+	public Optional<Country> getCountryByCode( String strCode, boolean bAttached )
+	{
+		Optional<Country> country = ( Optional<Country> ) _cacheGeoCode.getFromCountryCache( strCode );
+		
+		if ( country == null || country.isEmpty( ) )
+		{
+			country =  CountryHome.findByCode( strCode, bAttached );
+			_cacheGeoCode.putCountryInCache( strCode, country );
+		}
+		
+		return country;
+	}
+	
+	/**
 	 * search countries by name
 	 * 
 	 * @param strSearchBeginningVal

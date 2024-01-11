@@ -119,4 +119,13 @@ public interface ICountryDAO
      * @return The list which contains the data of all the avant objects
      */
 	List<Country> selectCountriesListByIds( Plugin _plugin, List<Integer> listIds );
+
+	/**
+     * Load the data from the table
+     * @param strCode The identifier of the country
+     * @param bAttached is the country attached
+     * @param plugin the Plugin
+     * @return The instance of the country
+     */
+	Optional<Country> loadByCode(String strCode, boolean bAttached, Plugin plugin);
 }

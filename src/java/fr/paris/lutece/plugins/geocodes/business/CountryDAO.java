@@ -50,15 +50,16 @@ import java.util.Optional;
 public final class CountryDAO implements ICountryDAO
 {
     // Constants
-	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_country, code, value FROM geocodes_country WHERE id_country = ?";
-	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value FROM geocodes_country WHERE code = ?";
-	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value FROM geocodes_country WHERE LOWER(value) like LOWER(?) order by value ";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value ) VALUES ( ?, ? ) ";
+	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE id_country = ?";
+	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE code = ?";
+	private static final String SQL_QUERY_SELECT_BY_CODE_AND_ATTACHED = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE code = ? and is_attached = ?";
+	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE LOWER(value) like LOWER(?) order by value ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value, is_attached ) VALUES ( ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_country WHERE id_country = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ? WHERE id_country = ?";
-    private static final String SQL_QUERY_SELECTALL = "SELECT id_country, code, value FROM geocodes_country";
+    private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ?, is_attached = ? WHERE id_country = ?";
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_country, code, value, is_attached FROM geocodes_country";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_country FROM geocodes_country";
-    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_country, code, value FROM geocodes_country WHERE id_country IN (  ";
+    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE id_country IN (  ";
 
     /**
      * {@inheritDoc }
@@ -71,6 +72,7 @@ public final class CountryDAO implements ICountryDAO
             int nIndex = 1;
             daoUtil.setString( nIndex++ , country.getCode( ) );
             daoUtil.setString( nIndex++ , country.getValue( ) );
+            daoUtil.setBoolean( nIndex++ , country.isAttached( ) );
             
             daoUtil.executeUpdate( );
             if ( daoUtil.nextGeneratedKey( ) ) 
@@ -100,7 +102,8 @@ public final class CountryDAO implements ICountryDAO
 	            
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
-			    country.setValue( daoUtil.getString( nIndex ) );
+			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setAttached( daoUtil.getBoolean( nIndex ) );
 	        }
 	
 	        return Optional.ofNullable( country );
@@ -126,7 +129,36 @@ public final class CountryDAO implements ICountryDAO
 	            
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
-			    country.setValue( daoUtil.getString( nIndex ) );
+			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setAttached( daoUtil.getBoolean( nIndex ) );
+	        }
+	
+	        return Optional.ofNullable( country );
+        }
+    }
+    
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public Optional<Country> loadByCode( String strCode, boolean bAttached, Plugin plugin )
+    {
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_CODE_AND_ATTACHED, plugin ) )
+        {
+	        daoUtil.setString( 1 , strCode );
+	        daoUtil.setBoolean( 2 , bAttached );
+	        daoUtil.executeQuery( );
+	        Country country = null;
+	
+	        if ( daoUtil.next( ) )
+	        {
+	            country = new Country();
+	            int nIndex = 1;
+	            
+	            country.setId( daoUtil.getInt( nIndex++ ) );
+			    country.setCode( daoUtil.getString( nIndex++ ) );
+			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setAttached( daoUtil.getBoolean( nIndex ) );
 	        }
 	
 	        return Optional.ofNullable( country );
@@ -159,6 +191,7 @@ public final class CountryDAO implements ICountryDAO
 	        
             	daoUtil.setString( nIndex++ , country.getCode( ) );
             	daoUtil.setString( nIndex++ , country.getValue( ) );
+            	daoUtil.setBoolean( nIndex++ , country.isAttached( ) );
 	        daoUtil.setInt( nIndex , country.getId( ) );
 	
 	        daoUtil.executeUpdate( );
@@ -183,7 +216,8 @@ public final class CountryDAO implements ICountryDAO
 	            
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
-			    country.setValue( daoUtil.getString( nIndex ) );
+			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setAttached( daoUtil.getBoolean( nIndex ) );
 	
 	            countryList.add( country );
 	        }
@@ -211,7 +245,8 @@ public final class CountryDAO implements ICountryDAO
 	            
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
-			    country.setValue( daoUtil.getString( nIndex ) );
+			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setAttached( daoUtil.getBoolean( nIndex ) );
 	
 	            countryList.add( country );
 	        }
@@ -294,7 +329,8 @@ public final class CountryDAO implements ICountryDAO
 		            
 		            country.setId( daoUtil.getInt( nIndex++ ) );
 				    country.setCode( daoUtil.getString( nIndex++ ) );
-				    country.setValue( daoUtil.getString( nIndex ) );
+				    country.setValue( daoUtil.getString( nIndex++ ) );
+				    country.setAttached( daoUtil.getBoolean( nIndex ) );
 		            
 		            countryList.add( country );
 		        }
