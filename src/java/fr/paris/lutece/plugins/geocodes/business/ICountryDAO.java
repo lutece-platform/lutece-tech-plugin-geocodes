@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.geocodes.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
+
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -96,7 +98,7 @@ public interface ICountryDAO
      * @param plugin the Plugin
      * @return The list which contains the data of all the country objects
      */
-    List<Country> selectCountriesListByValue( String strVal, Plugin plugin );
+    List<Country> selectCountriesListByValue( String strVal, Date dateRef, Plugin plugin );
     
     /**
      * Load the id of all the country objects and returns them as a list

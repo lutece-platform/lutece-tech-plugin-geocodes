@@ -40,7 +40,7 @@ import fr.paris.lutece.portal.service.plugin.PluginService;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
 
-
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -137,9 +137,9 @@ public final class CountryHome
      * Load the data of all the country objects and returns them as a list
      * @return the list which contains the data of all the country objects
      */
-    public static List<Country> getCountriesListByName( String strSearch )
+    public static List<Country> getCountriesListByName( String strSearch, Date dateRef )
     {
-        return _dao.selectCountriesListByValue( strSearch, _plugin );
+        return _dao.selectCountriesListByValue( strSearch, dateRef, _plugin );
     }
 
     
