@@ -285,6 +285,18 @@ update geocodes_country set is_attached = 1 where code = '99432' and value != 'T
 update geocodes_country set is_attached = 1 where code = '99427' and value != 'TERR. DU ROYAUME-UNI DANS L''ATLANTIQUE SUD';
 update geocodes_country set is_attached = 1 where code = '99308' and value != 'OCEAN INDIEN (TERRITOIRE BRITANNIQUE DE L'')';
 
+INSERT INTO geocodes_country (code, value, date_validity_start, date_validity_end) VALUES 
+( '91352","ALGERIE FRANCAISE (DEPT ALGER)', '1900-01-01', '1962-07-04' ),
+( '92352','ALGERIE FRANCAISE (DEPT ORAN)', '1900-01-01', '1962-07-04' ),
+( '93352','ALGERIE FRANCAISE (DEPT CONSTANTINE)', '1900-01-01', '1962-07-04' ),
+( '94352','ALGERIE FRANCAISE (DEPT TERRITOIRES DU SUD)', '1900-01-01', '1962-07-04' ),
+( '99143','CHYPRE (EMPIRE ROYAUME-UNI)', '1900-01-01', '1960-08-15' ), 
+( '99146','ARMENIE (URSS)', '1900-01-01', '1991-09-20' );
+
+update geocodes_country set date_validity_start = '1962-07-05' where code = '99352';
+update geocodes_country set date_validity_start = '1960-08-16' where code = '99254';
+update geocodes_country set date_validity_start = '1991-09-21' where code = '99252';
+
 -- city sample (FR)
 INSERT INTO geocodes_city ( code_country, code, code_zone, value, date_validity_start, date_validity_end, value_min, value_min_complete) VALUES 
 ('99100','1001','1','ABERGEMENT CLEMENCIAT','1943-01-01','2999-12-31','Abergement-Clémenciat','L''Abergement-Clémenciat'),

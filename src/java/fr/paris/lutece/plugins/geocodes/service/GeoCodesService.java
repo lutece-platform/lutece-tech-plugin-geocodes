@@ -212,14 +212,14 @@ public class GeoCodesService
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
-	public List<Country> getCountriesListByName( String strSearchBeginningVal )
+	public List<Country> getCountriesListByName( String strSearchBeginningVal, Date dateRef )
 	{
-		List<Country> lstCountries = ( List<Country> ) _cacheGeoCode.getFromCountryCache( strSearchBeginningVal );
+		List<Country> lstCountries = ( List<Country> ) _cacheGeoCode.getFromCountryCache( strSearchBeginningVal + dateRef );
 		
 		if ( lstCountries == null || lstCountries.isEmpty( ) )
 		{
-			lstCountries =  CountryHome.getCountriesListByName( strSearchBeginningVal );
-			_cacheGeoCode.putCountryInCache( strSearchBeginningVal, lstCountries );
+			lstCountries =  CountryHome.getCountriesListByName( strSearchBeginningVal, dateRef );
+			_cacheGeoCode.putCountryInCache( strSearchBeginningVal + dateRef, lstCountries );
 		}
 		
 		return lstCountries;

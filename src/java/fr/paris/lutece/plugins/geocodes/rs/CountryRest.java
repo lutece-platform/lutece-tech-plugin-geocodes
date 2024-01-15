@@ -34,6 +34,10 @@
 
 package fr.paris.lutece.plugins.geocodes.rs;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,6 +45,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -88,7 +93,9 @@ public class CountryRest
     private Response getCountryListV1( )
     {
     	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
-    	List<Country> listCountrys = geoCodesService.getCountriesListByName( "%" );
+    	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+    	Date date = new Date();
+    	List<Country> listCountrys = geoCodesService.getCountriesListByName( "%", date );
         
         if ( listCountrys.isEmpty( ) )
         {
@@ -158,11 +165,22 @@ public class CountryRest
     @Produces( MediaType.APPLICATION_JSON )
     public Response getCountiesByName(
     @PathParam( Constants.VERSION ) Integer nVersion,
-    @PathParam( Constants.SEARCHED_STRING ) String strVal )
+    @PathParam( Constants.SEARCHED_STRING ) String strVal,
+    @QueryParam( Constants.DATE ) String strDateCountry )
     {
         if ( nVersion == VERSION_1 )
         {
-            return getCountriesByNameV1( strVal );
+        	DateFormat formatter = new SimpleDateFormat("yyyy-MM-DD"); 
+        	Date dateref = new Date( );
+			try {
+				dateref = (Date)formatter.parse(strDateCountry);
+			} catch (ParseException e) {
+				AppLogService.error( Constants.ERROR_FORMAT_DATE_RESOURCE );
+	            return Response.status( Response.Status.NOT_FOUND )
+	                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
+	                    .build( );
+			}
+        	return getCountriesByNameV1( strVal, dateref );
         }
         AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
         return Response.status( Response.Status.NOT_FOUND )
@@ -175,7 +193,7 @@ public class CountryRest
      * @param id the id
      * @return the Country for the version 1
      */
-    private Response getCountriesByNameV1( String strSearchBeginningVal )
+    private Response getCountriesByNameV1( String strSearchBeginningVal, Date dateRef )
     {
         if ( strSearchBeginningVal == null || strSearchBeginningVal.length( ) < 3 )
         {
@@ -186,7 +204,7 @@ public class CountryRest
         }
         
         GeoCodesService geoCodesService = GeoCodesService.getInstance( );
-        List<Country> listCountries = geoCodesService.getCountriesListByName( strSearchBeginningVal );
+        List<Country> listCountries = geoCodesService.getCountriesListByName( strSearchBeginningVal, dateRef );
         if ( listCountries.isEmpty() )
         {
             AppLogService.error( Constants.ERROR_NOT_FOUND_RESOURCE );

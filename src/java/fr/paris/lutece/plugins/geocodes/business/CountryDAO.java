@@ -41,6 +41,7 @@ import fr.paris.lutece.util.sql.DAOUtil;
 import java.sql.Statement;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -54,6 +55,7 @@ public final class CountryDAO implements ICountryDAO
 	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE code = ?";
 	private static final String SQL_QUERY_SELECT_BY_CODE_AND_ATTACHED = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE code = ? and is_attached = ?";
 	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, is_attached FROM geocodes_country WHERE LOWER(value) like LOWER(?) order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_country, code, value FROM geocodes_country WHERE LOWER(value) like LOWER(?) AND date_validity_start <= ? AND date_validity_end >= ? order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value, is_attached ) VALUES ( ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_country WHERE id_country = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ?, is_attached = ? WHERE id_country = ?";
@@ -230,12 +232,14 @@ public final class CountryDAO implements ICountryDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Country> selectCountriesListByValue( String strVal, Plugin plugin )
+    public List<Country> selectCountriesListByValue( String strVal, Date dateRef, Plugin plugin )
     {
         List<Country> countryList = new ArrayList<>(  );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE, plugin ) )
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE_AND_DATE, plugin ) )
         {
         	daoUtil.setString( 1 , strVal + "%" );
+        	daoUtil.setDate( 2 , new java.sql.Date( dateRef.getTime( ) ) );
+	        daoUtil.setDate( 3 , new java.sql.Date( dateRef.getTime( ) ) );
 	        daoUtil.executeQuery(  );
 	
 	        while ( daoUtil.next(  ) )
