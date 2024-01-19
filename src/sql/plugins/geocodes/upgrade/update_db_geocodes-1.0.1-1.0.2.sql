@@ -19,7 +19,7 @@ alter table geocodes_country add column date_validity_start DATE default '1900-0
 alter table geocodes_country add column date_validity_end DATE default '2999-12-31';
 
 INSERT INTO geocodes_country (code, value, date_validity_start, date_validity_end) VALUES 
-( '91352","ALGERIE FRANCAISE (DEPT ALGER)', '1900-01-01', '1962-07-04' ),
+( '91352','ALGERIE FRANCAISE (DEPT ALGER)', '1900-01-01', '1962-07-04' ),
 ( '92352','ALGERIE FRANCAISE (DEPT ORAN)', '1900-01-01', '1962-07-04' ),
 ( '93352','ALGERIE FRANCAISE (DEPT CONSTANTINE)', '1900-01-01', '1962-07-04' ),
 ( '94352','ALGERIE FRANCAISE (DEPT TERRITOIRES DU SUD)', '1900-01-01', '1962-07-04' ),
