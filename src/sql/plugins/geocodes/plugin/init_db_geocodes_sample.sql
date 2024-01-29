@@ -286,8 +286,8 @@ update geocodes_country set is_attached = 1 where code = '99427' and value != 'T
 update geocodes_country set is_attached = 1 where code = '99308' and value != 'OCEAN INDIEN (TERRITOIRE BRITANNIQUE DE L'')';
 
 INSERT INTO geocodes_country (code, value, date_validity_start, date_validity_end) VALUES 
-( '91352","ALGERIE FRANCAISE (DEPT ALGER)', '1900-01-01', '1962-07-04' ),
-( '92352','ALGERIE FRANCAISE (DEPT ORAN)', '1900-01-01', '1962-07-04' ),
+( '91352','ALGERIE FRANCAISE (DEPT ALGER)', '1900-01-01', '1962-07-04' ),
+( '92352','ALGERIE ''FRANCAISE (DEPT ORAN)', '1900-01-01', '1962-07-04' ),
 ( '93352','ALGERIE FRANCAISE (DEPT CONSTANTINE)', '1900-01-01', '1962-07-04' ),
 ( '94352','ALGERIE FRANCAISE (DEPT TERRITOIRES DU SUD)', '1900-01-01', '1962-07-04' ),
 ( '99143','CHYPRE (EMPIRE ROYAUME-UNI)', '1900-01-01', '1960-08-15' ), 
