@@ -28,11 +28,12 @@
                  <p> - a GeoCodesService java class</p>
                  <p> - a REST service (see swagger documentation, available with the swaggerui plugin) : </p>
                     <ul>
-				   <li>GET /rest/geocodes/api/v1/cities/{id}</li>
-				   <li>GET /rest/geocodes/api/v1/cities/search/{str}</li>
-				   <li>GET /rest/geocodes/api/v1/countries</li>
-				   <li>GET /rest/geocodes/api/v1/countries/{id}</li>
-				   <li>GET /rest/geocodes/api/v1/countries/search/{str}</li>
+				   <li>GET /rest/geocodes/api/v1/cities?search={name}&dateref={dateref} allows you to search for a commune based on its exact name and the commune's validity date</li>
+				   <li>GET /rest/geocodes/api/v1/cities/list?search={name}&dateref={dateref} allows you to search by the beginning of the commune's name (minimum 3 characters) and its validity date.</li>
+				   <li>GET /rest/geocodes/api/v1/cities/{code}&dateref={dateref} allows you to search by commune insee code and validity date</li>
+				   <li>GET /rest/geocodes/api/v1/countries list all countries</li>
+				   <li>GET /rest/geocodes/api/v1/countries/{id} allows you to search for a country using its INSEE code</li>
+				   <li>GET /rest/geocodes/api/v1/countries/search/{str} allows you to search for a country by its name (minimum 3 characters) and validity date</li>
 				   </ul>
             </subsection>
         </section>

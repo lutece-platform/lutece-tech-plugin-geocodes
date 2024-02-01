@@ -28,11 +28,12 @@
                 <p> - une classe java GeoCodesService</p>
                 <p> - un service REST (cf documentation swagger): </p>
                     <ul>
-				   <li>GET /rest/geocodes/api/v1/cities/{id}</li>
-				   <li>GET /rest/geocodes/api/v1/cities/search/{str}</li>
-				   <li>GET /rest/geocodes/api/v1/countries</li>
-				   <li>GET /rest/geocodes/api/v1/countries/{id}</li>
-				   <li>GET /rest/geocodes/api/v1/countries/search/{str}</li>
+				   <li>GET /rest/geocodes/api/v1/cities?search={name}&dateref={dateref} permet de chercher une commune d'après son libellé exact et la date de validité de la commune</li>
+				   <li>GET /rest/geocodes/api/v1/cities/list?search={name}&dateref={dateref} permet d'effectuer une recherche sur le début du libellé de la commune, 3 caractères minimum, et sa date de validité</li>
+				   <li>GET /rest/geocodes/api/v1/cities/{code}&dateref={dateref} permet d'effectuer une recherche sur le code insee de la commune et sur la date de validité</li>
+				   <li>GET /rest/geocodes/api/v1/countries liste tous les pays</li>
+				   <li>GET /rest/geocodes/api/v1/countries/{id} permet de chercher un pays via son code INSEE</li>
+				   <li>GET /rest/geocodes/api/v1/countries/search/{str}?dateref={dateref} permet de chercher un pays sur son libellé, 3 caractères minimum, et sa date de validité</li>
 				   </ul>
             </subsection>
         </section>
