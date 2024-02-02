@@ -53,10 +53,10 @@ public final class CityDAO implements ICityDAO
 {
     // Constants
 	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE id_city = ?";
-	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE code = ? AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) ";
+	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE code = ? AND date_validity_start <= ? and date_validity_end >= ? ";
 	private static final String SQL_QUERY_SELECT_BETWEEN_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE date_validity_start <= ? AND date_validity_end >= ? and code = ? ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE LOWER(value) = LOWER(?) AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) order by value ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE ( LOWER(value_min) like LOWER(?) OR LOWER(value_min_complete) like LOWER(?) ) AND date_validity_start <= CURDATE( ) and date_validity_end >= CURDATE( ) order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE LOWER(value) = LOWER(?) AND date_validity_start <= ? and date_validity_end >= ? order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE ( LOWER(value_min) like LOWER(?) OR LOWER(value_min_complete) like LOWER(?) ) AND date_validity_start <= ? and date_validity_end >= ? order by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE  TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') = TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') AND date_validity_start <= ? AND date_validity_end >= ? order by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update FROM geocodes_city WHERE (   TRANSLATE(REPLACE(REPLACE(LOWER(value_min), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') OR  TRANSLATE(REPLACE(REPLACE(LOWER(value_min_complete), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') ) AND date_validity_start <= ? AND date_validity_end >= ? order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_city ( code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
@@ -137,6 +137,8 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_CODE, plugin ) )
         {
 	        daoUtil.setString( 1 , strCode );
+	        daoUtil.setDate( 2, new java.sql.Date(System.currentTimeMillis( ) ) );
+	        daoUtil.setDate( 3, new java.sql.Date(System.currentTimeMillis( ) ) );
 	        daoUtil.executeQuery( );
 	        City city = null;
 	
@@ -278,6 +280,8 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE, plugin ) )
         {
         	daoUtil.setString( 1 , strVal );
+        	daoUtil.setDate( 2, new java.sql.Date(System.currentTimeMillis( ) ) );
+        	daoUtil.setDate( 3, new java.sql.Date(System.currentTimeMillis( ) ) );
         	
 	        daoUtil.executeQuery(  );
 	
@@ -315,6 +319,8 @@ public final class CityDAO implements ICityDAO
         {
         	daoUtil.setString( 1 , strVal + "%"  );
         	daoUtil.setString( 2 , strVal + "%"  );
+        	daoUtil.setDate( 3, new java.sql.Date(System.currentTimeMillis( ) ) );
+        	daoUtil.setDate( 4, new java.sql.Date(System.currentTimeMillis( ) ) );
         	
 	        daoUtil.executeQuery(  );
 	
