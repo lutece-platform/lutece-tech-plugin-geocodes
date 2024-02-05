@@ -1,0 +1,1 @@
+update geocodes_city set code = LPAD(code,5,'0') where length(code) = 4;
