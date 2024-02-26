@@ -94,3 +94,6 @@ INSERT INTO geocodes_city ( code_country, code, code_zone, value, date_validity_
 ('99100','98832','0','YATE','1943-01-01','2999-12-31','Yaté','Yaté'),
 ('99100','98833','0','KOUAOUA','1943-01-01','2999-12-31','Kouaoua','Kouaoua'),
 ('99100','98901','0','LA PASSION CLIPPERTON','1943-01-01','2999-12-31','La Passion-Clipperton','La Passion-Clipperton');
+
+
+delete from geocodes_city where code IN ('75056','13055','69123');
