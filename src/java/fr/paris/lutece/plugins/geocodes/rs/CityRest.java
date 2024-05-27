@@ -66,6 +66,7 @@ import fr.paris.lutece.util.json.JsonUtil;
 public class CityRest
 {
     private static final int VERSION_1 = 1;
+    private static final int VERSION_2 = 2;
     
     
     /**
@@ -79,9 +80,17 @@ public class CityRest
     							@QueryParam( Constants.SEARCHED_STRING ) String strVal,
     							@QueryParam( Constants.DATE ) String strDateCity ) 
     {
-        if ( nVersion == VERSION_1 )
+    	DateFormat formatter = null;
+    	if ( nVersion == VERSION_1 )
         {
-        	DateFormat formatter = new SimpleDateFormat( "yyyy-MM-DD" ); 
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V1 ); 
+        }
+        else if ( nVersion == VERSION_2 )
+        {
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V2 ); 
+        }
+    	if ( formatter != null )
+    	{ 
         	Date dateref = new Date( );
 			try {
 				dateref = (Date)formatter.parse( strDateCity );
@@ -141,10 +150,18 @@ public class CityRest
     							@QueryParam( Constants.SEARCHED_STRING ) String strVal,
     							@QueryParam( Constants.DATE ) String strDateCity ) 
     {
-        if ( nVersion == VERSION_1 )
+    	DateFormat formatter = null;
+    	if ( nVersion == VERSION_1 )
         {
-        	DateFormat formatter = new SimpleDateFormat("yyyy-MM-DD"); 
-        	Date dateref = new Date( );
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V1 ); 
+        }
+        else if ( nVersion == VERSION_2 )
+        {
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V2 ); 
+        }
+    	if ( formatter != null )
+    	{
+	    	Date dateref = new Date( );
 			try {
 				dateref = (Date)formatter.parse(strDateCity);
 			} catch (ParseException e) {
@@ -153,8 +170,8 @@ public class CityRest
 	                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
 	                    .build( );
 			}
-        	return getCityListV1ByNameAndDateLike( strVal, dateref);
-        }
+	    	return getCityListV1ByNameAndDateLike( strVal, dateref);
+    	}
         AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
         return Response.status( Response.Status.NOT_FOUND )
                 .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_NOT_FOUND_VERSION ) ) )
@@ -205,9 +222,17 @@ public class CityRest
     @PathParam( Constants.ID ) String code,
     @QueryParam( Constants.DATE ) String strDateCity )
     {
-        if ( nVersion == VERSION_1 )
+    	DateFormat formatter = null;
+    	if ( nVersion == VERSION_1 )
         {
-        	DateFormat formatter = new SimpleDateFormat("yyyy-MM-DD"); 
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V1 ); 
+        }
+        else if ( nVersion == VERSION_2 )
+        {
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V2 ); 
+        }
+    	if ( formatter != null )
+    	{ 
         	Date dateref = new Date( );
 			try {
 				dateref = (Date)formatter.parse(strDateCity);

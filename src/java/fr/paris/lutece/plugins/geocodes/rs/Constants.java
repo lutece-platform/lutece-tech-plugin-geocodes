@@ -61,7 +61,7 @@ public final class Constants
     public static final String EMPTY_OBJECT = "{}";
     public static final String ERROR_NOT_FOUND_VERSION = "Version not found";
     public static final String ERROR_NOT_FOUND_RESOURCE = "Resource not found";
-    public static final String ERROR_FORMAT_DATE_RESOURCE = "Date not in correct format yyyy-MM-DD";
+    public static final String ERROR_FORMAT_DATE_RESOURCE = "Date not in correct format yyyy-MM-dd";
     public static final String ERROR_SEARCH_STRING = "Search string must contain 3 chars at least";
     public static final String ERROR_BAD_REQUEST_EMPTY_PARAMETER = "Empty parameter";
     
@@ -79,6 +79,8 @@ public final class Constants
     public static final String ID_PROVIDER_GEOCODE_INSEE = "geocodes.geoCodeProviderINSEE";
     
     public static final String CONST_DATE_MIN = "1943-01-01";
+    public static final String FORMAT_DATE_REF_V1 = "yyyy-MM-DD";
+    public static final String FORMAT_DATE_REF_V2 = "yyyy-MM-dd";
     
     /**
      * Private constructor
