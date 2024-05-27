@@ -66,6 +66,7 @@ import fr.paris.lutece.util.json.JsonUtil;
 public class CountryRest
 {
     private static final int VERSION_1 = 1;
+    private static final int VERSION_2 = 2;
     
     /**
      * Get Country List
@@ -93,7 +94,6 @@ public class CountryRest
     private Response getCountryListV1( )
     {
     	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
-    	DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     	Date date = new Date();
     	List<Country> listCountrys = geoCodesService.getCountriesListByName( "%", date );
         
@@ -168,9 +168,17 @@ public class CountryRest
     @PathParam( Constants.SEARCHED_STRING ) String strVal,
     @QueryParam( Constants.DATE ) String strDateCountry )
     {
-        if ( nVersion == VERSION_1 )
+    	DateFormat formatter = null;
+    	if ( nVersion == VERSION_1 )
         {
-        	DateFormat formatter = new SimpleDateFormat("yyyy-MM-DD"); 
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V1 ); 
+        }
+        else if ( nVersion == VERSION_2 )
+        {
+        	formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V2 ); 
+        }
+    	if ( formatter != null )
+    	{ 
         	Date dateref = new Date( );
 			try {
 				dateref = (Date)formatter.parse(strDateCountry);
