@@ -168,6 +168,14 @@ public class CountryRest
     @PathParam( Constants.SEARCHED_STRING ) String strVal,
     @QueryParam( Constants.DATE ) String strDateCountry )
     {
+    	if ( strDateCountry == null || strDateCountry.isEmpty( ) )
+        {
+        	AppLogService.error( Constants.ERROR_DATE_RESOURCE );
+            return Response.status( Response.Status.NOT_FOUND )
+                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_DATE_RESOURCE ) ) )
+                    .build( );
+        }
+    	
     	DateFormat formatter = null;
     	if ( nVersion == VERSION_1 )
         {
