@@ -86,6 +86,8 @@ public class City implements Serializable
     private String _strValueMinComplete;
     
     private Date _dateLastUpdate;
+    
+    private boolean _bDeprecated;
 
     /**
      * Returns the Id
@@ -291,6 +293,22 @@ public class City implements Serializable
      */
 	public void setDateLastUpdate(Date dateLastUpdate) {
 		this._dateLastUpdate = dateLastUpdate;
+	}
+
+	/**
+     * Returns the deprecated
+     * @return The deprecated
+     */
+	public boolean isDeprecated() {
+		return _bDeprecated;
+	}
+
+	/**
+     * Sets the deprecated
+     * @param _bDeprecated The deprecated
+     */
+	public void setDeprecated(boolean _bDeprecated) {
+		this._bDeprecated = _bDeprecated;
 	}
     
 }

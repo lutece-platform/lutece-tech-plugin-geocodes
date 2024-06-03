@@ -55,6 +55,8 @@ public class Country implements Serializable
     private String _strValue;
     
     private boolean _bAttached;
+    
+    private boolean _bDeprecated;
 
     /**
      * Returns the Id
@@ -125,6 +127,22 @@ public class Country implements Serializable
      */ 
 	public void setAttached(boolean _bAttached) {
 		this._bAttached = _bAttached;
+	}
+
+	/**
+     * Returns the boolean deprecated
+     * @return deprecated
+     */
+	public boolean isDeprecated() {
+		return _bDeprecated;
+	}
+
+	/**
+     * Sets the boolean deprecated
+     * @param _bDeprecated The boolean deprecated
+     */
+	public void setDeprecated(boolean _bDeprecated) {
+		this._bDeprecated = _bDeprecated;
 	}
     
 }
