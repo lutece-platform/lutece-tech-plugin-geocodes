@@ -12,7 +12,7 @@
 
     <artifactId>plugin-geocodes</artifactId>
     <packaging>lutece-plugin</packaging>
-    <version>1.0.5-SNAPSHOT</version>
+    <version>1.0.5</version>
     <name>Lutece geocodes plugin</name>
 
     <repositories>
@@ -60,6 +60,6 @@
         <connection>scm:git:https://github.com/lutece-platform/lutece-tech-plugin-geocodes.git</connection>
         <developerConnection>scm:git:https://github.com/lutece-platform/lutece-tech-plugin-geocodes.git</developerConnection>
         <url>https://github.com/lutece-platform/lutece-tech-plugin-geocodes.git</url>
-      <tag>HEAD</tag>
+      <tag>plugin-geocodes-1.0.5</tag>
   </scm>
 </project>
