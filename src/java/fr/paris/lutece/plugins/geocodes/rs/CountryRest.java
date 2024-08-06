@@ -97,12 +97,6 @@ public class CountryRest
     	Date date = new Date();
     	List<Country> listCountrys = geoCodesService.getCountriesListByName( "%", date );
         
-        if ( listCountrys.isEmpty( ) )
-        {
-            return Response.status( Response.Status.NO_CONTENT )
-                .entity( JsonUtil.buildJsonResponse( new JsonResponse( Constants.EMPTY_OBJECT ) ) )
-                .build( );
-        }
         return Response.status( Response.Status.OK )
                 .entity( JsonUtil.buildJsonResponse( new JsonResponse( listCountrys ) ) )
                 .build( );
@@ -221,13 +215,6 @@ public class CountryRest
         
         GeoCodesService geoCodesService = GeoCodesService.getInstance( );
         List<Country> listCountries = geoCodesService.getCountriesListByName( strSearchBeginningVal, dateRef );
-        if ( listCountries.isEmpty() )
-        {
-            AppLogService.error( Constants.ERROR_NOT_FOUND_RESOURCE );
-            return Response.status( Response.Status.NOT_FOUND )
-                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_NOT_FOUND_RESOURCE ) ) )
-                    .build( );
-        }
         
         return Response.status( Response.Status.OK )
                 .entity( JsonUtil.buildJsonResponse( new JsonResponse( listCountries ) ) )
