@@ -135,12 +135,6 @@ public class CityRest
         
         lstCities = geoCodesService.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
         
-        if ( lstCities.isEmpty( ) )
-        {
-            return Response.status( Response.Status.NO_CONTENT )
-                .entity( JsonUtil.buildJsonResponse( new JsonResponse( Constants.EMPTY_OBJECT ) ) )
-                .build( );
-        }
         return Response.status( Response.Status.OK )
                 .entity( JsonUtil.buildJsonResponse( new JsonResponse( lstCities ) ) )
                 .build( );
@@ -213,12 +207,6 @@ public class CityRest
         
         lstCities = geoCodesService.getCitiesListByNameAndDateLike( strSearchBeginningVal, dateCity );
         
-        if ( lstCities.isEmpty( ) )
-        {
-            return Response.status( Response.Status.NO_CONTENT )
-                .entity( JsonUtil.buildJsonResponse( new JsonResponse( Constants.EMPTY_OBJECT ) ) )
-                .build( );
-        }
         return Response.status( Response.Status.OK )
                 .entity( JsonUtil.buildJsonResponse( new JsonResponse( lstCities ) ) )
                 .build( );
