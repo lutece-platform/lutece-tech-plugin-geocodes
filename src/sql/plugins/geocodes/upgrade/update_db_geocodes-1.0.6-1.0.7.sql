@@ -1,0 +1,3 @@
+ALTER TABLE geocodes_city 
+ADD INDEX IDX_VALUE_MIN_CITY ( value_min ASC),
+ADD INDEX IDX_VALUE_MIN_COMPLETE_CITY ( value_min_complete ASC);
