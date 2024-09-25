@@ -119,13 +119,21 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     public String getManageCountries( HttpServletRequest request )
     {
         _country = null;
+        final Map<String, String> queryParameters = this.getQueryParameters( request );
+        final String cityLabel = queryParameters.get( QUERY_PARAM_INSEE_CITY_LABEL );
+        final String cityCode = queryParameters.get( QUERY_PARAM_INSEE_CITY_CODE );
+        final String countryLabel = queryParameters.get( QUERY_PARAM_INSEE_COUNTRY_LABEL );
+        final String countryCode = queryParameters.get( QUERY_PARAM_INSEE_COUNTRY_CODE );
+        final String placeCode = queryParameters.get( QUERY_PARAM_INSEE_PLACE_CODE );
         
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null || _listIdCountries.isEmpty( ) )
         {
-        	_listIdCountries = CountryHome.getIdCountriesList(  );
+
+        	_listIdCountries = CountryHome.getIdCountriesList( this.cleanLabel(cityLabel), cityCode, this.cleanLabel(countryLabel), countryCode,  placeCode );
         }
         
-        Map<String, Object> model = getPaginatedListModel( request, MARK_COUNTRY_LIST, _listIdCountries, JSP_MANAGE_COUNTRYS );
+        Map<String, Object> model = getPaginatedListModel( request, MARK_COUNTRY_LIST, _listIdCountries, JSP_MANAGE_COUNTRYS,
+                this.cleanLabel(cityLabel), cityCode, this.cleanLabel(countryLabel), countryCode,  placeCode);
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_COUNTRYS, TEMPLATE_MANAGE_COUNTRYS, model );
     }

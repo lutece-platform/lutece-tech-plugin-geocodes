@@ -1,0 +1,49 @@
+<div style="padding: .5rem .5rem;">
+    <a class="btn btn-primary btn-empty" title="#i18n{geocodes.search.emptyFields}">
+        <i class="fa fa-trash"></i>
+    </a>
+</div>
+<form class="form-inline" action="jsp/admin/plugins/geocodes/${page}.jsp">
+    <div class="input-group">
+        <@table responsive=false params='style="width: 100%;"'>
+        <tr>
+            <th>#i18n{geocodes.search.city.label}</th>
+            <th>#i18n{geocodes.search.city.code}</th>
+            <th>#i18n{geocodes.search.country.label}</th>
+            <th>#i18n{geocodes.search.country.code}</th>
+            <th>#i18n{geocodes.search.place.code}</th>
+            <th></th>
+        </tr>
+        <@tableHeadBodySeparator />
+        <tr>
+            <td>
+                <input class="form-control search-field" type="text" name="insee_city_label" placeholder="#i18n{geocodes.search.city.label}" value="${insee_city_label!''}" />
+            </td>
+            <td>
+                <input class="form-control search-field" type="text" name="insee_city" placeholder="#i18n{geocodes.search.city.code}" value="${insee_city!''}" />
+            </td>
+            <td>
+                <input class="form-control search-field" type="text" name="insee_country_label" placeholder="#i18n{geocodes.search.country.label}" value="${insee_country_label!''}" />
+            </td>
+            <td>
+                <input class="form-control search-field" type="text" name="insee_country" placeholder="#i18n{geocodes.search.country.code}" value="${insee_country!''}" />
+            </td>
+            <td>
+                <input class="form-control search-field" type="text" name="insee_place" placeholder="#i18n{geocodes.search.place.code}" value="${insee_place!''}" />
+            </td>
+            <td>
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit">
+                        <span class="fa fa-search"></span>
+                    </button>
+                </span>
+            </td>
+        </tr>
+    </@table>
+    </div>
+</form>
+<script>
+    $('.btn-empty').click(function () {
+        $('.search-field').val('');
+    });
+</script>

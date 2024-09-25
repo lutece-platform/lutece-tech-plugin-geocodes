@@ -118,7 +118,7 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "code" , CODE1 );
         request.addParameter( "value" , VALUE1 );
         request.addParameter( "code_zone" , CODEZONE1 );
-		List<Integer> listIds = CityHome.getIdCitiesList();
+		List<Integer> listIds = CityHome.getIdCitiesList( null, null, null, null, null);
         assertTrue( !listIds.isEmpty( ) );
         request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		jspbean = new CityJspBean();

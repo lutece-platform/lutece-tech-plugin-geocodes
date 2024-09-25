@@ -38,6 +38,8 @@ package fr.paris.lutece.plugins.geocodes.business;
 import fr.paris.lutece.portal.service.plugin.Plugin;
 import fr.paris.lutece.util.ReferenceList;
 import fr.paris.lutece.util.sql.DAOUtil;
+import org.apache.commons.lang3.StringUtils;
+
 import java.sql.Statement;
 
 import java.util.ArrayList;
@@ -61,6 +63,7 @@ public final class CountryDAO implements ICountryDAO
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ?, is_attached = ?, deprecated = ? WHERE id_country = ?";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_country, code, value, is_attached, deprecated FROM geocodes_country";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_country FROM geocodes_country";
+    private static final String SQL_QUERY_SEARCH_ID = "SELECT country.id_country FROM geocodes_country as country ${innerJoin} WHERE ${cityLabel} AND ${cityCode} AND ${countryLabel} AND ${countryCode} AND ${placeCode}";
     private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_country, code, value, is_attached, deprecated FROM geocodes_country WHERE id_country IN (  ";
 
     /**
@@ -270,10 +273,24 @@ public final class CountryDAO implements ICountryDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Integer> selectIdCountriesList( Plugin plugin )
+    public List<Integer> selectIdCountriesList( Plugin plugin, String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode   )
     {
+		boolean citySearch = false;
+		if( StringUtils.isNotBlank( cityLabel ) || StringUtils.isNotBlank( cityCode ) || StringUtils.isNotBlank( placeCode ))
+		{
+			citySearch = true;
+		}
+
+		String sql = SQL_QUERY_SEARCH_ID
+				.replace( "${innerJoin}", ( citySearch ? " INNER JOIN geocodes_city AS city ON city.code_country = country.code" : "" ) )
+				.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value = '" + cityLabel + "'" : "1=1" ) )
+				.replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "city.code = '" + cityCode + "'" : "1=1" ) )
+				.replace( "${countryLabel}", ( StringUtils.isNotBlank( countryLabel ) ? "country.value = '" + countryLabel + "'" : "1=1" ) )
+				.replace( "${countryCode}", ( StringUtils.isNotBlank( countryCode ) ? "country.code = '" + countryCode + "'" : "1=1" ) )
+				.replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "city.code_zone = '" + placeCode + "'" : "1=1" ) );
+
         List<Integer> countryList = new ArrayList<>( );
-        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_ID, plugin ) )
+        try( DAOUtil daoUtil = new DAOUtil( sql, plugin ) )
         {
 	        daoUtil.executeQuery(  );
 	

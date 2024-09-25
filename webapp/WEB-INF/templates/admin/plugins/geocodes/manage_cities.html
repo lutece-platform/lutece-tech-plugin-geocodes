@@ -8,6 +8,8 @@
 		<@tabs> 
 			<@tabsList2 tab="city" />
 			<@tabContent>
+				<#assign page >ManageCities</#assign>
+				<#include "search_geocodes.html"/>
 				<@table headBody=true>
 					<@tr>
 						<@th>#i18n{geocodes.manage_cities.columnCodeCountry}</@th>

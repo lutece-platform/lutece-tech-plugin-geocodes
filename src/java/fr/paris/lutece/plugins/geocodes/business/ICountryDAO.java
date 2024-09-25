@@ -105,7 +105,7 @@ public interface ICountryDAO
      * @param plugin the Plugin
      * @return The list which contains the id of all the country objects
      */
-    List<Integer> selectIdCountriesList( Plugin plugin );
+    List<Integer> selectIdCountriesList( Plugin plugin, String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode  );
     
     /**
      * Load the data of all the country objects and returns them as a referenceList

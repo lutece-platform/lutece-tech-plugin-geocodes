@@ -39,7 +39,9 @@ import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -57,7 +59,14 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
     
     // Parameters
     private static final String PARAMETER_PAGE_INDEX = "page_index";
-    
+
+    // Infos
+    public static final String QUERY_PARAM_INSEE_CITY_LABEL = "insee_city_label";
+    public static final String QUERY_PARAM_INSEE_CITY_CODE = "insee_city";
+    public static final String QUERY_PARAM_INSEE_COUNTRY_LABEL = "insee_country_label";
+    public static final String QUERY_PARAM_INSEE_COUNTRY_CODE = "insee_country";
+    public static final String QUERY_PARAM_INSEE_PLACE_CODE = "insee_place";
+
     // Markers
     private static final String MARK_PAGINATOR = "paginator";
     private static final String MARK_NB_ITEMS_PER_PAGE = "nb_items_per_page";
@@ -75,7 +84,7 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
      * @return The model
      */
     protected <T> Map<String, Object> getPaginatedListModel( HttpServletRequest request, String strBookmark, List<S> list,
-        String strManageJsp )
+        String strManageJsp, String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode )
     {
         int nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
         _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
@@ -89,6 +98,11 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
 
         Map<String, Object> model = getModel(  );
 
+        model.put( QUERY_PARAM_INSEE_CITY_LABEL, cityLabel );
+        model.put( QUERY_PARAM_INSEE_CITY_CODE, cityCode );
+        model.put( QUERY_PARAM_INSEE_COUNTRY_LABEL, countryLabel );
+        model.put( QUERY_PARAM_INSEE_COUNTRY_CODE, countryCode );
+        model.put( QUERY_PARAM_INSEE_PLACE_CODE, placeCode );
         model.put( MARK_NB_ITEMS_PER_PAGE, String.valueOf( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
         model.put( strBookmark, getItemsFromIds ( paginator.getPageItems( ) ) );
@@ -107,4 +121,84 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
      * @return the populated list of items corresponding to the id List
      */
      abstract  List<T> getItemsFromIds ( List<S> listIds ) ;
+
+    /**
+     * Return the possible parameters that can be searched
+     * @param request
+     * @return
+     */
+    protected Map<String, String> getQueryParameters( final HttpServletRequest request )
+    {
+        final Map<String, String> parameters = new HashMap<>( );
+        final String cityLabel = request.getParameter( QUERY_PARAM_INSEE_CITY_LABEL );
+        if ( cityLabel != null )
+        {
+            parameters.put( QUERY_PARAM_INSEE_CITY_LABEL, cityLabel );
+        }
+        final String cityCode = request.getParameter( QUERY_PARAM_INSEE_CITY_CODE );
+        if ( cityCode != null )
+        {
+            parameters.put( QUERY_PARAM_INSEE_CITY_CODE, cityCode );
+        }
+        final String countryLabel = request.getParameter( QUERY_PARAM_INSEE_COUNTRY_LABEL );
+        if ( countryLabel != null )
+        {
+            parameters.put( QUERY_PARAM_INSEE_COUNTRY_LABEL, countryLabel );
+        }
+        final String countryCode = request.getParameter( QUERY_PARAM_INSEE_COUNTRY_CODE );
+        if ( countryCode != null )
+        {
+            parameters.put( QUERY_PARAM_INSEE_COUNTRY_CODE, countryCode );
+        }
+        final String placeCode = request.getParameter( QUERY_PARAM_INSEE_PLACE_CODE );
+        if ( placeCode != null )
+        {
+            parameters.put( QUERY_PARAM_INSEE_PLACE_CODE, placeCode );
+        }
+        return parameters;
+    }
+
+    /**
+     * Clear the parameters list
+     * @param request
+     */
+    protected void clearParameters( final HttpServletRequest request )
+    {
+        final String cityLabel = request.getParameter(QUERY_PARAM_INSEE_CITY_LABEL);
+        if (cityLabel != null)
+        {
+            request.removeAttribute(QUERY_PARAM_INSEE_CITY_LABEL);
+        }
+        final String cityCode = request.getParameter(QUERY_PARAM_INSEE_CITY_CODE);
+        if (cityCode != null)
+        {
+            request.removeAttribute(QUERY_PARAM_INSEE_CITY_CODE);
+        }
+        final String countryLabel = request.getParameter(QUERY_PARAM_INSEE_COUNTRY_LABEL);
+        if (countryLabel != null)
+        {
+            request.removeAttribute(QUERY_PARAM_INSEE_COUNTRY_LABEL);
+        }
+        final String countryCode = request.getParameter(QUERY_PARAM_INSEE_COUNTRY_CODE);
+        if (countryCode != null)
+        {
+            request.removeAttribute(QUERY_PARAM_INSEE_COUNTRY_CODE);
+        }
+        final String placeCode = request.getParameter(QUERY_PARAM_INSEE_PLACE_CODE);
+        if (placeCode != null)
+        {
+            request.removeAttribute(QUERY_PARAM_INSEE_PLACE_CODE);
+        }
+    }
+
+    protected String cleanLabel(String label)
+    {
+        if(label != null)
+        {
+            return StringUtils.toRootUpperCase(StringUtils.stripAccents(label.replace('-', ' ')));
+        }
+        else {
+            return null;
+        }
+    }
 }
