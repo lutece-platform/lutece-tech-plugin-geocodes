@@ -7,30 +7,36 @@
     <div class="input-group">
         <@table responsive=false params='style="width: 100%;"'>
         <tr>
-            <th>#i18n{geocodes.search.city.label}</th>
-            <th>#i18n{geocodes.search.city.code}</th>
-            <th>#i18n{geocodes.search.country.label}</th>
-            <th>#i18n{geocodes.search.country.code}</th>
-            <th>#i18n{geocodes.search.place.code}</th>
+            <#if page=="ManageCities">
+                <th>#i18n{geocodes.search.city.label}</th>
+                <th>#i18n{geocodes.search.city.code}</th>
+                <th>#i18n{geocodes.search.place.code}</th>
+            <#else>
+                <th>#i18n{geocodes.search.country.label}</th>
+                <th>#i18n{geocodes.search.country.code}</th>
+            </#if>
             <th></th>
         </tr>
         <@tableHeadBodySeparator />
         <tr>
-            <td>
-                <input class="form-control search-field" type="text" name="insee_city_label" placeholder="#i18n{geocodes.search.city.label}" value="${insee_city_label!''}" />
-            </td>
-            <td>
-                <input class="form-control search-field" type="text" name="insee_city" placeholder="#i18n{geocodes.search.city.code}" value="${insee_city!''}" />
-            </td>
-            <td>
-                <input class="form-control search-field" type="text" name="insee_country_label" placeholder="#i18n{geocodes.search.country.label}" value="${insee_country_label!''}" />
-            </td>
-            <td>
-                <input class="form-control search-field" type="text" name="insee_country" placeholder="#i18n{geocodes.search.country.code}" value="${insee_country!''}" />
-            </td>
-            <td>
-                <input class="form-control search-field" type="text" name="insee_place" placeholder="#i18n{geocodes.search.place.code}" value="${insee_place!''}" />
-            </td>
+            <#if page=="ManageCities">
+                <td>
+                    <input class="form-control search-field" type="text" name="insee_city_label" placeholder="#i18n{geocodes.search.city.label}" value="${insee_city_label!''}" />
+                </td>
+                <td>
+                    <input class="form-control search-field" type="text" name="insee_city" placeholder="#i18n{geocodes.search.city.code}" value="${insee_city!''}" />
+                </td>
+                <td>
+                    <input class="form-control search-field" type="text" name="insee_place" placeholder="#i18n{geocodes.search.place.code}" value="${insee_place!''}" />
+                </td>
+            <#else>
+                <td>
+                    <input class="form-control search-field" type="text" name="insee_country_label" placeholder="#i18n{geocodes.search.country.label}" value="${insee_country_label!''}" />
+                </td>
+                <td>
+                    <input class="form-control search-field" type="text" name="insee_country" placeholder="#i18n{geocodes.search.country.code}" value="${insee_country!''}" />
+                </td>
+            </#if>
             <td>
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="submit">

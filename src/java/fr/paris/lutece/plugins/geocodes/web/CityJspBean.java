@@ -123,18 +123,16 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         final Map<String, String> queryParameters = this.getQueryParameters( request );
         final String cityLabel = queryParameters.get( QUERY_PARAM_INSEE_CITY_LABEL );
         final String cityCode = queryParameters.get( QUERY_PARAM_INSEE_CITY_CODE );
-        final String countryLabel = queryParameters.get( QUERY_PARAM_INSEE_COUNTRY_LABEL );
-        final String countryCode = queryParameters.get( QUERY_PARAM_INSEE_COUNTRY_CODE );
         final String placeCode = queryParameters.get( QUERY_PARAM_INSEE_PLACE_CODE );
         
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null || _listIdCities.isEmpty( ) )
         {
 
-        	_listIdCities = CityHome.getIdCitiesList( this.cleanLabel(cityLabel), cityCode, this.cleanLabel(countryLabel), countryCode,  placeCode );
+        	_listIdCities = CityHome.getIdCitiesList( this.cleanLabel(cityLabel), cityCode, placeCode );
         }
         
         Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITYS,
-                this.cleanLabel(cityLabel), cityCode, this.cleanLabel(countryLabel), countryCode,  placeCode);
+                this.cleanLabel(cityLabel), cityCode, null, null,  placeCode);
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_CITYS, TEMPLATE_MANAGE_CITYS, model );
     }

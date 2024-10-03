@@ -65,7 +65,7 @@ public final class CityDAO implements ICityDAO
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_city SET code_country = ?, code = ?, value = ?, code_zone = ?, date_validity_start = ?, date_validity_end = ?, value_min = ?, value_min_complete = ?, date_last_update = ?, deprecated = ? WHERE id_city = ?";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_city FROM geocodes_city";
-    private static final String SQL_QUERY_SEARCH_ID = "SELECT city.id_city FROM geocodes_city AS city ${innerJoin} WHERE ${cityLabel} AND ${cityCode} AND ${countryLabel} AND ${countryCode} AND ${placeCode}";
+    private static final String SQL_QUERY_SEARCH_ID = "SELECT city.id_city FROM geocodes_city AS city WHERE (${cityLabel} OR ${cityLabelMin} OR ${cityLabelMinComplete}) AND ${cityCode} AND ${placeCode}";
     private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE id_city IN (  ";
     private static final String SQL_QUERY_SELECTALL_BY_LAST_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city order by date_last_update, code limit 5";
     
@@ -440,15 +440,14 @@ public final class CityDAO implements ICityDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Integer> selectIdCitiesList( Plugin plugin, String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode  )
+    public List<Integer> selectIdCitiesList( Plugin plugin, String cityLabel, String cityCode, String placeCode  )
     {
 
 		String sql = SQL_QUERY_SEARCH_ID
-				.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value = '" + cityLabel + "'" : "1=1" ) )
+				.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value LIKE '%" + cityLabel + "%'" : "1=1" ) )
+				.replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min LIKE '%" + cityLabel + "%'" : "1=1" ) )
+				.replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min_complete LIKE '%" + cityLabel + "%'" : "1=1" ) )
 				.replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "city.code = '" + cityCode + "'" : "1=1" ) )
-				.replace( "${innerJoin}", ( StringUtils.isNotBlank( countryLabel ) ? " INNER JOIN geocodes_country AS country ON city.code_country = country.code" : "" ) )
-				.replace( "${countryLabel}", ( StringUtils.isNotBlank( countryLabel ) ? "country.value = '" + countryLabel + "'" : "1=1" ) )
-				.replace( "${countryCode}", ( StringUtils.isNotBlank( countryCode ) ? "city.code_country = '" + countryCode + "'" : "1=1" ) )
 				.replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "city.code_zone = '" + placeCode + "'" : "1=1" ) );
 
 

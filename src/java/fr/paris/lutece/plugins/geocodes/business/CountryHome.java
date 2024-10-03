@@ -147,9 +147,9 @@ public final class CountryHome
      * Load the id of all the country objects and returns them as a list
      * @return the list which contains the id of all the country objects
      */
-    public static List<Integer> getIdCountriesList( String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode )
+    public static List<Integer> getIdCountriesList( String countryLabel, String countryCode )
     {
-        return _dao.selectIdCountriesList( _plugin, cityLabel, cityCode, countryLabel, countryCode,  placeCode );
+        return _dao.selectIdCountriesList( _plugin, countryLabel, countryCode );
     }
     
     /**
