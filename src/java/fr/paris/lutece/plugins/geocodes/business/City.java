@@ -41,18 +41,19 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.util.Date;
 /**
  * This is the business class for the object City
- */ 
+ */
 @JsonAutoDetect( creatorVisibility = Visibility.NONE, fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE )
 public class City implements Serializable
 {
     private static final long serialVersionUID = 1L;
 
-    // Variables declarations 
+    // Variables declarations
     private int _nId;
-    
+
     public static final String ATTR_CODE = "code";
     public static final String ATTR_ID = "id";
     public static final String ATTR_DATE_CREATION = "creationDate";
@@ -61,32 +62,32 @@ public class City implements Serializable
     public static final String ATTR_VALUE = "value";
     public static final String ATTR_CODE_ZONE = "codeZone";
     public static final String ATTR_CODE_COUNTRY = "codeCountry";
-    
+
     @NotEmpty( message = "#i18n{geocodes.validation.city.CodeCountry.notEmpty}" )
-    @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeCountry.size}" ) 
+    @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeCountry.size}" )
     private String _strCodeCountry;
-    
+
     @NotEmpty( message = "#i18n{geocodes.validation.city.Code.notEmpty}" )
-    @Size( max = 10 , message = "#i18n{geocodes.validation.city.Code.size}" ) 
+    @Size( max = 10 , message = "#i18n{geocodes.validation.city.Code.size}" )
     private String _strCode;
-    
+
     @NotEmpty( message = "#i18n{geocodes.validation.city.Value.notEmpty}" )
-    @Size( max = 255 , message = "#i18n{geocodes.validation.city.Value.size}" ) 
+    @Size( max = 255 , message = "#i18n{geocodes.validation.city.Value.size}" )
     private String _strValue;
-    
-    @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeZone.size}" ) 
+
+    @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeZone.size}" )
     private String _strCodeZone;
-    
-    private Date _dateValidityStart;
-    
-    private Date _dateValidityEnd;
-    
+
+    private Timestamp _dateValidityStart;
+
+    private Timestamp _dateValidityEnd;
+
     private String _strValueMin;
-    
+
     private String _strValueMinComplete;
-    
-    private Date _dateLastUpdate;
-    
+
+    private Timestamp _dateLastUpdate;
+
     private boolean _bDeprecated;
 
     /**
@@ -108,7 +109,7 @@ public class City implements Serializable
     {
         _nId = nId;
     }
-    
+
     /**
      * Returns the CodeCountry
      * @return The CodeCountry
@@ -122,14 +123,14 @@ public class City implements Serializable
     /**
      * Sets the CodeCountry
      * @param strCodeCountry The CodeCountry
-     */ 
+     */
     @JsonProperty( ATTR_CODE_COUNTRY )
     public void setCodeCountry( String strCodeCountry )
     {
         _strCodeCountry = strCodeCountry;
     }
-    
-    
+
+
     /**
      * Returns the Code
      * @return The Code
@@ -143,14 +144,14 @@ public class City implements Serializable
     /**
      * Sets the Code
      * @param strCode The Code
-     */ 
+     */
     @JsonProperty( ATTR_CODE )
     public void setCode( String strCode )
     {
         _strCode = strCode;
     }
-    
-    
+
+
     /**
      * Returns the Value
      * @return The Value
@@ -163,13 +164,13 @@ public class City implements Serializable
     /**
      * Sets the Value
      * @param strValue The Value
-     */ 
+     */
     public void setValue( String strValue )
     {
         _strValue = strValue;
     }
-    
-    
+
+
     /**
      * Returns the CodeZone
      * @return The CodeZone
@@ -194,10 +195,10 @@ public class City implements Serializable
      * Returns the dateValidityStart
      * @return The dateValidityStart
      */
-	public Date getDateValidityStart( ) {
+	public Timestamp getDateValidityStart( ) {
 		return _dateValidityStart;
 	}
-    
+
 	/**
      * Returns the dateValidityStart
      * @return The dateValidityStart
@@ -211,9 +212,9 @@ public class City implements Serializable
 	/**
      * Sets the dateValidityStart
      * @param dateValidityStart The dateValidityStart
-     */ 
+     */
     @JsonProperty( ATTR_DATE_CREATION )
-	public void setDateValidityStart(Date dateValidityStart) {
+	public void setDateValidityStart(Timestamp dateValidityStart) {
 		this._dateValidityStart = dateValidityStart;
 	}
 
@@ -221,10 +222,10 @@ public class City implements Serializable
      * Returns the dateValidityEnd
      * @return The dateValidityEnd
      */
-	public Date getDateValidityEnd() {
+	public Timestamp getDateValidityEnd() {
 		return _dateValidityEnd;
 	}
-    
+
     /**
      * Returns the dateValidityStart
      * @return The dateValidityStart
@@ -237,9 +238,9 @@ public class City implements Serializable
 	/**
      * Sets the dateValidityEnd
      * @param dateValidityEnd The dateValidityEnd
-     */ 
+     */
     @JsonProperty( ATTR_DATE_END )
-	public void setDateValidityEnd( Date dateValidityEnd ) {
+	public void setDateValidityEnd( Timestamp dateValidityEnd ) {
 		this._dateValidityEnd = dateValidityEnd;
 	}
 
@@ -283,7 +284,7 @@ public class City implements Serializable
      * Returns the dateLastUpdate
      * @return The dateLastUpdate
      */
-	public Date getDateLastUpdate() {
+	public Timestamp getDateLastUpdate() {
 		return _dateLastUpdate;
 	}
 
@@ -291,7 +292,7 @@ public class City implements Serializable
      * Sets the dateLastUpdate
      * @param dateLastUpdate The dateLastUpdate
      */
-	public void setDateLastUpdate(Date dateLastUpdate) {
+	public void setDateLastUpdate(Timestamp dateLastUpdate) {
 		this._dateLastUpdate = dateLastUpdate;
 	}
 

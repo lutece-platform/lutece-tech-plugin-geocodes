@@ -16,6 +16,12 @@
 						<@th>#i18n{geocodes.manage_cities.columnCode}</@th>
 						<@th>#i18n{geocodes.manage_cities.columnValue}</@th>
 						<@th>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
+						<@th>#i18n{geocodes.manage_cities.columnDateValidityStart}</@th>
+						<@th>#i18n{geocodes.manage_cities.columnDateValidityEnd}</@th>
+						<@th>#i18n{geocodes.manage_cities.labelValueMin}</@th>
+						<@th>#i18n{geocodes.manage_cities.labelValueMinComplete}</@th>
+						<@th>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
+						<@th>#i18n{geocodes.manage_cities.columnDeprecated}</@th>
 						<@th>#i18n{portal.util.labelActions}</@th>
 					</@tr>
 					<@tableHeadBodySeparator />
@@ -34,8 +40,33 @@
 								${city.codeZone}
 							</@td>
 							<@td>
+								${city.dateValidityStart}
+							</@td>
+							<@td>
+								${city.dateValidityEnd}
+							</@td>
+							<@td>
+								${city.valueMin}
+							</@td>
+							<@td>
+								${city.valueMinComplete}
+							</@td>
+							<@td>
+								${city.dateLastUpdate}
+							</@td>
+							<@td>
+								<#switch city.deprecated>
+									<#case false>
+										#i18n{geocodes.manage_cities.columnDeprecated.false}<#break>
+									<#case true>
+										#i18n{geocodes.manage_cities.columnDeprecated.true}<#break>
+									<#default>
+										${city.deprecated}<#break>
+								</#switch>
+							</@td>
+							<@td>
 								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCities.jsp?view=modifyCity&id=${city.id}" targetElement="#modify-city-form" redirectForm=false id="modify-city-${city.id}" title="#i18n{geocodes.modify_city.title}" btnIcon="edit" position="end" />
-								<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=confirmRemoveCity&id=${city.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
+								<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=confirmRemoveCity&id=${city.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger' />
 							</@td>
 						</@tr>
 					</#list>

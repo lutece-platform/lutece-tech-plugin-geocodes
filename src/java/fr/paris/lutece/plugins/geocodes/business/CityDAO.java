@@ -120,14 +120,14 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	        }
-	
+
 	        return Optional.ofNullable( city );
         }
     }
@@ -145,29 +145,29 @@ public final class CityDAO implements ICityDAO
 	        daoUtil.setDate( 3, new java.sql.Date(System.currentTimeMillis( ) ) );
 	        daoUtil.executeQuery( );
 	        City city = null;
-	
+
 	        if ( daoUtil.next( ) )
 	        {
 	            city = new City();
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	        }
-	
+
 	        return Optional.ofNullable( city );
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
@@ -181,25 +181,25 @@ public final class CityDAO implements ICityDAO
 	        daoUtil.setString( 3, strCode );
 	        daoUtil.executeQuery( );
 	        City city = null;
-	
+
 	        if ( daoUtil.next( ) )
 	        {
 	            city = new City();
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	        }
-	
+
 	        return Optional.ofNullable( city );
         }
     }
@@ -226,7 +226,7 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE, plugin ) )
         {
 	        int nIndex = 1;
-	        
+
         	daoUtil.setString( nIndex++ , city.getCodeCountry( ) );
         	daoUtil.setString( nIndex++ , city.getCode( ) );
         	daoUtil.setString( nIndex++ , city.getValue( ) );
@@ -238,7 +238,7 @@ public final class CityDAO implements ICityDAO
             daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateLastUpdate( ).getTime( ) ) );
             daoUtil.setBoolean( nIndex++, city.isDeprecated( ) );
 	        daoUtil.setInt( nIndex , city.getId( ) );
-	
+
 	        daoUtil.executeUpdate( );
         }
     }
@@ -253,31 +253,31 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            City city = new City(  );
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
-	
+
 	            cityList.add( city );
 	        }
-	
+
 	        return cityList;
         }
     }
- 
+
     /**
      * {@inheritDoc }
      */
@@ -290,33 +290,33 @@ public final class CityDAO implements ICityDAO
         	daoUtil.setString( 1 , strVal );
         	daoUtil.setDate( 2, new java.sql.Date(System.currentTimeMillis( ) ) );
         	daoUtil.setDate( 3, new java.sql.Date(System.currentTimeMillis( ) ) );
-        	
+
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            City city = new City(  );
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
-	
+
 	            cityList.add( city );
 	        }
-	
+
 	        return cityList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
@@ -330,33 +330,33 @@ public final class CityDAO implements ICityDAO
         	daoUtil.setString( 2 , strVal + "%"  );
         	daoUtil.setDate( 3, new java.sql.Date(System.currentTimeMillis( ) ) );
         	daoUtil.setDate( 4, new java.sql.Date(System.currentTimeMillis( ) ) );
-        	
+
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            City city = new City(  );
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
-	
+
 	            cityList.add( city );
 	        }
-	
+
 	        return cityList;
         }
     }
- 
+
     /**
      * {@inheritDoc }
      */
@@ -369,33 +369,33 @@ public final class CityDAO implements ICityDAO
         	daoUtil.setString( 1 , strVal );
         	daoUtil.setDate( 2, new java.sql.Date( dateCity.getTime( ) ) );
         	daoUtil.setDate( 3, new java.sql.Date( dateCity.getTime( ) ) );
-        	
+
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            City city = new City(  );
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
-	
+
 	            cityList.add( city );
 	        }
-	
+
 	        return cityList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
@@ -409,33 +409,33 @@ public final class CityDAO implements ICityDAO
         	daoUtil.setString( 2 , strVal + "%"  );
         	daoUtil.setDate( 3, new java.sql.Date( dateCity.getTime( ) ) );
         	daoUtil.setDate( 4, new java.sql.Date( dateCity.getTime( ) ) );
-        	
+
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            City city = new City(  );
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
-	
+
 	            cityList.add( city );
 	        }
-	
+
 	        return cityList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
@@ -455,16 +455,16 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( sql, plugin ) )
         {
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            cityList.add( daoUtil.getInt( 1 ) );
 	        }
-	
+
 	        return cityList;
         }
     }
-    
+
     /**
      * {@inheritDoc }
      */
@@ -475,23 +475,23 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL, plugin ) )
         {
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            cityList.addItem( daoUtil.getInt( 1 ) , daoUtil.getString( 2 ) );
 	        }
-	
+
 	        return cityList;
     	}
     }
-    
+
     /**
      * {@inheritDoc }
      */
 	@Override
 	public List<City> selectCitiesListByIds( Plugin plugin, List<Integer> listIds ) {
 		List<City> cityList = new ArrayList<>(  );
-		
+
 		StringBuilder builder = new StringBuilder( );
 
 		if ( !listIds.isEmpty( ) )
@@ -499,47 +499,47 @@ public final class CityDAO implements ICityDAO
 			for( int i = 0 ; i < listIds.size(); i++ ) {
 			    builder.append( "?," );
 			}
-	
+
 			String placeHolders =  builder.deleteCharAt( builder.length( ) -1 ).toString( );
 			String stmt = SQL_QUERY_SELECTALL_BY_IDS + placeHolders + ")";
-			
-			
+
+
 	        try ( DAOUtil daoUtil = new DAOUtil( stmt, plugin ) )
 	        {
 	        	int index = 1;
 				for( Integer n : listIds ) {
-					daoUtil.setInt(  index++, n ); 
+					daoUtil.setInt(  index++, n );
 				}
-	        	
+
 	        	daoUtil.executeQuery(  );
 	        	while ( daoUtil.next(  ) )
 		        {
 		        	City city = new City(  );
 		            int nIndex = 1;
-		            
+
 		            city.setId( daoUtil.getInt( nIndex++ ) );
 				    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 				    city.setCode( daoUtil.getString( nIndex++ ) );
 				    city.setValue( daoUtil.getString( nIndex++ ) );
 				    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-				    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-				    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+				    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+				    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 				    city.setValueMin( daoUtil.getString( nIndex++ ) );
 				    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-				    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+				    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 				    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
-		            
+
 		            cityList.add( city );
 		        }
-		
+
 		        daoUtil.free( );
-		        
+
 	        }
 	    }
 		return cityList;
-		
+
 	}
-	
+
 	/**
      * {@inheritDoc }
      */
@@ -550,22 +550,22 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_BY_LAST_DATE, plugin ) )
         {
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            City city = new City(  );
 	            int nIndex = 1;
-	            
+
 	            city.setId( daoUtil.getInt( nIndex++ ) );
 			    city.setCodeCountry( daoUtil.getString( nIndex++ ) );
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	
 	            cityList.add( city );
