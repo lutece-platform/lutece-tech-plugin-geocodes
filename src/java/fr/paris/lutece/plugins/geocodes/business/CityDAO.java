@@ -120,11 +120,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	        }
 
@@ -156,11 +156,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	        }
 
@@ -192,11 +192,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	        }
 
@@ -264,11 +264,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 
 	            cityList.add( city );
@@ -303,11 +303,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 
 	            cityList.add( city );
@@ -343,11 +343,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 
 	            cityList.add( city );
@@ -382,11 +382,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 
 	            cityList.add( city );
@@ -422,11 +422,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 
 	            cityList.add( city );
@@ -522,11 +522,11 @@ public final class CityDAO implements ICityDAO
 				    city.setCode( daoUtil.getString( nIndex++ ) );
 				    city.setValue( daoUtil.getString( nIndex++ ) );
 				    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-				    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-				    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+				    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+				    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 				    city.setValueMin( daoUtil.getString( nIndex++ ) );
 				    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-				    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+				    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 				    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 
 		            cityList.add( city );
@@ -561,11 +561,11 @@ public final class CityDAO implements ICityDAO
 			    city.setCode( daoUtil.getString( nIndex++ ) );
 			    city.setValue( daoUtil.getString( nIndex++ ) );
 			    city.setCodeZone( daoUtil.getString( nIndex++ ) );
-			    city.setDateValidityStart( daoUtil.getTimestamp( nIndex++ ) );
-			    city.setDateValidityEnd( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+			    city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-			    city.setDateLastUpdate( daoUtil.getTimestamp( nIndex++ ) );
+			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 	
 	            cityList.add( city );

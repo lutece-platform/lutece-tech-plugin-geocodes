@@ -35,31 +35,25 @@
  
 package fr.paris.lutece.plugins.geocodes.web;
 
+import fr.paris.lutece.plugins.geocodes.business.City;
+import fr.paris.lutece.plugins.geocodes.business.CityHome;
+import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
-import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
-import fr.paris.lutece.util.url.UrlItem;
+import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.AbstractPaginator;
+import fr.paris.lutece.util.url.UrlItem;
 
-import java.sql.Timestamp;
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
-import fr.paris.lutece.plugins.geocodes.business.City;
-import fr.paris.lutece.plugins.geocodes.business.CityHome;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class provides the user interface to manage City features ( manage, create, modify, remove )
@@ -83,9 +77,6 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     // Markers
     private static final String MARK_CITY_LIST = "city_list";
     private static final String MARK_CITY = "city";
-    private static final String MARK_DATE_VALIDITY_START = "date_validity_start";
-    private static final String MARK_DATE_VALIDITY_END = "date_validity_end";
-    private static final String MARK_LAST_UPDATE_DATE = "last_update_date";
 
     private static final String JSP_MANAGE_CITYS = "jsp/admin/plugins/geocodes/ManageCities.jsp";
 
@@ -113,11 +104,24 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    
+
+    // City mapping
+    private static final String CITY_CODE = "code";
+    private static final String CITY_CODE_COUNTRY = "code_country";
+    private static final String CITY_VALUE = "value";
+    private static final String CITY_CODE_ZONE = "code_zone";
+    private static final String CITY_DATE_VALIDITY_START = "date_validity_start";
+    private static final String CITY_DATE_VALIDITY_END = "date_validity_end";
+    private static final String CITY_VALUE_MIN = "value_min";
+    private static final String CITY_VALUE_MIN_COMPLETE = "value_min_complete";
+    private static final String CITY_DEPRECATED = "deprecated";
+    private static final String CITY_STR_DATE_VALIDITY_START = "str_date_validity_start";
+    private static final String CITY_STR_DATE_VALIDITY_END = "str_date_validity_end";
+
     // Session variable to store working values
     private City _city;
     private List<Integer> _listIdCities;
-    
+
     /**
      * Build the Manage View
      * @param request The HTTP request
@@ -135,11 +139,10 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         
         if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null || _listIdCities.isEmpty( ) )
         {
-
         	_listIdCities = CityHome.getIdCitiesList( this.cleanLabel(cityLabel), cityCode, placeCode );
         }
         
-        Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITYS,
+        final Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITYS,
                 this.cleanLabel(cityLabel), cityCode, null, null,  placeCode);
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_CITYS, TEMPLATE_MANAGE_CITYS, model );
@@ -151,9 +154,9 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
      * @return the populated list of items corresponding to the id List
      */
 	@Override
-	List<City> getItemsFromIds( List<Integer> listIds ) 
+	List<City> getItemsFromIds( final List<Integer> listIds )
 	{
-		List<City> listCity = CityHome.getCitiesListByIds( listIds );
+		final List<City> listCity = CityHome.getCitiesListByIds( listIds );
 		
 		// keep original order
         return listCity.stream()
@@ -180,10 +183,8 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     {
         _city = ( _city != null ) ? _city : new City(  );
 
-        String lastUpdate = new SimpleDateFormat("dd/MM/yyyy").format(new Date());
-        Map<String, Object> model = getModel(  );
+        final Map<String, Object> model = getModel(  );
         model.put( MARK_CITY, _city );
-        model.put( MARK_LAST_UPDATE_DATE, lastUpdate );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_CITY ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_CITY, TEMPLATE_CREATE_CITY, model );
@@ -199,24 +200,19 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     @Action( ACTION_CREATE_CITY )
     public String doCreateCity( HttpServletRequest request ) throws AccessDeniedException
     {
-        populate( _city, request, getLocale( ) );
-        _city.setDateLastUpdate(new Timestamp(new Date().getTime()));
-        try
-        {
-            String dateValidityStart = request.getParameter("date_validity_start");
-            String dateValidityEnd = request.getParameter("date_validity_end");
-            _city.setDateValidityStart(new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(dateValidityStart).getTime()));
-            _city.setDateValidityEnd(new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(dateValidityEnd).getTime()));
-        } catch (ParseException e)
-        {
-            addError( e.getMessage( ) );
-            return redirectView( request, VIEW_MANAGE_CITYS );
-        }
-        
-
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_CITY ) )
         {
             throw new AccessDeniedException ( "Invalid security token" );
+        }
+
+        try
+        {
+            this.populateCity( _city, request );
+        }
+        catch ( final ParseException e )
+        {
+            addError(e.getMessage());
+            return redirectView( request, VIEW_MANAGE_CITYS );
         }
 
         // Check constraints
@@ -284,18 +280,13 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         if ( _city == null || ( _city.getId(  ) != nId ) )
         {
             Optional<City> optCity = CityHome.findByPrimaryKey( nId );
-            _city = optCity.orElseThrow( ( ) -> new AppException(ERROR_RESOURCE_NOT_FOUND ) );
+            _city = optCity.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         }
 
-        String validityStart = _city.getDateValidityStart() != null ? new SimpleDateFormat("yyyy-MM-dd").format(new Date(_city.getDateValidityStart().getTime())) : null;
-        String validityEnd = _city.getDateValidityEnd() != null ? new SimpleDateFormat("yyyy-MM-dd").format(new Date(_city.getDateValidityEnd().getTime())) : null;
-        String lastUpdate = _city.getDateLastUpdate() != null ? new SimpleDateFormat("dd/MM/yyyy").format(new Date(_city.getDateLastUpdate().getTime())) : null;
-
-        Map<String, Object> model = getModel(  );
+        final Map<String, Object> model = getModel(  );
         model.put( MARK_CITY, _city );
-        model.put( MARK_DATE_VALIDITY_START, validityStart );
-        model.put( MARK_DATE_VALIDITY_END, validityEnd );
-        model.put( MARK_LAST_UPDATE_DATE, lastUpdate );
+        model.put( CITY_STR_DATE_VALIDITY_START, DateUtil.getDateString( _city.getDateValidityStart(), request.getLocale( ) ) );
+        model.put( CITY_STR_DATE_VALIDITY_END, DateUtil.getDateString( _city.getDateValidityEnd(), request.getLocale( ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_CITY ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_CITY, TEMPLATE_MODIFY_CITY, model );
@@ -311,25 +302,18 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     @Action( ACTION_MODIFY_CITY )
     public String doModifyCity( HttpServletRequest request ) throws AccessDeniedException, ParseException
     {
-
-        populate( _city, request, getLocale( ) );
-		_city.setDateLastUpdate(new Timestamp(new Date().getTime()));
-        try
-        {
-            String dateValidityStart = request.getParameter("date_validity_start");
-            String dateValidityEnd = request.getParameter("date_validity_end");
-            _city.setDateValidityStart(new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(dateValidityStart).getTime()));
-            _city.setDateValidityEnd(new Timestamp(new SimpleDateFormat("yyyy-MM-dd").parse(dateValidityEnd).getTime()));
-        } catch (ParseException e)
-        {
-            addError( e.getMessage( ) );
-            return redirectView( request, VIEW_MANAGE_CITYS );
-        }
-
-		
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_CITY ) )
         {
             throw new AccessDeniedException ( "Invalid security token" );
+        }
+        try
+        {
+            this.populateCity( _city, request );
+        }
+        catch ( final ParseException e )
+        {
+            addError(e.getMessage());
+            return redirectView( request, VIEW_MANAGE_CITYS );
         }
 
         // Check constraints
@@ -343,5 +327,21 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_CITYS );
+    }
+
+    private void populateCity( final City city, final HttpServletRequest request ) throws ParseException
+    {
+        city.setCode( request.getParameter( CITY_CODE ) );
+        city.setCodeCountry( request.getParameter( CITY_CODE_COUNTRY ) );
+        city.setValue( request.getParameter( CITY_VALUE ) );
+        city.setCodeZone( request.getParameter( CITY_CODE_ZONE ) );
+        final String dateValidityStart = request.getParameter( CITY_DATE_VALIDITY_START );
+        city.setDateValidityStart( DateUtil.formatDate( dateValidityStart, request.getLocale( ) ) );
+        final String dateValidityEnd = request.getParameter( CITY_DATE_VALIDITY_END );
+        city.setDateValidityEnd( DateUtil.formatDate( dateValidityEnd, request.getLocale( ) ) );
+        city.setValueMin( request.getParameter( CITY_VALUE_MIN ) );
+        city.setValueMinComplete( request.getParameter( CITY_VALUE_MIN_COMPLETE ) );
+        city.setDeprecated( Objects.equals( request.getParameter( CITY_DEPRECATED ), "true" ) );
+        city.setDateLastUpdate( new Date( ) );
     }
 }

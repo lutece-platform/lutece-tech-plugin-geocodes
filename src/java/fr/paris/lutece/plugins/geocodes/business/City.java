@@ -33,15 +33,13 @@
  */
 package fr.paris.lutece.plugins.geocodes.business;
 
-import javax.validation.constraints.Size;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
-import java.sql.Timestamp;
 import java.util.Date;
 /**
  * This is the business class for the object City
@@ -78,15 +76,15 @@ public class City implements Serializable
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeZone.size}" )
     private String _strCodeZone;
 
-    private Timestamp _dateValidityStart;
+    private Date _dateValidityStart;
 
-    private Timestamp _dateValidityEnd;
+    private Date _dateValidityEnd;
 
     private String _strValueMin;
 
     private String _strValueMinComplete;
 
-    private Timestamp _dateLastUpdate;
+    private Date _dateLastUpdate;
 
     private boolean _bDeprecated;
 
@@ -195,7 +193,7 @@ public class City implements Serializable
      * Returns the dateValidityStart
      * @return The dateValidityStart
      */
-	public Timestamp getDateValidityStart( ) {
+	public Date getDateValidityStart( ) {
 		return _dateValidityStart;
 	}
 
@@ -214,7 +212,7 @@ public class City implements Serializable
      * @param dateValidityStart The dateValidityStart
      */
     @JsonProperty( ATTR_DATE_CREATION )
-	public void setDateValidityStart(Timestamp dateValidityStart) {
+	public void setDateValidityStart(Date dateValidityStart) {
 		this._dateValidityStart = dateValidityStart;
 	}
 
@@ -222,7 +220,7 @@ public class City implements Serializable
      * Returns the dateValidityEnd
      * @return The dateValidityEnd
      */
-	public Timestamp getDateValidityEnd() {
+	public Date getDateValidityEnd() {
 		return _dateValidityEnd;
 	}
 
@@ -240,7 +238,7 @@ public class City implements Serializable
      * @param dateValidityEnd The dateValidityEnd
      */
     @JsonProperty( ATTR_DATE_END )
-	public void setDateValidityEnd( Timestamp dateValidityEnd ) {
+	public void setDateValidityEnd( Date dateValidityEnd ) {
 		this._dateValidityEnd = dateValidityEnd;
 	}
 
@@ -284,7 +282,7 @@ public class City implements Serializable
      * Returns the dateLastUpdate
      * @return The dateLastUpdate
      */
-	public Timestamp getDateLastUpdate() {
+	public Date getDateLastUpdate() {
 		return _dateLastUpdate;
 	}
 
@@ -292,7 +290,7 @@ public class City implements Serializable
      * Sets the dateLastUpdate
      * @param dateLastUpdate The dateLastUpdate
      */
-	public void setDateLastUpdate(Timestamp dateLastUpdate) {
+	public void setDateLastUpdate(Date dateLastUpdate) {
 		this._dateLastUpdate = dateLastUpdate;
 	}
 

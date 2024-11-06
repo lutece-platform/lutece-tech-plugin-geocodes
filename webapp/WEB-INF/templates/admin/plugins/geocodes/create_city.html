@@ -22,19 +22,22 @@
 						<@input type='text' id='code_zone' name='code_zone'  maxlength=50 value='' tabIndex='3' />
 					</@formGroup>    
 					<@formGroup labelFor='date_validity_start' labelKey='#i18n{geocodes.create_city.labelDateValidityStart}' mandatory=true>
-						<input type='date' name='date_validity_start' id='date_validity_start' value='' tabIndex='4'/>
+						<@inputGroup>
+							<@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
+							<@input type='date' id='date_validity_start' name='date_validity_start' value='' tabIndex='4' />
+						</@inputGroup>
 					</@formGroup>
 					<@formGroup labelFor='date_validity_end' labelKey='#i18n{geocodes.create_city.labelDateValidityEnd}' mandatory=true>
-						<input type='date' name='date_validity_end' id='date_validity_end' value='' tabIndex='5'/>
+						<@inputGroup>
+							<@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
+							<@input type='date' id='date_validity_end' name='date_validity_end' value='' tabIndex='5' />
+						</@inputGroup>
 					</@formGroup>
 					<@formGroup labelFor='value_min' labelKey='#i18n{geocodes.create_city.labelValueMin}' mandatory=true>
 						<@input type='text' id='value_min' name='value_min'  maxlength=50 value='' tabIndex='6' />
 					</@formGroup>
 					<@formGroup labelFor='value_min_complete' labelKey='#i18n{geocodes.create_city.labelValueMinComplete}' mandatory=true>
 						<@input type='text' id='value_min_complete' name='value_min_complete'  maxlength=50 value='' tabIndex='7' />
-					</@formGroup>
-					<@formGroup labelFor='last_update_date' labelKey='#i18n{geocodes.create_city.labelDateLastUpdate}' mandatory=true>
-						<@input type='date' name='last_update_date' id='last_update_date' value='${last_update_date!\'\'}' disabled=true tabIndex='8'/>
 					</@formGroup>
 					<@formGroup labelFor='deprecated' labelKey='#i18n{geocodes.create_city.labelDeprecated}' mandatory=true>
 						<@select class="search-field form-select select-type" id="deprecated" name="deprecated" default_value="" tabIndex=9>
