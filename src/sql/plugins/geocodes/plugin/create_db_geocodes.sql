@@ -12,6 +12,7 @@ is_attached SMALLINT DEFAULT 0,
 date_validity_start DATE default '1900-01-01',
 date_validity_end DATE default '2999-12-31',
 deprecated SMALLINT DEFAULT 0,
+value_min_complete varchar(255) default '',
 PRIMARY KEY (id_country)
 );
 
