@@ -14,6 +14,10 @@
 					<@tr>
 						<@th>#i18n{geocodes.manage_countries.columnCode}</@th>
 						<@th>#i18n{geocodes.manage_countries.columnValue}</@th>
+						<@th>#i18n{geocodes.manage_countries.columnAttached}</@th>
+						<@th>#i18n{geocodes.manage_countries.columnDateValidityStart}</@th>
+						<@th>#i18n{geocodes.manage_countries.columnDateValidityEnd}</@th>
+						<@th>#i18n{geocodes.manage_countries.columnDeprecated}</@th>
 						<@th>#i18n{portal.util.labelActions}</@th>
 					</@tr>
 					<@tableHeadBodySeparator />
@@ -24,6 +28,32 @@
 							</@td>
 							<@td>
 								${country.value}
+							</@td>
+							<@td>
+								<#switch country.attached>
+									<#case false>
+										#i18n{geocodes.manage_countries.boolean.false}<#break>
+									<#case true>
+										#i18n{geocodes.manage_countries.boolean.true}<#break>
+									<#default>
+										${country.attached}<#break>
+								</#switch>
+							</@td>
+							<@td>
+								${country.dateValidityStart}
+							</@td>
+							<@td>
+								${country.dateValidityEnd}
+							</@td>
+							<@td>
+								<#switch country.deprecated>
+									<#case false>
+										#i18n{geocodes.manage_countries.boolean.false}<#break>
+									<#case true>
+										#i18n{geocodes.manage_countries.boolean.true}<#break>
+									<#default>
+										${country.deprecated}<#break>
+								</#switch>
 							</@td>
 							<@td>
 								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view=modifyCountry&id=${country.id}" targetElement="#modify-country-form" redirectForm=false id="modify-country-${country.id}" title="#i18n{geocodes.modify_country.title}" btnIcon="edit" position="end" />

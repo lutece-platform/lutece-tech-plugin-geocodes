@@ -15,6 +15,35 @@
                     <@formGroup labelFor='value' labelKey='#i18n{geocodes.modify_country.labelValue}' mandatory=true>
                         <@input type='text' id='value' name='value'  maxlength=255 value='${country.value!\'\'}' tabIndex='1' />
                     </@formGroup>
+
+                    <@formGroup labelFor='attached' labelKey='#i18n{geocodes.manage_countries.columnAttached}' mandatory=true>
+                        <@select class="search-field form-select select-type" id="attached" name="attached" default_value="${country.attached?c!''}" tabIndex=2>
+                            <option value="false" <#if country.attached != true> selected="selected"</#if>>#i18n{geocodes.manage_countries.boolean.false}</option>
+                            <option value="true" <#if country.attached == true> selected="selected"</#if>>#i18n{geocodes.manage_countries.boolean.true}</option>
+                        </@select>
+                    </@formGroup>
+
+                    <@formGroup labelFor='date_validity_start' labelKey='#i18n{geocodes.manage_countries.columnDateValidityStart}' mandatory=true>
+                        <@inputGroup>
+                            <@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
+                            <@input type='date' id='date_validity_start' name='date_validity_start' value='${str_date_validity_start!\'\'}' tabIndex='3' />
+                        </@inputGroup>
+                    </@formGroup>
+
+                    <@formGroup labelFor='date_validity_end' labelKey='#i18n{geocodes.manage_countries.columnDateValidityEnd}' mandatory=true>
+                        <@inputGroup>
+                            <@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
+                            <@input type='date' id='date_validity_end' name='date_validity_end' value='${str_date_validity_end!\'\'}' tabIndex='4' />
+                        </@inputGroup>
+                    </@formGroup>
+
+                    <@formGroup labelFor='deprecated' labelKey='#i18n{geocodes.manage_countries.columnDeprecated}' mandatory=true>
+                        <@select class="search-field form-select select-type" id="deprecated" name="deprecated" default_value="${country.deprecated?c!''}" tabIndex=5>
+                            <option value="false" <#if country.deprecated != true> selected="selected"</#if>>#i18n{geocodes.manage_countries.boolean.false}</option>
+                            <option value="true" <#if country.deprecated == true> selected="selected"</#if>>#i18n{geocodes.manage_countries.boolean.true}</option>
+                        </@select>
+                    </@formGroup>
+
                     <@actionButtons button1Name="action_modifyCountry" button2Name="view_manageCountry"/>
                 </@tform>
             </@tabContent>

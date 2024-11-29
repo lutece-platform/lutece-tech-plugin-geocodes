@@ -35,6 +35,7 @@
  
 package fr.paris.lutece.plugins.geocodes.web;
 
+import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -43,13 +44,17 @@ import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
 
+import java.text.ParseException;
 import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
@@ -109,6 +114,16 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     // Session variable to store working values
     private Country _country;
     private List<Integer> _listIdCountries;
+
+    // Country mapping
+    private static final String COUNTRY_CODE = "code";
+    private static final String COUNTRY_VALUE = "value";
+    private static final String COUNTRY_DATE_VALIDITY_START = "date_validity_start";
+    private static final String COUNTRY_DATE_VALIDITY_END = "date_validity_end";
+    private static final String COUNTRY_ATTACHED = "attached";
+    private static final String COUNTRY_DEPRECATED = "deprecated";
+    private static final String COUNTRY_STR_DATE_VALIDITY_START = "str_date_validity_start";
+    private static final String COUNTRY_STR_DATE_VALIDITY_END = "str_date_validity_end";
     
     /**
      * Build the Manage View
@@ -185,9 +200,9 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
      * @throws AccessDeniedException
      */
     @Action( ACTION_CREATE_COUNTRY )
-    public String doCreateCountry( HttpServletRequest request ) throws AccessDeniedException
+    public String doCreateCountry( HttpServletRequest request ) throws AccessDeniedException, ParseException
     {
-        populate( _country, request, getLocale( ) );
+        this.populateCountry( _country, request);
         
 
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_COUNTRY ) )
@@ -266,6 +281,8 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
 
         Map<String, Object> model = getModel(  );
         model.put( MARK_COUNTRY, _country );
+        model.put( COUNTRY_STR_DATE_VALIDITY_START, DateUtil.getDateString( _country.getDateValidityStart(), request.getLocale( ) ) );
+        model.put( COUNTRY_STR_DATE_VALIDITY_END, DateUtil.getDateString( _country.getDateValidityEnd(), request.getLocale( ) ) );
         model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_COUNTRY ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_COUNTRY, TEMPLATE_MODIFY_COUNTRY, model );
@@ -279,9 +296,9 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
      * @throws AccessDeniedException
      */
     @Action( ACTION_MODIFY_COUNTRY )
-    public String doModifyCountry( HttpServletRequest request ) throws AccessDeniedException
+    public String doModifyCountry( HttpServletRequest request ) throws AccessDeniedException, ParseException
     {   
-        populate( _country, request, getLocale( ) );
+        this.populateCountry( _country, request );
 		
 		
         if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_COUNTRY ) )
@@ -300,5 +317,18 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         resetListId( );
 
         return redirectView( request, VIEW_MANAGE_COUNTRYS );
+    }
+
+    private void populateCountry(final Country country, final HttpServletRequest request ) throws ParseException
+    {
+        country.setCode( request.getParameter( COUNTRY_CODE ) );
+        country.setValue( request.getParameter( COUNTRY_VALUE ) );
+        country.setAttached( Objects.equals( request.getParameter( COUNTRY_ATTACHED ), "true" ) );
+        final String dateValidityStart = request.getParameter( COUNTRY_DATE_VALIDITY_START );
+        country.setDateValidityStart( DateUtil.formatDate( dateValidityStart, request.getLocale( ) ) );
+        final String dateValidityEnd = request.getParameter( COUNTRY_DATE_VALIDITY_END );
+        country.setDateValidityEnd(DateUtil.formatDate( dateValidityEnd, request.getLocale( ) ));
+        country.setDeprecated( Objects.equals( request.getParameter( COUNTRY_DEPRECATED ), "true" ) );
+        
     }
 }

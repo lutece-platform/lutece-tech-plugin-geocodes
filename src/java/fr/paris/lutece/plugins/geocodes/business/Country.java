@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.geocodes.business;
 import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
+import java.util.Date;
+
 /**
  * This is the business class for the object Country
  */ 
@@ -55,7 +57,11 @@ public class Country implements Serializable
     private String _strValue;
     
     private boolean _bAttached;
-    
+
+    private Date _dateValidityStart;
+
+    private Date _dateValidityEnd;
+
     private boolean _bDeprecated;
 
     /**
@@ -128,6 +134,42 @@ public class Country implements Serializable
 	public void setAttached(boolean _bAttached) {
 		this._bAttached = _bAttached;
 	}
+
+    /**
+     * Returns the date attached
+     * @return attached
+     */
+    public Date getDateValidityEnd()
+    {
+        return _dateValidityEnd;
+    }
+
+    /**
+     * Sets the date attached
+     * @param _dateValidityEnd The date attached
+     */
+    public void setDateValidityEnd(Date _dateValidityEnd)
+    {
+        this._dateValidityEnd = _dateValidityEnd;
+    }
+
+    /**
+     * Returns the date attached
+     * @return attached
+     */
+    public Date getDateValidityStart()
+    {
+        return _dateValidityStart;
+    }
+
+    /**
+     * Sets the date attached
+     * @param _dateValidityStart The date attached
+     */
+    public void setDateValidityStart(Date _dateValidityStart)
+    {
+        this._dateValidityStart = _dateValidityStart;
+    }
 
 	/**
      * Returns the boolean deprecated
