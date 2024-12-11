@@ -51,7 +51,38 @@ public interface ICityDAO
      * @param city instance of the City object to insert
      * @param plugin the Plugin
      */
-    void insert( City city, Plugin plugin );
+    City insert( City city, Plugin plugin );
+
+    /**
+     * Insert a new record in the history table.
+     * @param city instance of the City object to insert
+     * @param plugin the Plugin
+     */
+    void addCityChanges(City city, String author, String applied, Plugin plugin );
+
+    /**
+     * Load the data of all the city objects and returns them as a list
+     * @param idCity The identifier of the City's History to get
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the city objects
+     */
+    List<CityChanges> selectCityChangesListByCityId(int idCity, Plugin plugin );
+
+    /**
+     * Load the data of the city object and returns it
+     * @param idHistoryCity The identifier of the CityHistory to save
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the city objects
+     */
+    CityChanges selectCityChanges(int idHistoryCity, Plugin plugin);
+
+    /**
+     * Load the data of the city object and returns it
+     * @param cityChanges The CityHistory to update
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the city objects
+     */
+    CityChanges storeChanges(CityChanges cityChanges, Plugin plugin);
 
     /**
      * Update the record in the table

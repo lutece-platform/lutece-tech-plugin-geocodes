@@ -65,8 +65,184 @@
 										${city.deprecated}<#break>
 								</#switch>
 							</@td>
+
 							<@td>
 								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCities.jsp?view=modifyCity&id=${city.id}" targetElement="#modify-city-form" redirectForm=false id="modify-city-${city.id}" title="#i18n{geocodes.modify_city.title}" btnIcon="edit" position="end" />
+								<@offcanvas id="changes-${city.code}" title="<i class='ti ti-history fs-2'></i> ${city.value}" btnTitle="Historique du champ" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${city.pendingChanges}">
+
+									<@table headBody=true>
+										<@tr>
+											<@td>
+												${city.codeCountry}
+											</@td>
+											<@td>
+												${city.code}
+											</@td>
+											<@td>
+												${city.value}
+											</@td>
+											<@td>
+												${city.codeZone}
+											</@td>
+											<@td>
+												${city.dateValidityStart}
+											</@td>
+											<@td>
+												${city.dateValidityEnd}
+											</@td>
+											<@td>
+												${city.valueMin}
+											</@td>
+											<@td>
+												${city.valueMinComplete}
+											</@td>
+											<@td>
+												${city.dateLastUpdate}
+											</@td>
+											<@td>
+												<#switch city.deprecated>
+													<#case false>
+														#i18n{geocodes.manage_cities.columnDeprecated.false}<#break>
+													<#case true>
+														#i18n{geocodes.manage_cities.columnDeprecated.true}<#break>
+													<#default>
+														${city.deprecated}<#break>
+												</#switch>
+											</@td>
+											<@td>
+
+											</@td>
+											<@td>
+
+											</@td>
+										</@tr>
+											<@tableHeadBodySeparator />
+										<@tr>
+											<@th>#i18n{geocodes.manage_cities.columnCodeCountry}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnCode}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnValue}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnDateValidityStart}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnDateValidityEnd}</@th>
+											<@th>#i18n{geocodes.manage_cities.labelValueMin}</@th>
+											<@th>#i18n{geocodes.manage_cities.labelValueMinComplete}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnDeprecated}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnAuthor}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnStatus}</@th>
+											<@th>#i18n{portal.util.labelActions}</@th>
+										</@tr>
+										<@tableHeadBodySeparator />
+										<#list city.listChanges as cityChanges >
+											<@tr>
+												<@td>
+													<#assign equals= cityChanges.codeCountry == city.codeCountry>
+													<#if equals>
+														${cityChanges.codeCountry}
+													<#else>
+														<@tag color="warning">${cityChanges.codeCountry}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.code == city.code>
+													<#if equals>
+													${cityChanges.code}
+													<#else>
+														<@tag color="warning">${cityChanges.code}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.value == city.value>
+													<#if equals>
+													${cityChanges.value}
+													<#else>
+														<@tag color="warning">${cityChanges.value}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.codeZone == city.codeZone>
+													<#if equals>
+													${cityChanges.codeZone}
+													<#else>
+														<@tag color="warning">${cityChanges.codeZone}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.dateValidityStart == city.dateValidityStart>
+													<#if equals>
+													${cityChanges.dateValidityStart}
+													<#else>
+														<@tag color="warning">${cityChanges.dateValidityStart}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.dateValidityEnd == city.dateValidityEnd>
+													<#if equals>
+													${cityChanges.dateValidityEnd}
+													<#else>
+														<@tag color="warning">${cityChanges.dateValidityEnd}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.valueMin == city.valueMin>
+													<#if equals>
+													${cityChanges.valueMin}
+													<#else>
+														<@tag color="warning">${cityChanges.valueMin}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.valueMinComplete == city.valueMinComplete>
+													<#if equals>
+													${cityChanges.valueMinComplete}
+													<#else>
+														<@tag color="warning">${cityChanges.valueMinComplete}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= cityChanges.dateLastUpdate == city.dateLastUpdate>
+													<#if equals>
+													${cityChanges.dateLastUpdate}
+													<#else>
+														<@tag color="warning">${cityChanges.dateLastUpdate}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#switch cityChanges.deprecated>
+														<#case false>
+															#i18n{geocodes.manage_cities.columnDeprecated.false}<#break>
+														<#case true>
+															#i18n{geocodes.manage_cities.columnDeprecated.true}<#break>
+														<#default>
+															${cityChanges.deprecated}<#break>
+													</#switch>
+												</@td>
+												<@td>
+													${cityChanges.author}
+												</@td>
+												<@td>
+													<#switch cityChanges.status>
+														<#case "APPLIED">
+															<@tag color="success">#i18n{geocodes.manage_cities.columnApplied.applied}</@tag><#break>
+														<#case "PENDING">
+															<@tag color="warning">#i18n{geocodes.manage_cities.columnApplied.pending}</@tag><#break>
+														<#case "REFUSED">
+															<@tag color="danger">#i18n{geocodes.manage_cities.columnApplied.refused}</@tag><#break>
+														<#default>
+															${cityChanges.status}<#break>
+													</#switch>
+												</@td>
+												<@td>
+													<#if cityChanges.status == "PENDING" >
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=applyCityChanges&idChanges=${cityChanges.idChanges}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=denyChanges&idChanges=${cityChanges.idChanges}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='trash' hideTitle=['all'] />
+													</#if>
+												</@td>
+											</@tr>
+										</#list>
+									</@table>
+
+								</@offcanvas>
 								<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=confirmRemoveCity&id=${city.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger' />
 							</@td>
 						</@tr>

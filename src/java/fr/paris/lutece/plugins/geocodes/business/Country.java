@@ -37,6 +37,7 @@ import javax.validation.constraints.Size;
 import javax.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * This is the business class for the object Country
@@ -46,23 +47,27 @@ public class Country implements Serializable
     private static final long serialVersionUID = 1L;
 
     // Variables declarations 
-    private int _nId;
+    protected int _nId;
     
     @NotEmpty( message = "#i18n{geocodes.validation.country.Code.notEmpty}" )
     @Size( max = 255 , message = "#i18n{geocodes.validation.country.Code.size}" ) 
-    private String _strCode;
+    protected String _strCode;
     
     @NotEmpty( message = "#i18n{geocodes.validation.country.Value.notEmpty}" )
-    @Size( max = 255 , message = "#i18n{geocodes.validation.country.Value.size}" ) 
-    private String _strValue;
-    
-    private boolean _bAttached;
+    @Size( max = 255 , message = "#i18n{geocodes.validation.country.Value.size}" )
+    protected String _strValue;
 
-    private Date _dateValidityStart;
+    protected boolean _bAttached;
 
-    private Date _dateValidityEnd;
+    protected Date _dateValidityStart;
 
-    private boolean _bDeprecated;
+    protected Date _dateValidityEnd;
+
+    protected boolean _bDeprecated;
+
+    private List<CountryChanges> listChanges;
+
+    private int pendingChanges;
 
     /**
      * Returns the Id
@@ -186,5 +191,25 @@ public class Country implements Serializable
 	public void setDeprecated(boolean _bDeprecated) {
 		this._bDeprecated = _bDeprecated;
 	}
+
+    public List<CountryChanges> getListChanges()
+    {
+        return listChanges;
+    }
+
+    public void setListChanges(List<CountryChanges> listChanges)
+    {
+        this.listChanges = listChanges;
+    }
+
+    public int getPendingChanges()
+    {
+        return pendingChanges;
+    }
+
+    public void setPendingChanges(int pendingChanges)
+    {
+        this.pendingChanges = pendingChanges;
+    }
     
 }

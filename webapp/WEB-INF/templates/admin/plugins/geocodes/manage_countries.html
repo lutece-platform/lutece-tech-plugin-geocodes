@@ -57,6 +57,148 @@
 							</@td>
 							<@td>
 								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view=modifyCountry&id=${country.id}" targetElement="#modify-country-form" redirectForm=false id="modify-country-${country.id}" title="#i18n{geocodes.modify_country.title}" btnIcon="edit" position="end" />
+
+								<@offcanvas id="changes-${country.id}" title="<i class='ti ti-history fs-2'></i> ${country.value}" btnTitle="Historique du champ" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${country.pendingChanges}">
+									<@table headBody=true>
+										<@tr>
+											<@td>
+												${country.code}
+											</@td>
+											<@td>
+												${country.value}
+											</@td>
+											<@td>
+												<#switch country.attached>
+													<#case false>
+														#i18n{geocodes.manage_countries.boolean.false}<#break>
+													<#case true>
+														#i18n{geocodes.manage_countries.boolean.true}<#break>
+													<#default>
+														${country.attached}<#break>
+												</#switch>
+											</@td>
+											<@td>
+												${country.dateValidityStart}
+											</@td>
+											<@td>
+												${country.dateValidityEnd}
+											</@td>
+											<@td>
+												<#switch country.deprecated>
+													<#case false>
+														#i18n{geocodes.manage_countries.boolean.false}<#break>
+													<#case true>
+														#i18n{geocodes.manage_countries.boolean.true}<#break>
+													<#default>
+														${country.deprecated}<#break>
+												</#switch>
+											</@td>
+											<@td>
+
+											</@td>
+											<@td>
+
+											</@td>
+											<@td>
+
+											</@td>
+										</@tr>
+										<@tableHeadBodySeparator />
+										<@tr>
+											<@th>#i18n{geocodes.manage_countries.columnCode}</@th>
+											<@th>#i18n{geocodes.manage_countries.columnValue}</@th>
+											<@th>#i18n{geocodes.manage_countries.columnAttached}</@th>
+											<@th>#i18n{geocodes.manage_countries.columnDateValidityStart}</@th>
+											<@th>#i18n{geocodes.manage_countries.columnDateValidityEnd}</@th>
+											<@th>#i18n{geocodes.manage_countries.columnDeprecated}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnAuthor}</@th>
+											<@th>#i18n{geocodes.manage_cities.columnStatus}</@th>
+											<@th>#i18n{portal.util.labelActions}</@th>
+										</@tr>
+										<@tableHeadBodySeparator />
+										<#list country.listChanges as countryChanges >
+											<@tr>
+												<@td>
+													<#assign equals= countryChanges.code == country.code>
+													<#if equals>
+														${countryChanges.code}
+													<#else>
+														<@tag color="warning">${countryChanges.code}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= countryChanges.value == country.value>
+													<#if equals>
+														${countryChanges.value}
+													<#else>
+														<@tag color="warning">${countryChanges.value}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#switch countryChanges.attached>
+														<#case false>
+															#i18n{geocodes.manage_countries.boolean.false}<#break>
+														<#case true>
+															#i18n{geocodes.manage_countries.boolean.true}<#break>
+														<#default>
+															${countryChanges.attached}<#break>
+													</#switch>
+												</@td>
+												<@td>
+													<#assign equals= countryChanges.dateValidityStart == country.dateValidityStart>
+													<#if equals>
+														${countryChanges.dateValidityStart}
+													<#else>
+														<@tag color="warning">${countryChanges.dateValidityStart}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= countryChanges.dateValidityEnd == country.dateValidityEnd>
+													<#if equals>
+														${countryChanges.dateValidityEnd}
+													<#else>
+														<@tag color="warning">${countryChanges.dateValidityEnd}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#switch countryChanges.deprecated>
+														<#case false>
+															#i18n{geocodes.manage_countries.boolean.false}<#break>
+														<#case true>
+															#i18n{geocodes.manage_countries.boolean.true}<#break>
+														<#default>
+															${countryChanges.deprecated}<#break>
+													</#switch>
+												</@td>
+												<@td>
+													${countryChanges.dateLastUpdate}
+												</@td>
+												<@td>
+													${countryChanges.author}
+												</@td>
+												<@td>
+													<#switch countryChanges.status>
+														<#case "APPLIED">
+															<@tag color="success">#i18n{geocodes.manage_cities.columnApplied.applied}</@tag><#break>
+														<#case "PENDING">
+															<@tag color="warning">#i18n{geocodes.manage_cities.columnApplied.pending}</@tag><#break>
+														<#case "REFUSED">
+															<@tag color="danger">#i18n{geocodes.manage_cities.columnApplied.refused}</@tag><#break>
+														<#default>
+															${countryChanges.status}<#break>
+													</#switch>
+												</@td>
+												<@td>
+													<#if countryChanges.status == "PENDING" >
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=applyCountryChanges&idChanges=${countryChanges.idChanges}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=denyChanges&idChanges=${countryChanges.idChanges}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='trash' hideTitle=['all'] />
+													</#if>
+												</@td>
+											</@tr>
+										</#list>
+									</@table>
+								</@offcanvas>
 								<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?action=confirmRemoveCountry&id=${country.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
 							</@td>
 						</@tr>

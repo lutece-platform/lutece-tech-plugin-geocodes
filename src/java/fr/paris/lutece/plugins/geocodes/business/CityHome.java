@@ -67,7 +67,7 @@ public final class CityHome
      */
     public static City create( City city )
     {
-        _dao.insert( city, _plugin );
+        city = _dao.insert( city, _plugin );
 
         return city;
     }
@@ -82,6 +82,30 @@ public final class CityHome
         _dao.store( city, _plugin );
 
         return city;
+    }
+
+    public static City addCityChanges(City city, String autor, String applied)
+    {
+        _dao.addCityChanges( city, autor, applied, _plugin );
+
+        return city;
+    }
+
+    public static List<CityChanges> selectCityChangesListByCityId(int id )
+    {
+        return _dao.selectCityChangesListByCityId( id, _plugin);
+    }
+
+    public static CityChanges getChangesFromChangesId(int id )
+    {
+        return _dao.selectCityChanges( id, _plugin );
+    }
+
+    public static CityChanges updateChanges(CityChanges history )
+    {
+        _dao.storeChanges( history, _plugin );
+
+        return history;
     }
 
     /**

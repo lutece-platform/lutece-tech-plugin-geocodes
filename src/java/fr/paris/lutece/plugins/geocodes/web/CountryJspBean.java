@@ -35,7 +35,8 @@
  
 package fr.paris.lutece.plugins.geocodes.web;
 
-import fr.paris.lutece.plugins.geocodes.business.City;
+import fr.paris.lutece.plugins.geocodes.business.CountryChanges;
+import fr.paris.lutece.plugins.geocodes.business.GeocodesChangesStatusEnum;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
@@ -60,6 +61,7 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.business.CountryHome;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * This class provides the user interface to manage Country features ( manage, create, modify, remove )
@@ -74,6 +76,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
 
     // Parameters
     private static final String PARAMETER_ID_COUNTRY = "id";
+    private static final String PARAMETER_ID_CHANGES = "idChanges";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_COUNTRYS = "geocodes.manage_countries.pageTitle";
@@ -102,6 +105,8 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     private static final String ACTION_MODIFY_COUNTRY = "modifyCountry";
     private static final String ACTION_REMOVE_COUNTRY = "removeCountry";
     private static final String ACTION_CONFIRM_REMOVE_COUNTRY = "confirmRemoveCountry";
+    private static final String ACTION_APPLY_COUNTRY_CHANGES = "applyCountryChanges";
+    private static final String ACTION_DENY_CHANGES = "denyChanges";
 
     // Infos
     private static final String INFO_COUNTRY_CREATED = "geocodes.info.country.created";
@@ -110,6 +115,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String ERROR_MULTIPLE_COUNTRIES_RETURNED = "Multiple countries returned";
     
     // Session variable to store working values
     private Country _country;
@@ -158,8 +164,18 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
 	@Override
 	List<Country> getItemsFromIds( List<Integer> listIds ) 
 	{
-		List<Country> listCountry = CountryHome.getCountriesListByIds( listIds );
-		
+		List<Country> listCountry = new ArrayList<>();
+
+        for( Country country : CountryHome.getCountriesListByIds( listIds ) )
+        {
+            country.setListChanges(CountryHome.getListChangesFromCountryId(country.getId()));
+            country.setPendingChanges(0);
+            for(CountryChanges countryChanges : country.getListChanges())
+            {
+                country.setPendingChanges(country.getPendingChanges() + (StringUtils.equals(countryChanges.getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0));
+            }
+            listCountry.add( country );
+        }
 		// keep original order
         return listCountry.stream()
                  .sorted(Comparator.comparingInt( notif -> listIds.indexOf( notif.getId())))
@@ -217,6 +233,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         }
 
         CountryHome.create( _country );
+        CountryHome.addCountryChanges( _country, new Date(), this.getUser().getLastName(), GeocodesChangesStatusEnum.APPLIED.toString());
         addInfo( INFO_COUNTRY_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -297,7 +314,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
      */
     @Action( ACTION_MODIFY_COUNTRY )
     public String doModifyCountry( HttpServletRequest request ) throws AccessDeniedException, ParseException
-    {   
+    {
         this.populateCountry( _country, request );
 		
 		
@@ -313,8 +330,46 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         }
 
         CountryHome.update( _country );
+        CountryHome.addCountryChanges( _country, new Date(), this.getUser().getLastName(), GeocodesChangesStatusEnum.APPLIED.toString());
         addInfo( INFO_COUNTRY_UPDATED, getLocale(  ) );
         resetListId( );
+
+        return redirectView( request, VIEW_MANAGE_COUNTRYS );
+    }
+
+    @Action(ACTION_APPLY_COUNTRY_CHANGES)
+    public String doApplyCountryModification ( HttpServletRequest request )
+    {
+        CountryChanges countryChanges = CountryHome.getChangesFromChangesId( Integer.parseInt(request.getParameter(PARAMETER_ID_CHANGES) ) );
+
+        List<Integer> listCityId = new ArrayList<>();
+        listCityId.add( countryChanges.getId() );
+        List<Country> listCountry = CountryHome.getCountriesListByIds(listCityId);
+
+        if(listCountry.size() == 1 )
+        {
+            Country country = this.updateCountry(listCountry.get( 0 ), countryChanges);
+
+            CountryHome.update( country );
+            countryChanges.setDateLastUpdate(new Date());
+            countryChanges.setStatus(GeocodesChangesStatusEnum.APPLIED.toString());
+            CountryHome.updateChanges(countryChanges);
+        }
+        else
+        {
+            throw new AppException( ERROR_MULTIPLE_COUNTRIES_RETURNED);
+        }
+
+        return redirectView( request, VIEW_MANAGE_COUNTRYS );
+    }
+
+    @Action( ACTION_DENY_CHANGES )
+    public String doRefuseModification ( HttpServletRequest request )
+    {
+        CountryChanges countryChanges = CountryHome.getChangesFromChangesId( Integer.parseInt(request.getParameter(PARAMETER_ID_CHANGES) ) );
+
+        countryChanges.setStatus(GeocodesChangesStatusEnum.REFUSED.toString());
+        CountryHome.updateChanges(countryChanges);
 
         return redirectView( request, VIEW_MANAGE_COUNTRYS );
     }
@@ -330,5 +385,35 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         country.setDateValidityEnd(DateUtil.formatDate( dateValidityEnd, request.getLocale( ) ));
         country.setDeprecated( Objects.equals( request.getParameter( COUNTRY_DEPRECATED ), "true" ) );
         
+    }
+
+    private Country updateCountry(Country country, CountryChanges changes)
+    {
+        if(!StringUtils.equals(country.getCode(), changes.getCode()))
+        {
+            country.setCode( changes.getCode() );
+        }
+        if(!StringUtils.equals(country.getValue(), changes.getValue()))
+        {
+            country.setValue( changes.getValue() );
+        }
+        if(country.isAttached() != changes.isAttached())
+        {
+            country.setAttached( changes.isAttached( ) );
+        }
+        if(!country.getDateValidityStart().equals(changes.getDateValidityStart()))
+        {
+            country.setDateValidityStart( changes.getDateValidityStart() );
+        }
+        if(!country.getDateValidityEnd().equals(changes.getDateValidityEnd()))
+        {
+            country.setDateValidityEnd( changes.getDateValidityEnd() );
+        }
+        if(country.isDeprecated() != changes.isDeprecated())
+        {
+            country.setDeprecated( changes.isDeprecated() );
+        }
+
+        return country;
     }
 }

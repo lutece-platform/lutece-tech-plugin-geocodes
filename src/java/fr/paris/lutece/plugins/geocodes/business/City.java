@@ -41,16 +41,18 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+
 /**
  * This is the business class for the object City
  */
 @JsonAutoDetect( creatorVisibility = Visibility.NONE, fieldVisibility = Visibility.NONE, getterVisibility = Visibility.NONE, isGetterVisibility = Visibility.NONE, setterVisibility = Visibility.NONE )
 public class City implements Serializable
 {
-    private static final long serialVersionUID = 1L;
+    protected static final long serialVersionUID = 1L;
 
     // Variables declarations
-    private int _nId;
+    protected int _nId;
 
     public static final String ATTR_CODE = "code";
     public static final String ATTR_ID = "id";
@@ -63,30 +65,34 @@ public class City implements Serializable
 
     @NotEmpty( message = "#i18n{geocodes.validation.city.CodeCountry.notEmpty}" )
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeCountry.size}" )
-    private String _strCodeCountry;
+    protected String _strCodeCountry;
 
     @NotEmpty( message = "#i18n{geocodes.validation.city.Code.notEmpty}" )
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.Code.size}" )
-    private String _strCode;
+    protected String _strCode;
 
     @NotEmpty( message = "#i18n{geocodes.validation.city.Value.notEmpty}" )
     @Size( max = 255 , message = "#i18n{geocodes.validation.city.Value.size}" )
-    private String _strValue;
+    protected String _strValue;
 
     @Size( max = 10 , message = "#i18n{geocodes.validation.city.CodeZone.size}" )
-    private String _strCodeZone;
+    protected String _strCodeZone;
 
-    private Date _dateValidityStart;
+    protected Date _dateValidityStart;
 
-    private Date _dateValidityEnd;
+    protected Date _dateValidityEnd;
 
-    private String _strValueMin;
+    protected String _strValueMin;
 
-    private String _strValueMinComplete;
+    protected String _strValueMinComplete;
 
-    private Date _dateLastUpdate;
+    protected Date _dateLastUpdate;
 
-    private boolean _bDeprecated;
+    protected boolean _bDeprecated;
+
+    private List<CityChanges> listChanges;
+
+    private int pendingChanges;
 
     /**
      * Returns the Id
@@ -309,5 +315,24 @@ public class City implements Serializable
 	public void setDeprecated(boolean _bDeprecated) {
 		this._bDeprecated = _bDeprecated;
 	}
-    
+
+    public List<CityChanges> getListChanges()
+    {
+        return listChanges;
+    }
+
+    public void setListChanges(List<CityChanges> listChanges)
+    {
+        this.listChanges = listChanges;
+    }
+
+    public int getPendingChanges()
+    {
+        return pendingChanges;
+    }
+
+    public void setPendingChanges(int pendingChanges)
+    {
+        this.pendingChanges = pendingChanges;
+    }
 }

@@ -65,12 +65,16 @@ public final class CountryDAO implements ICountryDAO
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_country FROM geocodes_country";
     private static final String SQL_QUERY_SEARCH_ID = "SELECT country.id_country FROM geocodes_country as country WHERE ${countryLabel} AND ${countryCode}";
     private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_country, code, value, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country IN (  ";
+	private static final String SQL_QUERY_INSERT_HISTORY = "INSERT INTO geocodes_country_changes (id_country, code, value, is_attached, date_validity_start, date_validity_end, deprecated, date_update, author, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+	private static final String SQL_QUERY_SELECT_HISTORY_BY_COUNTRY_ID = "SELECT * FROM geocodes_country_changes WHERE id_country = ?";
+	private static final String SQL_QUERY_SELECT_HISTORY_BY_HISTORY_ID = "SELECT * FROM geocodes_country_changes WHERE id_country_history = ?";
+	private static final String SQL_QUERY_UPDATE_HISTORY = "UPDATE geocodes_country_changes SET code = ?, value = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ?, date_update = ?, author = ?, status = ? WHERE id_city_history = ?";
 
     /**
      * {@inheritDoc }
      */
     @Override
-    public void insert( Country country, Plugin plugin )
+    public Country insert( Country country, Plugin plugin )
     {
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
@@ -88,8 +92,129 @@ public final class CountryDAO implements ICountryDAO
                 country.setId( daoUtil.getGeneratedKeyInt( 1 ) );
             }
         }
-        
+        return country;
     }
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public void addCountryChanges(Country country, String author, Date dateUpdate, String status, Plugin plugin )
+	{
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_HISTORY, Statement.RETURN_GENERATED_KEYS, plugin ) )
+		{
+			int nIndex = 1;
+			daoUtil.setInt( nIndex++ , country.getId( ) );
+			daoUtil.setString( nIndex++ , country.getCode( ) );
+			daoUtil.setString( nIndex++ , country.getValue( ) );
+			daoUtil.setBoolean( nIndex++ , country.isAttached( ) );
+			daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityStart( ).getTime( ) ) );
+			daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityEnd( ).getTime( ) ) );
+			daoUtil.setBoolean( nIndex++, country.isDeprecated( ) );
+			daoUtil.setDate( nIndex++, new java.sql.Date( dateUpdate.getTime() ));
+			daoUtil.setString( nIndex++ , author );
+			daoUtil.setString( nIndex , status );
+
+			daoUtil.executeUpdate( );
+		}
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public List<CountryChanges> selectCountryChangesListByCountryId(int idCountry, Plugin plugin )
+	{
+		List<CountryChanges> countryList = new ArrayList<>(  );
+		try( DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_HISTORY_BY_COUNTRY_ID, plugin ) )
+		{
+			daoUtil.setInt( 1 , idCountry );
+
+			daoUtil.executeQuery(  );
+
+			while ( daoUtil.next(  ) )
+			{
+				CountryChanges countryChanges = new CountryChanges(  );
+				int nIndex = 1;
+
+				countryChanges.setIdChanges( daoUtil.getInt( nIndex++ ) );
+				countryChanges.setId( daoUtil.getInt( nIndex++ ) );
+				countryChanges.setCode( daoUtil.getString( nIndex++ ) );
+				countryChanges.setValue( daoUtil.getString( nIndex++ ) );
+				countryChanges.setAttached(daoUtil.getBoolean( nIndex++ ) );
+				countryChanges.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+				countryChanges.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+				countryChanges.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
+				countryChanges.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+				countryChanges.setAuthor( daoUtil.getString( nIndex++ ) );
+				countryChanges.setStatus( daoUtil.getString( nIndex ) );
+
+				countryList.add(countryChanges);
+			}
+
+			return countryList;
+		}
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public CountryChanges selectCountryChanges(int idHistory, Plugin plugin)
+	{
+		CountryChanges countryChanges = new CountryChanges(  );
+		try( DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_HISTORY_BY_HISTORY_ID, plugin ) )
+		{
+			daoUtil.setInt( 1 , idHistory );
+
+			daoUtil.executeQuery(  );
+
+			while ( daoUtil.next(  ) )
+			{
+				int nIndex = 1;
+
+				countryChanges.setIdChanges( daoUtil.getInt( nIndex++ ) );
+				countryChanges.setId( daoUtil.getInt( nIndex++ ) );
+				countryChanges.setCode( daoUtil.getString( nIndex++ ) );
+				countryChanges.setValue( daoUtil.getString( nIndex++ ) );
+				countryChanges.setAttached(daoUtil.getBoolean( nIndex++ ) );
+				countryChanges.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+				countryChanges.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+				countryChanges.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
+				countryChanges.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+				countryChanges.setAuthor( daoUtil.getString( nIndex++ ) );
+				countryChanges.setStatus( daoUtil.getString( nIndex ) );
+
+			}
+			return countryChanges;
+		}
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public CountryChanges storeChanges(CountryChanges countryChanges, Plugin plugin)
+	{
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_UPDATE_HISTORY, plugin ) )
+		{
+			int nIndex = 1;
+
+			daoUtil.setString( nIndex++ , countryChanges.getCode( ) );
+			daoUtil.setString( nIndex++ , countryChanges.getValue( ) );
+			daoUtil.setBoolean( nIndex++ , countryChanges.isAttached());
+			daoUtil.setDate( nIndex++, new java.sql.Date( countryChanges.getDateValidityStart( ).getTime( ) ) );
+			daoUtil.setDate( nIndex++, new java.sql.Date( countryChanges.getDateValidityEnd( ).getTime( ) ) );
+			daoUtil.setBoolean( nIndex++, countryChanges.isDeprecated( ) );
+			daoUtil.setDate( nIndex++, new java.sql.Date( countryChanges.getDateLastUpdate( ).getTime( ) ) );
+			daoUtil.setString( nIndex++, countryChanges.getAuthor());
+			daoUtil.setString( nIndex++, countryChanges.getStatus());
+			daoUtil.setInt( nIndex , countryChanges.getIdChanges( ) );
+
+			daoUtil.executeUpdate( );
+		}
+		return countryChanges;
+	}
 
     /**
      * {@inheritDoc }

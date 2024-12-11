@@ -51,7 +51,38 @@ public interface ICountryDAO
      * @param country instance of the Country object to insert
      * @param plugin the Plugin
      */
-    void insert( Country country, Plugin plugin );
+    Country insert( Country country, Plugin plugin );
+
+    /**
+     * Insert a new record in the history table.
+     * @param country instance of the Country object to insert
+     * @param plugin the Plugin
+     */
+    void addCountryChanges(Country country, String author, Date dateUpdate, String applied, Plugin plugin );
+
+    /**
+     * Load the data of all the city objects and returns them as a list
+     * @param idCity The identifier of the City's History to get
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the city objects
+     */
+    List<CountryChanges> selectCountryChangesListByCountryId(int idCity, Plugin plugin );
+
+    /**
+     * Load the data of the city object and returns it
+     * @param idHistory The identifier of the CountryHistory to save
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the city objects
+     */
+    CountryChanges selectCountryChanges(int idHistory, Plugin plugin);
+
+    /**
+     * Load the data of the city object and returns it
+     * @param cityHistory The CountryHistory to update
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the city objects
+     */
+    CountryChanges storeChanges(CountryChanges cityHistory, Plugin plugin);
 
     /**
      * Update the record in the table

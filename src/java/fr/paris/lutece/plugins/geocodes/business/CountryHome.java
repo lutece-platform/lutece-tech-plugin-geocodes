@@ -67,7 +67,7 @@ public final class CountryHome
      */
     public static Country create( Country country )
     {
-        _dao.insert( country, _plugin );
+        country = _dao.insert( country, _plugin );
 
         return country;
     }
@@ -82,6 +82,30 @@ public final class CountryHome
         _dao.store( country, _plugin );
 
         return country;
+    }
+
+    public static Country addCountryChanges(Country country, Date dateUpdate, String autor, String applied )
+    {
+        _dao.addCountryChanges( country, autor, dateUpdate, applied, _plugin );
+
+        return country;
+    }
+
+    public static List<CountryChanges> getListChangesFromCountryId(int id )
+    {
+        return _dao.selectCountryChangesListByCountryId( id, _plugin);
+    }
+
+    public static CountryChanges getChangesFromChangesId(int id )
+    {
+        return _dao.selectCountryChanges( id, _plugin );
+    }
+
+    public static CountryChanges updateChanges(CountryChanges history )
+    {
+        _dao.storeChanges( history, _plugin );
+
+        return history;
     }
 
     /**

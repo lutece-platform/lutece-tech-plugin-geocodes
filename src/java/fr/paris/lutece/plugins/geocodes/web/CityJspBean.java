@@ -36,7 +36,9 @@
 package fr.paris.lutece.plugins.geocodes.web;
 
 import fr.paris.lutece.plugins.geocodes.business.City;
+import fr.paris.lutece.plugins.geocodes.business.CityChanges;
 import fr.paris.lutece.plugins.geocodes.business.CityHome;
+import fr.paris.lutece.plugins.geocodes.business.GeocodesChangesStatusEnum;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
@@ -48,10 +50,10 @@ import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -68,6 +70,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
 
     // Parameters
     private static final String PARAMETER_ID_CITY = "id";
+    private static final String PARAMETER_ID_CHANGES = "idChanges";
 
     // Properties for page titles
     private static final String PROPERTY_PAGE_TITLE_MANAGE_CITYS = "geocodes.manage_cities.pageTitle";
@@ -96,6 +99,8 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     private static final String ACTION_MODIFY_CITY = "modifyCity";
     private static final String ACTION_REMOVE_CITY = "removeCity";
     private static final String ACTION_CONFIRM_REMOVE_CITY = "confirmRemoveCity";
+    private static final String ACTION_APPLY_CITY_CHANGES = "applyCityChanges";
+    private static final String ACTION_DENY_CHANGES = "denyChanges";
 
     // Infos
     private static final String INFO_CITY_CREATED = "geocodes.info.city.created";
@@ -104,6 +109,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
+    private static final String ERROR_MULTIPLE_CITIES_RETURNED = "Multiple cities returned";
 
     // City mapping
     private static final String CITY_CODE = "code";
@@ -156,8 +162,19 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
 	@Override
 	List<City> getItemsFromIds( final List<Integer> listIds )
 	{
-		final List<City> listCity = CityHome.getCitiesListByIds( listIds );
-		
+		final List<City> listCity = new ArrayList<>( );
+
+        for( City city : CityHome.getCitiesListByIds( listIds ) )
+        {
+            city.setListChanges(CityHome.selectCityChangesListByCityId(city.getId()));
+            city.setPendingChanges(0);
+            for(CityChanges cityChanges : city.getListChanges())
+            {
+                city.setPendingChanges(city.getPendingChanges() + (StringUtils.equals(cityChanges.getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0));
+            }
+            listCity.add( city );
+        }
+
 		// keep original order
         return listCity.stream()
                  .sorted(Comparator.comparingInt( notif -> listIds.indexOf( notif.getId())))
@@ -220,8 +237,8 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         {
             return redirectView( request, VIEW_CREATE_CITY );
         }
-
-        CityHome.create( _city );
+        City city = CityHome.create( _city );
+        CityHome.addCityChanges(city, this.getUser().getLastName(), GeocodesChangesStatusEnum.APPLIED.toString());
         addInfo( INFO_CITY_CREATED, getLocale(  ) );
         resetListId( );
 
@@ -262,6 +279,43 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         CityHome.remove( nId );
         addInfo( INFO_CITY_REMOVED, getLocale(  ) );
         resetListId( );
+
+        return redirectView( request, VIEW_MANAGE_CITYS );
+    }
+
+    @Action(ACTION_APPLY_CITY_CHANGES)
+    public String doApplyCityModification ( HttpServletRequest request )
+    {
+        CityChanges cityChanges = CityHome.getChangesFromChangesId( Integer.parseInt(request.getParameter(PARAMETER_ID_CHANGES) ) );
+
+        List<Integer> listCityId = new ArrayList<>();
+        listCityId.add( cityChanges.getId() );
+        List<City> listCity = CityHome.getCitiesListByIds(listCityId);
+
+        if(listCity.size() == 1 )
+        {
+            City city = this.updateCity(listCity.get( 0 ), cityChanges);
+
+            CityHome.update( city );
+            cityChanges.setDateLastUpdate(new Date());
+            cityChanges.setStatus(GeocodesChangesStatusEnum.APPLIED.toString());
+            CityHome.updateChanges(cityChanges);
+        }
+        else
+        {
+            throw new AppException( ERROR_MULTIPLE_CITIES_RETURNED);
+        }
+
+        return redirectView( request, VIEW_MANAGE_CITYS );
+    }
+
+    @Action( ACTION_DENY_CHANGES )
+    public String doRefuseModification ( HttpServletRequest request )
+    {
+        CityChanges cityChanges = CityHome.getChangesFromChangesId( Integer.parseInt(request.getParameter(PARAMETER_ID_CHANGES) ) );
+
+        cityChanges.setStatus(GeocodesChangesStatusEnum.REFUSED.toString());
+        CityHome.updateChanges(cityChanges);
 
         return redirectView( request, VIEW_MANAGE_CITYS );
     }
@@ -323,6 +377,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         }
 
         CityHome.update( _city );
+        CityHome.addCityChanges(_city, this.getUser().getLastName(), GeocodesChangesStatusEnum.APPLIED.toString());
         addInfo( INFO_CITY_UPDATED, getLocale(  ) );
         resetListId( );
 
@@ -343,5 +398,48 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         city.setValueMinComplete( request.getParameter( CITY_VALUE_MIN_COMPLETE ) );
         city.setDeprecated( Objects.equals( request.getParameter( CITY_DEPRECATED ), "true" ) );
         city.setDateLastUpdate( new Date( ) );
+    }
+
+    private City updateCity(City city, CityChanges changes)
+    {
+        if(!StringUtils.equals(city.getCodeCountry(), changes.getCodeCountry()))
+        {
+            city.setCodeCountry( changes.getCodeCountry() );
+        }
+        if(!StringUtils.equals(city.getCode(), changes.getCode()))
+        {
+            city.setCode( changes.getCode() );
+        }
+        if(!StringUtils.equals(city.getValue(), changes.getValue()))
+        {
+            city.setValue( changes.getValue() );
+        }
+        if(!StringUtils.equals(city.getCodeZone(), changes.getCodeZone()))
+        {
+            city.setCodeZone( changes.getCodeZone() );
+        }
+        if(!city.getDateValidityStart().equals(changes.getDateValidityStart()))
+        {
+            city.setDateValidityStart( changes.getDateValidityStart() );
+        }
+        if(!city.getDateValidityEnd().equals(changes.getDateValidityEnd()))
+        {
+            city.setDateValidityEnd( changes.getDateValidityEnd() );
+        }
+        if(!StringUtils.equals(city.getValueMin(), changes.getValueMin()))
+        {
+            city.setValueMin( changes.getValueMin() );
+        }
+        if(!StringUtils.equals(city.getValueMinComplete(), changes.getValueMinComplete()))
+        {
+            city.setValueMinComplete( changes.getValueMinComplete() );
+        }
+        if(city.isDeprecated() != changes.isDeprecated())
+        {
+            city.setDeprecated( changes.isDeprecated() );
+        }
+        city.setDateLastUpdate( new Date( ) );
+
+        return city;
     }
 }

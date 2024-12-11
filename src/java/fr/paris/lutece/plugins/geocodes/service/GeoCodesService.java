@@ -263,9 +263,9 @@ public class GeoCodesService
 	 * 
 	 * @param cityUpdate : the city to update
 	 */
-	public static void updateCity( City cityUpdate )
+	public static void updateCity( City cityUpdate, String author, String applied )
 	{
-		CityHome.update( cityUpdate );
+		CityHome.addCityChanges(cityUpdate, author, applied);
 	}
 	
 	/**
@@ -273,9 +273,10 @@ public class GeoCodesService
 	 * 
 	 * @param cityNew : the city to create
 	 */
-	public static void createCity( City cityNew )
+	public static void createCity( City cityNew, String author, String applied )
 	{
-		CityHome.create( cityNew );
+		City city = CityHome.create( cityNew );
+		CityHome.addCityChanges(city, author, applied);
 	}
 	
 	public static Date checkDateValidityStart( Date dateCheck )
