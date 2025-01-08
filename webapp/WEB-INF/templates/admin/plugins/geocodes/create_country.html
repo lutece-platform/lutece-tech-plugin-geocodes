@@ -16,6 +16,9 @@
 					<@formGroup labelFor='value' labelKey='#i18n{geocodes.modify_country.labelValue}' mandatory=true>
 						<@input type='text' id='value' name='value'  maxlength=255 value='' tabIndex='1' />
 					</@formGroup>
+					<@formGroup labelFor='valueMinComplete' labelKey='#i18n{geocodes.modify_country.labelValue}' mandatory=true>
+						<@input type='text' id='valueMinComplete' name='valueMinComplete'  maxlength=255 value='' tabIndex='1' />
+					</@formGroup>
 
 					<@formGroup labelFor='attached' labelKey='#i18n{geocodes.manage_countries.columnAttached}' mandatory=true>
 						<@select class="search-field form-select select-type" id="attached" name="attached" default_value="" tabIndex=2>

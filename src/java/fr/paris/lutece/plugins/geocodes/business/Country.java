@@ -65,6 +65,8 @@ public class Country implements Serializable
 
     protected boolean _bDeprecated;
 
+    protected String _strValueMinComplete;
+
     private List<CountryChanges> listChanges;
 
     private int pendingChanges;
@@ -191,6 +193,16 @@ public class Country implements Serializable
 	public void setDeprecated(boolean _bDeprecated) {
 		this._bDeprecated = _bDeprecated;
 	}
+
+    public String getValueMinComplete()
+    {
+        return _strValueMinComplete;
+    }
+
+    public void setValueMinComplete(String _strValueMinComplete)
+    {
+        this._strValueMinComplete = _strValueMinComplete;
+    }
 
     public List<CountryChanges> getListChanges()
     {

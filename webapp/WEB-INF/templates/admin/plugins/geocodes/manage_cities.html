@@ -68,7 +68,7 @@
 
 							<@td>
 								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCities.jsp?view=modifyCity&id=${city.id}" targetElement="#modify-city-form" redirectForm=false id="modify-city-${city.id}" title="#i18n{geocodes.modify_city.title}" btnIcon="edit" position="end" />
-								<@offcanvas id="changes-${city.code}" title="<i class='ti ti-history fs-2'></i> ${city.value}" btnTitle="Historique du champ" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${city.pendingChanges}">
+								<@offcanvas id="changes-${city.id}" title="<i class='ti ti-history fs-2'></i> ${city.value}" btnTitle="Historique du champ" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${city.pendingChanges}">
 
 									<@table headBody=true>
 										<@tr>

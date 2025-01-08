@@ -14,6 +14,7 @@
 					<@tr>
 						<@th>#i18n{geocodes.manage_countries.columnCode}</@th>
 						<@th>#i18n{geocodes.manage_countries.columnValue}</@th>
+						<@th>#i18n{geocodes.manage_countries.columnValueMinComplete}</@th>
 						<@th>#i18n{geocodes.manage_countries.columnAttached}</@th>
 						<@th>#i18n{geocodes.manage_countries.columnDateValidityStart}</@th>
 						<@th>#i18n{geocodes.manage_countries.columnDateValidityEnd}</@th>
@@ -28,6 +29,9 @@
 							</@td>
 							<@td>
 								${country.value}
+							</@td>
+							<@td>
+								${country.valueMinComplete}
 							</@td>
 							<@td>
 								<#switch country.attached>
@@ -66,6 +70,9 @@
 											</@td>
 											<@td>
 												${country.value}
+											</@td>
+											<@td>
+												${country.valueMinComplete}
 											</@td>
 											<@td>
 												<#switch country.attached>
@@ -107,6 +114,7 @@
 										<@tr>
 											<@th>#i18n{geocodes.manage_countries.columnCode}</@th>
 											<@th>#i18n{geocodes.manage_countries.columnValue}</@th>
+											<@th>#i18n{geocodes.manage_countries.columnValueMinComplete}</@th>
 											<@th>#i18n{geocodes.manage_countries.columnAttached}</@th>
 											<@th>#i18n{geocodes.manage_countries.columnDateValidityStart}</@th>
 											<@th>#i18n{geocodes.manage_countries.columnDateValidityEnd}</@th>
@@ -133,6 +141,14 @@
 														${countryChanges.value}
 													<#else>
 														<@tag color="warning">${countryChanges.value}</@tag>
+													</#if>
+												</@td>
+												<@td>
+													<#assign equals= countryChanges.valueMinComplete == country.valueMinComplete>
+													<#if equals>
+														${countryChanges.valueMinComplete}
+													<#else>
+														<@tag color="warning">${countryChanges.valueMinComplete}</@tag>
 													</#if>
 												</@td>
 												<@td>

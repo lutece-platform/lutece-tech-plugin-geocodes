@@ -124,6 +124,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     // Country mapping
     private static final String COUNTRY_CODE = "code";
     private static final String COUNTRY_VALUE = "value";
+    private static final String COUNTRY_VALUE_MIN_COMPLETE = "valueMinComplete";
     private static final String COUNTRY_DATE_VALIDITY_START = "date_validity_start";
     private static final String COUNTRY_DATE_VALIDITY_END = "date_validity_end";
     private static final String COUNTRY_ATTACHED = "attached";
@@ -378,6 +379,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     {
         country.setCode( request.getParameter( COUNTRY_CODE ) );
         country.setValue( request.getParameter( COUNTRY_VALUE ) );
+        country.setValueMinComplete( request.getParameter( COUNTRY_VALUE_MIN_COMPLETE ) );
         country.setAttached( Objects.equals( request.getParameter( COUNTRY_ATTACHED ), "true" ) );
         final String dateValidityStart = request.getParameter( COUNTRY_DATE_VALIDITY_START );
         country.setDateValidityStart( DateUtil.formatDate( dateValidityStart, request.getLocale( ) ) );
@@ -396,6 +398,10 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         if(!StringUtils.equals(country.getValue(), changes.getValue()))
         {
             country.setValue( changes.getValue() );
+        }
+        if(!StringUtils.equals(country.getValueMinComplete(), changes.getValue()))
+        {
+            country.setValue( changes.getValueMinComplete() );
         }
         if(country.isAttached() != changes.isAttached())
         {

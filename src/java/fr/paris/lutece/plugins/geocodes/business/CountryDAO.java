@@ -53,22 +53,22 @@ import java.util.Optional;
 public final class CountryDAO implements ICountryDAO
 {
     // Constants
-	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_country, code, value, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country = ?";
-	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value, is_attached, deprecated FROM geocodes_country WHERE code = ?";
-	private static final String SQL_QUERY_SELECT_BY_CODE_AND_ATTACHED = "SELECT id_country, code, value, is_attached, deprecated FROM geocodes_country WHERE code = ? and is_attached = ?";
-	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, is_attached, deprecated FROM geocodes_country WHERE LOWER(value) like LOWER(?) and deprecated = 0 order by value ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_country, code, value, is_attached, deprecated FROM geocodes_country WHERE  TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') AND date_validity_start <= ? AND date_validity_end >= ? and deprecated = 0 order by value ";
-    private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value, is_attached, date_validity_start, date_validity_end, deprecated ) VALUES ( ?, ?, ?, ?, ?, ? ) ";
+	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_country, code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country = ?";
+	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE code = ?";
+	private static final String SQL_QUERY_SELECT_BY_CODE_AND_ATTACHED = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE code = ? and is_attached = ?";
+	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE LOWER(value) like LOWER(?) and deprecated = 0 order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE  TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') AND date_validity_start <= ? AND date_validity_end >= ? and deprecated = 0 order by value ";
+    private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_country WHERE id_country = ? ";
-    private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ? WHERE id_country = ?";
-    private static final String SQL_QUERY_SELECTALL = "SELECT id_country, code, value, is_attached, deprecated FROM geocodes_country";
+    private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ?, value_min_complete = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ? WHERE id_country = ?";
+    private static final String SQL_QUERY_SELECTALL = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_country FROM geocodes_country";
     private static final String SQL_QUERY_SEARCH_ID = "SELECT country.id_country FROM geocodes_country as country WHERE ${countryLabel} AND ${countryCode}";
-    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_country, code, value, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country IN (  ";
-	private static final String SQL_QUERY_INSERT_HISTORY = "INSERT INTO geocodes_country_changes (id_country, code, value, is_attached, date_validity_start, date_validity_end, deprecated, date_update, author, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
+    private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_country, code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country IN (  ";
+	private static final String SQL_QUERY_INSERT_HISTORY = "INSERT INTO geocodes_country_changes (id_country, code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated, date_update, author, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
 	private static final String SQL_QUERY_SELECT_HISTORY_BY_COUNTRY_ID = "SELECT * FROM geocodes_country_changes WHERE id_country = ?";
 	private static final String SQL_QUERY_SELECT_HISTORY_BY_HISTORY_ID = "SELECT * FROM geocodes_country_changes WHERE id_country_history = ?";
-	private static final String SQL_QUERY_UPDATE_HISTORY = "UPDATE geocodes_country_changes SET code = ?, value = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ?, date_update = ?, author = ?, status = ? WHERE id_city_history = ?";
+	private static final String SQL_QUERY_UPDATE_HISTORY = "UPDATE geocodes_country_changes SET code = ?, value = ?,  value_min_complete = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ?, date_update = ?, author = ?, status = ? WHERE id_city_history = ?";
 
     /**
      * {@inheritDoc }
@@ -81,6 +81,7 @@ public final class CountryDAO implements ICountryDAO
             int nIndex = 1;
             daoUtil.setString( nIndex++ , country.getCode( ) );
             daoUtil.setString( nIndex++ , country.getValue( ) );
+            daoUtil.setString( nIndex++ , country.getValueMinComplete( ) );
             daoUtil.setBoolean( nIndex++ , country.isAttached( ) );
 			daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityStart( ).getTime( ) ) );
 			daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityEnd( ).getTime( ) ) );
@@ -107,6 +108,7 @@ public final class CountryDAO implements ICountryDAO
 			daoUtil.setInt( nIndex++ , country.getId( ) );
 			daoUtil.setString( nIndex++ , country.getCode( ) );
 			daoUtil.setString( nIndex++ , country.getValue( ) );
+			daoUtil.setString( nIndex++ , country.getValueMinComplete( ) );
 			daoUtil.setBoolean( nIndex++ , country.isAttached( ) );
 			daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityStart( ).getTime( ) ) );
 			daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityEnd( ).getTime( ) ) );
@@ -147,7 +149,8 @@ public final class CountryDAO implements ICountryDAO
 				countryChanges.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 				countryChanges.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 				countryChanges.setAuthor( daoUtil.getString( nIndex++ ) );
-				countryChanges.setStatus( daoUtil.getString( nIndex ) );
+				countryChanges.setStatus( daoUtil.getString( nIndex++ ) );
+				countryChanges.setValueMinComplete( daoUtil.getString( nIndex ) );
 
 				countryList.add(countryChanges);
 			}
@@ -183,7 +186,8 @@ public final class CountryDAO implements ICountryDAO
 				countryChanges.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
 				countryChanges.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 				countryChanges.setAuthor( daoUtil.getString( nIndex++ ) );
-				countryChanges.setStatus( daoUtil.getString( nIndex ) );
+				countryChanges.setStatus( daoUtil.getString( nIndex++ ) );
+				countryChanges.setValueMinComplete( daoUtil.getString( nIndex ) );
 
 			}
 			return countryChanges;
@@ -202,6 +206,7 @@ public final class CountryDAO implements ICountryDAO
 
 			daoUtil.setString( nIndex++ , countryChanges.getCode( ) );
 			daoUtil.setString( nIndex++ , countryChanges.getValue( ) );
+			daoUtil.setString( nIndex++ , countryChanges.getValueMinComplete( ) );
 			daoUtil.setBoolean( nIndex++ , countryChanges.isAttached());
 			daoUtil.setDate( nIndex++, new java.sql.Date( countryChanges.getDateValidityStart( ).getTime( ) ) );
 			daoUtil.setDate( nIndex++, new java.sql.Date( countryChanges.getDateValidityEnd( ).getTime( ) ) );
@@ -236,6 +241,7 @@ public final class CountryDAO implements ICountryDAO
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
 			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setValueMinComplete( daoUtil.getString( nIndex++ ) );
 			    country.setAttached( daoUtil.getBoolean( nIndex++ ) );
 				country.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
 				country.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
@@ -266,6 +272,7 @@ public final class CountryDAO implements ICountryDAO
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
 			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setValueMinComplete( daoUtil.getString( nIndex++ ) );
 			    country.setAttached( daoUtil.getBoolean( nIndex++ ) );
 			    country.setDeprecated( daoUtil.getBoolean( nIndex ) );
 	        }
@@ -295,6 +302,7 @@ public final class CountryDAO implements ICountryDAO
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
 			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setValueMinComplete( daoUtil.getString( nIndex++ ) );
 			    country.setAttached( daoUtil.getBoolean( nIndex++ ) );
 			    country.setDeprecated( daoUtil.getBoolean( nIndex ) );
 	        }
@@ -329,6 +337,7 @@ public final class CountryDAO implements ICountryDAO
 	        
             	daoUtil.setString( nIndex++ , country.getCode( ) );
             	daoUtil.setString( nIndex++ , country.getValue( ) );
+            	daoUtil.setString( nIndex++ , country.getValueMinComplete( ) );
             	daoUtil.setBoolean( nIndex++ , country.isAttached( ) );
             	daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityStart( ).getTime( ) ) );
             	daoUtil.setDate( nIndex++ , new java.sql.Date( country.getDateValidityEnd( ).getTime( ) ) );
@@ -358,6 +367,7 @@ public final class CountryDAO implements ICountryDAO
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
 			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setValueMinComplete( daoUtil.getString( nIndex++ ) );
 			    country.setAttached( daoUtil.getBoolean( nIndex++ ) );
 			    country.setDeprecated( daoUtil.getBoolean( nIndex ) );
 	
@@ -390,6 +400,7 @@ public final class CountryDAO implements ICountryDAO
 	            country.setId( daoUtil.getInt( nIndex++ ) );
 			    country.setCode( daoUtil.getString( nIndex++ ) );
 			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setValueMinComplete( daoUtil.getString( nIndex++ ) );
 			    country.setAttached( daoUtil.getBoolean( nIndex++ ) );
 			    country.setDeprecated( daoUtil.getBoolean( nIndex ) );
 	
@@ -480,6 +491,7 @@ public final class CountryDAO implements ICountryDAO
 		            country.setId( daoUtil.getInt( nIndex++ ) );
 				    country.setCode( daoUtil.getString( nIndex++ ) );
 				    country.setValue( daoUtil.getString( nIndex++ ) );
+				    country.setValueMinComplete( daoUtil.getString( nIndex++ ) );
 				    country.setAttached( daoUtil.getBoolean( nIndex++ ) );
 				    country.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
 				    country.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
