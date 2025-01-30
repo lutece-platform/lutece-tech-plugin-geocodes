@@ -203,6 +203,17 @@ public final class CityHome
     {
         return _dao.loadByDateAndCode( dateCity, strCode, _plugin );
     }
+
+    /**
+     * Load the data of all the city codes and returns them as a list
+     *
+     * @param dateCity date of city
+     * @return the list which contains the data of all the city objects
+     */
+    public static List<String> getCitiesCodesListByDate( Date dateCity )
+    {
+        return _dao.selectCitiesCodesListByDate( dateCity, _plugin );
+    }
     
     /**
      * Load the data of all the city objects and returns them as a list

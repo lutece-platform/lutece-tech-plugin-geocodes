@@ -67,7 +67,70 @@ public class CityRest
 {
     private static final int VERSION_1 = 1;
     private static final int VERSION_2 = 2;
-    
+
+    /**
+     * Get City List with date
+     *
+     * @param nVersion
+     *            the API version
+     * @return the City List
+     */
+    @GET
+    @Path( Constants.CITY_CODES_PATH )
+    @Produces( MediaType.APPLICATION_JSON )
+    public Response getCityCodesListByDate( @PathParam( Constants.VERSION ) Integer nVersion, @QueryParam( Constants.DATE ) String strDateCity )
+    {
+        if ( strDateCity == null || strDateCity.isEmpty( ) )
+        {
+            AppLogService.error( Constants.ERROR_DATE_RESOURCE );
+            return Response.status( Response.Status.NOT_FOUND )
+                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_DATE_RESOURCE ) ) ).build( );
+        }
+
+        DateFormat formatter = null;
+        if ( nVersion == VERSION_1 )
+        {
+            formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V1 );
+        }
+        else if ( nVersion == VERSION_2 )
+        {
+            formatter = new SimpleDateFormat( Constants.FORMAT_DATE_REF_V2 );
+        }
+        if ( formatter != null )
+        {
+            Date dateref;
+            try
+            {
+                dateref = formatter.parse( strDateCity );
+            }
+            catch( ParseException e )
+            {
+                AppLogService.error( Constants.ERROR_FORMAT_DATE_RESOURCE );
+                return Response.status( Response.Status.NOT_FOUND )
+                        .entity( JsonUtil
+                                .buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
+                        .build( );
+            }
+            return getCityCodeListV1ByDate( dateref );
+        }
+        AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
+        return Response.status( Response.Status.NOT_FOUND )
+                .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_NOT_FOUND_VERSION ) ) ).build( );
+    }
+
+    /**
+     * Get City List V1
+     *
+     * @return the City List for the version 1
+     */
+    private Response getCityCodeListV1ByDate( Date dateCity )
+    {
+        final GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+
+        final List<String> lstCities = geoCodesService.getCitiesCodesListByDate( dateCity );
+
+        return Response.status( Response.Status.OK ).entity( JsonUtil.buildJsonResponse( new JsonResponse( lstCities ) ) ).build( );
+    }
     
     /**
      * Get City List with date

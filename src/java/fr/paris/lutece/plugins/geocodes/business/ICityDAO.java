@@ -178,6 +178,17 @@ public interface ICityDAO
      */
 	List<City> selectCitiesListByLastDate(Plugin plugin);
 
+    /**
+     * Load the data of all the city codes objects and returns them as a list
+     *
+     * @param plugin
+     *            the Plugin
+     * @param dateCity
+     *            date of the city
+     * @return The list which contains the data of all the city objects
+     */
+    List<String> selectCitiesCodesListByDate( Date dateCity, Plugin plugin );
+
 	/**
      * Load the data of all the city objects and returns them as a list
      * @param plugin the Plugin

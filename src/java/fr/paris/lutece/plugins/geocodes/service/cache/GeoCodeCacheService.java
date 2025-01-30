@@ -10,6 +10,7 @@ public final class GeoCodeCacheService extends AbstractCacheableService
 	private static final String SERVICE_NAME = "GeoCode Cache Service";
 	private static final String CONST_PREFIX_CITY = "city_";
 	private static final String CONST_PREFIX_COUNTRY = "country_";
+	private static final String CONST_PREFIX_CITY_CODES = "city_codes_";
 	
 	// VARIABLES
     private static GeoCodeCacheService _singleton;
@@ -45,6 +46,11 @@ public final class GeoCodeCacheService extends AbstractCacheableService
 	{
 		_singleton.putInCache( CONST_PREFIX_CITY + strKey , object);
 	}
+
+	public void putCitiesCodesByDateInCache( String strKey, Object object )
+	{
+		_singleton.putInCache( CONST_PREFIX_CITY_CODES + strKey, object );
+	}
 	
 	public void putCountryInCache( String strKey, Object object )
 	{
@@ -54,6 +60,11 @@ public final class GeoCodeCacheService extends AbstractCacheableService
 	public Object getFromCityCache( String strKey )
 	{
 		return _singleton.getFromCache( CONST_PREFIX_CITY + strKey );
+	}
+
+	public Object getFromCitiesCodesByDateInCache( String strKey )
+	{
+		return _singleton.getFromCache( CONST_PREFIX_CITY_CODES + strKey );
 	}
 	
 	public Object getFromCountryCache( String strKey )

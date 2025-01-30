@@ -1,5 +1,6 @@
 package fr.paris.lutece.plugins.geocodes.service;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +21,8 @@ public class GeoCodesService
 {
 	private GeoCodeCacheService _cacheGeoCode = GeoCodeCacheService.getInstance( );
 	private GeoCodeCacheServiceLike _cacheGeoCodeLike = GeoCodeCacheServiceLike.getInstance( );
+	private static final Date dateMin = DateUtil.parseIsoDate( "1943-01-01 00:00:00" );
+	private static final SimpleDateFormat citiesCodesDateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
 	private static GeoCodesService _singleton;
 	
 	
@@ -166,6 +169,29 @@ public class GeoCodesService
 	    	return lstCities;
 		}
 		return lstCitiesCache;
+	}
+
+	/**
+	 * search cities codes by date
+	 *
+	 * @param dateCity
+	 * @return the list
+	 */
+	public List<String> getCitiesCodesListByDate( Date dateCity )
+	{
+		dateCity = checkDateValidityStart( dateCity );
+		final String strDate = citiesCodesDateFormat.format( dateCity );
+		final List<String> result = (List<String>) _cacheGeoCode.getFromCityCache( strDate );
+
+		if ( result == null || result.isEmpty( ) )
+		{
+			final GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+			final IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+			final List<String> lstCities = geoCodeLocal.getCitiesCodesListByDate( dateCity );
+			_cacheGeoCode.putCitiesCodesByDateInCache( strDate, lstCities );
+			return lstCities;
+		}
+		return result;
 	}
 	
 	/**

@@ -29,6 +29,12 @@ public class GeoCodesLocal implements IGeoCodeProvider{
 	}
 
 	@Override
+	public List<String> getCitiesCodesListByDate( Date dateCity )
+	{
+		return CityHome.getCitiesCodesListByDate( dateCity );
+	}
+
+	@Override
 	public List<City> getCitiesListByNameAndDate( String strSearchBeginningVal, Date dateCity ) {
 		return  CityHome.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
 	}

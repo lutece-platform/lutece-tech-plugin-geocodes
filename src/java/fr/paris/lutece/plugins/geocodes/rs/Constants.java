@@ -66,6 +66,7 @@ public final class Constants
     public static final String ERROR_BAD_REQUEST_EMPTY_PARAMETER = "Empty parameter";
     
     public static final String CITY_PATH = "/cities";
+    public static final String CITY_CODES_PATH = "/codes";
     public static final String CITY_ATTRIBUTE_CODE_COUNTRY = "code_country";
     public static final String CITY_ATTRIBUTE_CODE = "code";
     public static final String CITY_ATTRIBUTE_VALUE = "value";

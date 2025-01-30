@@ -76,4 +76,11 @@ public interface IGeoCodeProvider {
 	 */
 	Optional<City> getCityByCode( String strCode );
 
+	/**
+	 * Get list of city codes by date
+	 * @param dateCity
+	 * @return
+	 */
+	List<String> getCitiesCodesListByDate( Date dateCity );
+
 }

@@ -59,6 +59,7 @@ public final class CityDAO implements ICityDAO
 	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE LOWER(value) = LOWER(?) AND date_validity_start <= ? and date_validity_end >= ? order and deprecated = 0 by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE ( LOWER(value_min) like LOWER(?) OR LOWER(value_min_complete) like LOWER(?) ) AND date_validity_start <= ? and date_validity_end >= ? and deprecated = 0 order by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE  TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') = TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') AND date_validity_start <= ? AND date_validity_end >= ? and deprecated = 0 order by value ";
+	private static final String SQL_QUERY_SELECT_CODES_BY_DATE = "SELECT code FROM geocodes_city WHERE date_validity_start <= ? AND date_validity_end >= ? and deprecated = 0";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE (   TRANSLATE(REPLACE(REPLACE(LOWER(value_min), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ') OR  TRANSLATE(REPLACE(REPLACE(LOWER(value_min_complete), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ') like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ') ) AND date_validity_start <= ? AND date_validity_end >= ? and deprecated = 0 order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_city ( code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_city WHERE id_city = ? ";
@@ -494,6 +495,29 @@ public final class CityDAO implements ICityDAO
 	        return cityList;
         }
     }
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public List<String> selectCitiesCodesListByDate( Date dateCity, Plugin plugin )
+	{
+		List<String> codesList = new ArrayList<>( );
+		try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_CODES_BY_DATE, plugin ) )
+		{
+			daoUtil.setDate( 1, new java.sql.Date( dateCity.getTime( ) ) );
+			daoUtil.setDate( 2, new java.sql.Date( dateCity.getTime( ) ) );
+
+			daoUtil.executeQuery( );
+
+			while ( daoUtil.next( ) )
+			{
+				codesList.add( daoUtil.getString( 1 ) );
+			}
+
+			return codesList;
+		}
+	}
 
     /**
      * {@inheritDoc }
