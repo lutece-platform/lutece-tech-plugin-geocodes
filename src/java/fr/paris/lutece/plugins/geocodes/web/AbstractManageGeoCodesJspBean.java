@@ -39,12 +39,13 @@ import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * ManageGeoCodes JSP Bean abstract class for JSP Bean
@@ -66,6 +67,7 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
     public static final String QUERY_PARAM_INSEE_COUNTRY_LABEL = "insee_country_label";
     public static final String QUERY_PARAM_INSEE_COUNTRY_CODE = "insee_country";
     public static final String QUERY_PARAM_INSEE_PLACE_CODE = "insee_place";
+    public static final String QUERY_PARAM_APPROXIMATE = "approximate";
 
     // Markers
     private static final String MARK_PAGINATOR = "paginator";
@@ -83,8 +85,8 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
      * @param strManageJsp The JSP
      * @return The model
      */
-    protected <T> Map<String, Object> getPaginatedListModel( HttpServletRequest request, String strBookmark, List<S> list,
-        String strManageJsp, String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode )
+    protected <T> Map<String, Object> getPaginatedListModel( HttpServletRequest request, String strBookmark, List<S> list, String strManageJsp,
+            String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode, boolean approximate )
     {
         int nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
         _strCurrentPageIndex = AbstractPaginator.getPageIndex( request, AbstractPaginator.PARAMETER_PAGE_INDEX, _strCurrentPageIndex );
@@ -103,6 +105,7 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
         model.put( QUERY_PARAM_INSEE_COUNTRY_LABEL, countryLabel );
         model.put( QUERY_PARAM_INSEE_COUNTRY_CODE, countryCode );
         model.put( QUERY_PARAM_INSEE_PLACE_CODE, placeCode );
+        model.put( QUERY_PARAM_APPROXIMATE, approximate );
         model.put( MARK_NB_ITEMS_PER_PAGE, String.valueOf( _nItemsPerPage ) );
         model.put( MARK_PAGINATOR, paginator );
         model.put( strBookmark, getItemsFromIds ( paginator.getPageItems( ) ) );
@@ -154,6 +157,20 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
         if ( placeCode != null )
         {
             parameters.put( QUERY_PARAM_INSEE_PLACE_CODE, placeCode );
+        }
+
+        if ( ObjectUtils.allNull( cityLabel, cityCode, countryLabel, countryCode, placeCode ) )
+        {
+            // First page loading => we set the approximate search flag to 'true'
+            parameters.put( QUERY_PARAM_APPROXIMATE, "true" );
+        }
+        else
+        {
+            final String approximate = request.getParameter( QUERY_PARAM_APPROXIMATE );
+            if ( approximate != null )
+            {
+                parameters.put( QUERY_PARAM_APPROXIMATE, approximate );
+            }
         }
         return parameters;
     }

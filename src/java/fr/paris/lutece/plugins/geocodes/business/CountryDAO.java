@@ -415,12 +415,18 @@ public final class CountryDAO implements ICountryDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Integer> selectIdCountriesList( Plugin plugin, String countryLabel, String countryCode   )
+    public List<Integer> selectIdCountriesList( final Plugin plugin, final String countryLabel, final String countryCode, final boolean approximateSearch )
     {
-
-		String sql = SQL_QUERY_SEARCH_ID
-				.replace( "${countryLabel}", ( StringUtils.isNotBlank( countryLabel ) ? "country.value LIKE '%" + countryLabel + "%'" : "1=1" ) )
-				.replace( "${countryCode}", ( StringUtils.isNotBlank( countryCode ) ? "country.code = '" + countryCode + "'" : "1=1" ) );
+        final String sql;
+        if (approximateSearch) {
+            sql = SQL_QUERY_SEARCH_ID
+                    .replace("${countryLabel}", (StringUtils.isNotBlank(countryLabel) ? "country.value LIKE '%" + countryLabel + "%'" : "1=1"))
+                    .replace("${countryCode}", (StringUtils.isNotBlank(countryCode) ? "country.code = '" + countryCode + "'" : "1=1"));
+        } else {
+            sql = SQL_QUERY_SEARCH_ID
+                    .replace("${countryLabel}", (StringUtils.isNotBlank(countryLabel) ? "country.value = '" + countryLabel + "'" : "1=1"))
+                    .replace("${countryCode}", (StringUtils.isNotBlank(countryCode) ? "country.code = '" + countryCode + "'" : "1=1"));
+        }
 
         List<Integer> countryList = new ArrayList<>( );
         try( DAOUtil daoUtil = new DAOUtil( sql, plugin ) )

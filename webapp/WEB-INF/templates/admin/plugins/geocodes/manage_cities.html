@@ -3,6 +3,11 @@
 	<@pageColumn>
 		<@pageHeader title='#i18n{geocodes.manage_cities.title}'>
 			<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCities.jsp?view_createCity" targetElement="#create-city-form" redirectForm=false id="create-city" title="#i18n{geocodes.create_city.title}" btnTitle="#i18n{geocodes.manage_cities.buttonAdd}" btnIcon="plus" position="end" />
+			<@headerButtons>
+				<form class="form-inline pull-right" method="post" name="manage_cities" action="jsp/admin/plugins/geocodes/ManageCities.jsp">
+					<@button type='submit' name='action_exportCities' buttonIcon='plus' title='#i18n{geocodes.manage_cities.buttonExport}' />
+				</form>
+			</@headerButtons>
 		</@pageHeader>
 		<@messages infos=infos />
 		<@messages errors=errors />
@@ -11,18 +16,18 @@
 			<@tabContent>
 				<#assign page >ManageCities</#assign>
 				<#include "search_geocodes.html"/>
-				<@table headBody=true>
+				<@table id='city-table' headBody=true>
 					<@tr>
-						<@th>#i18n{geocodes.manage_cities.columnCodeCountry}</@th>
-						<@th>#i18n{geocodes.manage_cities.columnCode}</@th>
-						<@th>#i18n{geocodes.manage_cities.columnValue}</@th>
-						<@th>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
-						<@th>#i18n{geocodes.manage_cities.columnDateValidityStart}</@th>
-						<@th>#i18n{geocodes.manage_cities.columnDateValidityEnd}</@th>
-						<@th>#i18n{geocodes.manage_cities.labelValueMin}</@th>
-						<@th>#i18n{geocodes.manage_cities.labelValueMinComplete}</@th>
-						<@th>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
-						<@th>#i18n{geocodes.manage_cities.columnDeprecated}</@th>
+						<@th params='onclick="sortTable(0, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCodeCountry}</@th>
+						<@th params='onclick="sortTable(1, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCode}</@th>
+						<@th params='onclick="sortTable(2, \'city-table\')"'>#i18n{geocodes.manage_cities.columnValue}</@th>
+						<@th params='onclick="sortTable(3, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
+						<@th params='onclick="sortTable(4, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDateValidityStart}</@th>
+						<@th params='onclick="sortTable(5, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDateValidityEnd}</@th>
+						<@th params='onclick="sortTable(6, \'city-table\')"'>#i18n{geocodes.manage_cities.labelValueMin}</@th>
+						<@th params='onclick="sortTable(7, \'city-table\')"'>#i18n{geocodes.manage_cities.labelValueMinComplete}</@th>
+						<@th params='onclick="sortTable(8, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
+						<@th params='onclick="sortTable(9, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDeprecated}</@th>
 						<@th>#i18n{portal.util.labelActions}</@th>
 					</@tr>
 					<@tableHeadBodySeparator />
@@ -253,3 +258,4 @@
 		<@paginationAdmin paginator=paginator combo=1 />
 	</@pageColumn>
 </@pageContainer>
+<script src="./js/admin/plugins/identitystore/table.js"></script>

@@ -110,7 +110,7 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
 		request = new MockHttpServletRequest();
         request.addParameter( "code" , CODE1 );
         request.addParameter( "value" , VALUE1 );
-		List<Integer> listIds = CountryHome.getIdCountriesList(null, null);
+		List<Integer> listIds = CountryHome.getIdCountriesList(null, null, true);
         assertTrue( !listIds.isEmpty( ) );
         request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		jspbean = new CountryJspBean();

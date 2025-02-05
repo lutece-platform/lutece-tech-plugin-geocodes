@@ -16,6 +16,7 @@
                 <th>#i18n{geocodes.search.country.code}</th>
             </#if>
             <th></th>
+            <th></th>
         </tr>
         <@tableHeadBodySeparator />
         <tr>
@@ -37,6 +38,21 @@
                     <input class="form-control search-field" type="text" name="insee_country" placeholder="#i18n{geocodes.search.country.code}" value="${insee_country!''}" />
                 </td>
             </#if>
+            <td>
+                <#assign checked=true />
+                <#if approximate?exists>
+                    <#if approximate>
+                        <#assign checked=true />
+                    <#else>
+                        <#assign checked=false />
+                    </#if>
+                <#else>
+                    <#assign checked=true />
+                </#if>
+                <@listGroupItem>
+                    <@checkBox orientation='switch' id='approximate' name='approximate' labelKey='#i18n{geocodes.search.approximate}' value='true' mandatory=false checked=checked/>
+                </@listGroupItem>
+            </td>
             <td>
                 <span class="input-group-btn">
                     <button class="btn btn-default" type="submit">

@@ -82,8 +82,10 @@ public final class Constants
     public static final String CONST_DATE_MIN = "1943-01-01";
     public static final String FORMAT_DATE_REF_V1 = "yyyy-MM-DD";
     public static final String FORMAT_DATE_REF_V2 = "yyyy-MM-dd";
-    public static final String ERROR_DATE_RESOURCE = "The date dateRef must be entered";  
-    
+    public static final String ERROR_DATE_RESOURCE = "The date dateRef must be entered";
+
+    public static final String CSV_DATE_FORMAT = "dd/MM/yyyy";
+
     /**
      * Private constructor
      */

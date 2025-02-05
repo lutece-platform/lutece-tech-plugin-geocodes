@@ -39,11 +39,14 @@ import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.business.CityChanges;
 import fr.paris.lutece.plugins.geocodes.business.CityHome;
 import fr.paris.lutece.plugins.geocodes.business.GeocodesChangesStatusEnum;
+import fr.paris.lutece.plugins.geocodes.service.CsvExportService;
+import fr.paris.lutece.plugins.geocodes.utils.Batch;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -53,9 +56,12 @@ import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * This class provides the user interface to manage City features ( manage, create, modify, remove )
@@ -101,6 +107,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     private static final String ACTION_CONFIRM_REMOVE_CITY = "confirmRemoveCity";
     private static final String ACTION_APPLY_CITY_CHANGES = "applyCityChanges";
     private static final String ACTION_DENY_CHANGES = "denyChanges";
+    private static final String ACTION_EXPORT_CITIES = "exportCities";
 
     // Infos
     private static final String INFO_CITY_CREATED = "geocodes.info.city.created";
@@ -124,6 +131,9 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     private static final String CITY_STR_DATE_VALIDITY_START = "str_date_validity_start";
     private static final String CITY_STR_DATE_VALIDITY_END = "str_date_validity_end";
 
+    // Export properties
+    private static final int EXPORT_BATCH_PARTITION_SIZE = AppPropertiesService.getPropertyInt("geocodes.export.cities.batch.size", 100);
+
     // Session variable to store working values
     private City _city;
     private List<Integer> _listIdCities;
@@ -142,14 +152,15 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         final String cityLabel = queryParameters.get( QUERY_PARAM_INSEE_CITY_LABEL );
         final String cityCode = queryParameters.get( QUERY_PARAM_INSEE_CITY_CODE );
         final String placeCode = queryParameters.get( QUERY_PARAM_INSEE_PLACE_CODE );
-        
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null || _listIdCities.isEmpty( ) )
+        final boolean approximate = Boolean.parseBoolean( queryParameters.get( QUERY_PARAM_APPROXIMATE ) );
+
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listIdCities.isEmpty( ) )
         {
-        	_listIdCities = CityHome.getIdCitiesList( this.cleanLabel(cityLabel), cityCode, placeCode );
+            _listIdCities = CityHome.getIdCitiesList( this.cleanLabel( cityLabel ), cityCode, placeCode, approximate );
         }
-        
-        final Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITYS,
-                this.cleanLabel(cityLabel), cityCode, null, null,  placeCode);
+
+        final Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITYS, this.cleanLabel( cityLabel ),
+                cityCode, null, null, placeCode, approximate );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_CITYS, TEMPLATE_MANAGE_CITYS, model );
     }
@@ -383,6 +394,38 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
 
         return redirectView( request, VIEW_MANAGE_CITYS );
     }
+
+    @Action( ACTION_EXPORT_CITIES )
+    public void doExportCities( final HttpServletRequest request )
+    {
+        try
+        {
+            final List<City> cities = this.getItemsFromIds(_listIdCities);
+            final Batch<City> batches = Batch.ofSize(cities, EXPORT_BATCH_PARTITION_SIZE);
+
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+            final ZipOutputStream zipOut = new ZipOutputStream(outputStream );
+
+            int i = 0;
+            for ( final List<City> batch : batches )
+            {
+                final byte [ ] bytes = CsvExportService.instance().writeCities(batch);
+                final ZipEntry zipEntry = new ZipEntry("cities-" + ++i + ".csv" );
+                zipEntry.setSize( bytes.length );
+                zipOut.putNextEntry( zipEntry );
+                zipOut.write( bytes );
+            }
+            zipOut.closeEntry( );
+            zipOut.close( );
+            this.download( outputStream.toByteArray( ), "cities.zip", "application/zip" );
+        }
+        catch( final Exception e )
+        {
+            addError( e.getMessage( ) );
+            redirectView( request, VIEW_MANAGE_CITYS );
+        }
+    }
+
 
     private void populateCity( final City city, final HttpServletRequest request ) throws ParseException
     {

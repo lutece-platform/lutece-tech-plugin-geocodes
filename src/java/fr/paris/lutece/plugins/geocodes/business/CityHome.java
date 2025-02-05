@@ -168,9 +168,9 @@ public final class CityHome
      * Load the id of all the city objects and returns them as a list
      * @return the list which contains the id of all the city objects
      */
-    public static List<Integer> getIdCitiesList( String cityLabel, String cityCode, String placeCode )
+    public static List<Integer> getIdCitiesList( final String cityLabel, final String cityCode, final String placeCode, final boolean approximateSearch )
     {
-        return _dao.selectIdCitiesList( _plugin,  cityLabel, cityCode,  placeCode  );
+        return _dao.selectIdCitiesList( _plugin, cityLabel, cityCode, placeCode, approximateSearch );
     }
     
     /**

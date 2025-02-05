@@ -136,8 +136,8 @@ public interface ICityDAO
      * @param plugin the Plugin
      * @return The list which contains the id of all the city objects
      */
-    List<Integer> selectIdCitiesList( Plugin plugin, String cityLabel, String cityCode, String placeCode );
-    
+    List<Integer> selectIdCitiesList( Plugin plugin, String cityLabel, String cityCode, String placeCode, boolean approximateSearch );
+
     /**
      * Load the data of all the city objects and returns them as a referenceList
      * @param plugin the Plugin

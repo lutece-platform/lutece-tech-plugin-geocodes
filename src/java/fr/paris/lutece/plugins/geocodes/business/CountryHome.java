@@ -171,9 +171,9 @@ public final class CountryHome
      * Load the id of all the country objects and returns them as a list
      * @return the list which contains the id of all the country objects
      */
-    public static List<Integer> getIdCountriesList( String countryLabel, String countryCode )
+    public static List<Integer> getIdCountriesList( final String countryLabel, final String countryCode, final boolean approximateSearch )
     {
-        return _dao.selectIdCountriesList( _plugin, countryLabel, countryCode );
+        return _dao.selectIdCountriesList( _plugin, countryLabel, countryCode, approximateSearch );
     }
     
     /**

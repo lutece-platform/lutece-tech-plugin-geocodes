@@ -602,16 +602,22 @@ public final class CityDAO implements ICityDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Integer> selectIdCitiesList( Plugin plugin, String cityLabel, String cityCode, String placeCode  )
+    public List<Integer> selectIdCitiesList( final Plugin plugin, final String cityLabel, final String cityCode, final String placeCode, final boolean approximateSearch )
     {
-
-		String sql = SQL_QUERY_SEARCH_ID
-				.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value LIKE '%" + cityLabel + "%'" : "1=1" ) )
-				.replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min LIKE '%" + cityLabel + "%'" : "1=1" ) )
-				.replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min_complete LIKE '%" + cityLabel + "%'" : "1=1" ) )
-				.replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "city.code = '" + cityCode + "'" : "1=1" ) )
-				.replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "city.code_zone = '" + placeCode + "'" : "1=1" ) );
-
+        final String sql;
+        if (approximateSearch) {
+            sql = SQL_QUERY_SEARCH_ID.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value LIKE '%" + cityLabel + "%'" : "1=1" ) )
+                .replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min LIKE '%" + cityLabel + "%'" : "1=1" ) )
+                .replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min_complete LIKE '%" + cityLabel + "%'" : "1=1" ) )
+                .replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "city.code = '" + cityCode + "'" : "1=1" ) )
+                .replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "city.code_zone = '" + placeCode + "'" : "1=1" ) );
+        } else {
+            sql = SQL_QUERY_SEARCH_ID.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value = '" + cityLabel + "'" : "1=1" ) )
+                .replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min = '" + cityLabel + "'" : "1=1" ) )
+                .replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min_complete = '" + cityLabel + "'" : "1=1" ) )
+                .replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "city.code = '" + cityCode + "'" : "1=1" ) )
+                .replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "city.code_zone = '" + placeCode + "'" : "1=1" ) );
+        }
 
         List<Integer> cityList = new ArrayList<>( );
         try( DAOUtil daoUtil = new DAOUtil( sql, plugin ) )

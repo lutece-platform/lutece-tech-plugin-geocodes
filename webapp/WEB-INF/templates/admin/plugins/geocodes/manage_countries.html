@@ -3,6 +3,11 @@
 	<@pageColumn>
 		<@pageHeader title='#i18n{geocodes.manage_countries.title}'>
 			<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view_createCountry" targetElement="#create-country-form" redirectForm=false id="create-country" title="#i18n{geocodes.create_country.title}" btnTitle="#i18n{geocodes.manage_countries.buttonAdd}" btnIcon="plus" position="end" />
+			<@headerButtons>
+				<form class="form-inline pull-right" method="post" name="manage_countries" action="jsp/admin/plugins/geocodes/ManageCountries.jsp">
+					<@button type='submit' name='action_exportCountries' buttonIcon='plus' title='#i18n{geocodes.manage_countries.buttonExport}' />
+				</form>
+			</@headerButtons>
 		</@pageHeader>
 		<@messages infos=infos />
 		<@tabs> 
@@ -10,15 +15,15 @@
 			<#assign page >ManageCountries</#assign>
 			<#include "search_geocodes.html"/>
 			<@tabContent>
-				<@table>
+				<@table id='country-table'>
 					<@tr>
-						<@th>#i18n{geocodes.manage_countries.columnCode}</@th>
-						<@th>#i18n{geocodes.manage_countries.columnValue}</@th>
-						<@th>#i18n{geocodes.manage_countries.columnValueMinComplete}</@th>
-						<@th>#i18n{geocodes.manage_countries.columnAttached}</@th>
-						<@th>#i18n{geocodes.manage_countries.columnDateValidityStart}</@th>
-						<@th>#i18n{geocodes.manage_countries.columnDateValidityEnd}</@th>
-						<@th>#i18n{geocodes.manage_countries.columnDeprecated}</@th>
+						<@th params='onclick="sortTable(0, \'country-table\')"'>#i18n{geocodes.manage_countries.columnCode}</@th>
+						<@th params='onclick="sortTable(1, \'country-table\')"'>#i18n{geocodes.manage_countries.columnValue}</@th>
+						<@th params='onclick="sortTable(2, \'country-table\')"'>#i18n{geocodes.manage_countries.columnValueMinComplete}</@th>
+						<@th params='onclick="sortTable(3, \'country-table\')"'>#i18n{geocodes.manage_countries.columnAttached}</@th>
+						<@th params='onclick="sortTable(4, \'country-table\')"'>#i18n{geocodes.manage_countries.columnDateValidityStart}</@th>
+						<@th params='onclick="sortTable(5, \'country-table\')"'>#i18n{geocodes.manage_countries.columnDateValidityEnd}</@th>
+						<@th params='onclick="sortTable(6, \'country-table\')"'>#i18n{geocodes.manage_countries.columnDeprecated}</@th>
 						<@th>#i18n{portal.util.labelActions}</@th>
 					</@tr>
 					<@tableHeadBodySeparator />
@@ -225,3 +230,4 @@
 		<@paginationAdmin paginator=paginator combo=1 />
 	</@pageColumn>
 </@pageContainer>
+<script src="./js/admin/plugins/identitystore/table.js"></script>

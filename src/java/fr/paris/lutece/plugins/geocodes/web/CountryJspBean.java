@@ -37,11 +37,14 @@ package fr.paris.lutece.plugins.geocodes.web;
 
 import fr.paris.lutece.plugins.geocodes.business.CountryChanges;
 import fr.paris.lutece.plugins.geocodes.business.GeocodesChangesStatusEnum;
+import fr.paris.lutece.plugins.geocodes.service.CsvExportService;
+import fr.paris.lutece.plugins.geocodes.utils.Batch;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.util.AppException;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
@@ -49,6 +52,7 @@ import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
 
+import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.Comparator;
 import java.util.ArrayList;
@@ -58,6 +62,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.business.CountryHome;
@@ -107,6 +113,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     private static final String ACTION_CONFIRM_REMOVE_COUNTRY = "confirmRemoveCountry";
     private static final String ACTION_APPLY_COUNTRY_CHANGES = "applyCountryChanges";
     private static final String ACTION_DENY_CHANGES = "denyChanges";
+    private static final String ACTION_EXPORT_COUNTRIES = "exportCountries";
 
     // Infos
     private static final String INFO_COUNTRY_CREATED = "geocodes.info.country.created";
@@ -131,7 +138,10 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
     private static final String COUNTRY_DEPRECATED = "deprecated";
     private static final String COUNTRY_STR_DATE_VALIDITY_START = "str_date_validity_start";
     private static final String COUNTRY_STR_DATE_VALIDITY_END = "str_date_validity_end";
-    
+
+    // Export properties
+    private static final int EXPORT_BATCH_PARTITION_SIZE = AppPropertiesService.getPropertyInt("geocodes.export.countries.batch.size", 100);
+
     /**
      * Build the Manage View
      * @param request The HTTP request
@@ -144,15 +154,15 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         final Map<String, String> queryParameters = this.getQueryParameters( request );
         final String countryLabel = queryParameters.get( QUERY_PARAM_INSEE_COUNTRY_LABEL );
         final String countryCode = queryParameters.get( QUERY_PARAM_INSEE_COUNTRY_CODE );
-        
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX) == null || _listIdCountries.isEmpty( ) )
-        {
+        final boolean approximate = Boolean.parseBoolean( queryParameters.get( QUERY_PARAM_APPROXIMATE ) );
 
-        	_listIdCountries = CountryHome.getIdCountriesList( this.cleanLabel(countryLabel), countryCode );
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listIdCountries.isEmpty( ) )
+        {
+            _listIdCountries = CountryHome.getIdCountriesList( this.cleanLabel( countryLabel ), countryCode, approximate );
         }
-        
-        Map<String, Object> model = getPaginatedListModel( request, MARK_COUNTRY_LIST, _listIdCountries, JSP_MANAGE_COUNTRYS,
-                null, null, this.cleanLabel(countryLabel), countryCode,  null);
+
+        Map<String, Object> model = getPaginatedListModel( request, MARK_COUNTRY_LIST, _listIdCountries, JSP_MANAGE_COUNTRYS, null, null,
+                this.cleanLabel( countryLabel ), countryCode, null, approximate );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_COUNTRYS, TEMPLATE_MANAGE_COUNTRYS, model );
     }
@@ -375,7 +385,38 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         return redirectView( request, VIEW_MANAGE_COUNTRYS );
     }
 
-    private void populateCountry(final Country country, final HttpServletRequest request ) throws ParseException
+    @Action( ACTION_EXPORT_COUNTRIES )
+    public void doExportCountries( final HttpServletRequest request )
+    {
+        try
+        {
+            final List<Country> countries = this.getItemsFromIds( _listIdCountries );
+            final Batch<Country> batches = Batch.ofSize( countries, EXPORT_BATCH_PARTITION_SIZE );
+
+            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
+            final ZipOutputStream zipOut = new ZipOutputStream( outputStream );
+
+            int i = 0;
+            for ( final List<Country> batch : batches )
+            {
+                final byte [ ] bytes = CsvExportService.instance().writeCountries(batch);
+                final ZipEntry zipEntry = new ZipEntry("countries-" + ++i + ".csv" );
+                zipEntry.setSize( bytes.length );
+                zipOut.putNextEntry( zipEntry );
+                zipOut.write( bytes );
+            }
+            zipOut.closeEntry( );
+            zipOut.close( );
+            this.download( outputStream.toByteArray( ), "countries.zip", "application/zip" );
+        }
+        catch( final Exception e )
+        {
+            addError( e.getMessage( ) );
+            redirectView( request, VIEW_MANAGE_COUNTRYS );
+        }
+    }
+
+    private void populateCountry( final Country country, final HttpServletRequest request ) throws ParseException
     {
         country.setCode( request.getParameter( COUNTRY_CODE ) );
         country.setValue( request.getParameter( COUNTRY_VALUE ) );
