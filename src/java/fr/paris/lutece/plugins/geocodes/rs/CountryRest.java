@@ -49,8 +49,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.commons.lang3.StringUtils;
-
 import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.service.GeoCodesService;
 import fr.paris.lutece.plugins.rest.service.RestConstants;
@@ -95,7 +93,7 @@ public class CountryRest
     {
     	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
     	Date date = new Date();
-    	List<Country> listCountrys = geoCodesService.getCountriesListByName( "%", date );
+    	List<Country> listCountrys = geoCodesService.getCountriesListByNameAndDate("%", date);
         
         return Response.status( Response.Status.OK )
                 .entity( JsonUtil.buildJsonResponse( new JsonResponse( listCountrys ) ) )
@@ -112,9 +110,7 @@ public class CountryRest
     @GET
     @Path( Constants.ID_PATH )
     @Produces( MediaType.APPLICATION_JSON )
-    public Response getCountry(
-    @PathParam( Constants.VERSION ) Integer nVersion,
-    @PathParam( Constants.ID ) String id )
+    public Response getCountry( @PathParam( Constants.VERSION ) Integer nVersion, @PathParam( Constants.ID ) String id )
     {
         if ( nVersion == VERSION_1 )
         {
@@ -151,16 +147,16 @@ public class CountryRest
     /**
      * Search Countries
      * @param nVersion the API version
-     * @param search the searched string
+     * @param strVal the searched string
+     * @param strDateCountry the date
      * @return the Countries
      */
     @GET
     @Path( Constants.SEARCH_PATH )
     @Produces( MediaType.APPLICATION_JSON )
-    public Response getCountiesByName(
-    @PathParam( Constants.VERSION ) Integer nVersion,
-    @PathParam( Constants.SEARCHED_STRING ) String strVal,
-    @QueryParam( Constants.DATE ) String strDateCountry )
+    public Response getCountiesByNameAndDate( @PathParam( Constants.VERSION ) Integer nVersion,
+                                              @PathParam( Constants.SEARCHED_STRING ) String strVal,
+                                              @QueryParam( Constants.DATE ) String strDateCountry)
     {
     	if ( strDateCountry == null || strDateCountry.isEmpty( ) )
         {
@@ -181,16 +177,16 @@ public class CountryRest
         }
     	if ( formatter != null )
     	{ 
-        	Date dateref = new Date( );
+        	Date dateref;
 			try {
-				dateref = (Date)formatter.parse(strDateCountry);
+				dateref = formatter.parse(strDateCountry);
 			} catch (ParseException e) {
 				AppLogService.error( Constants.ERROR_FORMAT_DATE_RESOURCE );
 	            return Response.status( Response.Status.NOT_FOUND )
 	                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
 	                    .build( );
 			}
-        	return getCountriesByNameV1( strVal, dateref );
+        	return getCountriesByNameAndDateV1(strVal, dateref);
         }
         AppLogService.error( Constants.ERROR_NOT_FOUND_VERSION );
         return Response.status( Response.Status.NOT_FOUND )
@@ -199,11 +195,12 @@ public class CountryRest
     }
     
     /**
-     * Get Country V1
-     * @param id the id
+     * Get Country by name and date V1
+     * @param strSearchBeginningVal the search
+     * @param dateRef the date
      * @return the Country for the version 1
      */
-    private Response getCountriesByNameV1( String strSearchBeginningVal, Date dateRef )
+    private Response getCountriesByNameAndDateV1(String strSearchBeginningVal, Date dateRef)
     {
         if ( strSearchBeginningVal == null || strSearchBeginningVal.length( ) < 3 )
         {
@@ -214,7 +211,7 @@ public class CountryRest
         }
         
         GeoCodesService geoCodesService = GeoCodesService.getInstance( );
-        List<Country> listCountries = geoCodesService.getCountriesListByName( strSearchBeginningVal, dateRef );
+        List<Country> listCountries = geoCodesService.getCountriesListByNameAndDate(strSearchBeginningVal, dateRef);
         
         return Response.status( Response.Status.OK )
                 .entity( JsonUtil.buildJsonResponse( new JsonResponse( listCountries ) ) )

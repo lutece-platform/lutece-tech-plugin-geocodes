@@ -58,6 +58,7 @@ public interface IGeoCodeProvider {
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
+	@Deprecated
 	List<City> getCitiesListByNameLike( String strSearchBeginningVal );
 
 	/**
@@ -66,6 +67,7 @@ public interface IGeoCodeProvider {
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
+	@Deprecated
 	List<City> getCitiesListByName( String strSearchBeginningVal );
 
 	/**
@@ -74,6 +76,7 @@ public interface IGeoCodeProvider {
 	 * @param strCode
 	 * @return the city (as Optional)
 	 */
+	@Deprecated
 	Optional<City> getCityByCode( String strCode );
 
 	/**

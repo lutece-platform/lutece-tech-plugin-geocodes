@@ -129,7 +129,7 @@ public interface ICountryDAO
      * @param plugin the Plugin
      * @return The list which contains the data of all the country objects
      */
-    List<Country> selectCountriesListByValue( String strVal, Date dateRef, Plugin plugin );
+    List<Country> selectCountriesListByValueAndDate(String strVal, Date dateRef, Plugin plugin);
     
     /**
      * Load the id of all the country objects and returns them as a list

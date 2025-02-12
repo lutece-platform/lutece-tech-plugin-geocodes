@@ -382,7 +382,7 @@ public final class CountryDAO implements ICountryDAO
      * {@inheritDoc }
      */
     @Override
-    public List<Country> selectCountriesListByValue( String strVal, Date dateRef, Plugin plugin )
+    public List<Country> selectCountriesListByValueAndDate(String strVal, Date dateRef, Plugin plugin)
     {
         List<Country> countryList = new ArrayList<>(  );
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE_AND_DATE, plugin ) )

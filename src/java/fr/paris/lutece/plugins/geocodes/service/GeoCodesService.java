@@ -60,6 +60,7 @@ public class GeoCodesService
 	 * @param strCodel
 	 * @return the city (as Optional)
 	 */
+	@Deprecated
 	public Optional<City> getCityByCode( String strCode )
 	{
 		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCityCache( strCode );
@@ -81,6 +82,7 @@ public class GeoCodesService
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
+	@Deprecated
 	public List<City> getCitiesListByName( String strSearchBeginningVal )
 	{
 		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCityCache( strSearchBeginningVal );
@@ -104,6 +106,7 @@ public class GeoCodesService
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
+	@Deprecated
 	public List<City> getCitiesListByNameLike( String strSearchBeginningVal )
 	{
 		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCodeLike.getFromCache( strSearchBeginningVal );
@@ -238,13 +241,13 @@ public class GeoCodesService
 	 * @param strSearchBeginningVal
 	 * @return the list
 	 */
-	public List<Country> getCountriesListByName( String strSearchBeginningVal, Date dateRef )
+	public List<Country> getCountriesListByNameAndDate(String strSearchBeginningVal, Date dateRef)
 	{
 		List<Country> lstCountries = ( List<Country> ) _cacheGeoCode.getFromCountryCache( strSearchBeginningVal + dateRef );
 		
 		if ( lstCountries == null || lstCountries.isEmpty( ) )
 		{
-			lstCountries =  CountryHome.getCountriesListByName( strSearchBeginningVal, dateRef );
+			lstCountries =  CountryHome.getCountriesListByNameAndDate(strSearchBeginningVal, dateRef);
 			_cacheGeoCode.putCountryInCache( strSearchBeginningVal + dateRef, lstCountries );
 		}
 		

@@ -24,6 +24,7 @@ public class GeoCodesLocal implements IGeoCodeProvider{
 	}
 	
 	@Override
+	@Deprecated
 	public Optional<City> getCityByCode( String strCode ) {
 		return  CityHome.findByCode( strCode );
 	}
@@ -45,11 +46,13 @@ public class GeoCodesLocal implements IGeoCodeProvider{
 	}
 	
 	@Override
+	@Deprecated
 	public List<City> getCitiesListByNameLike( String strSearchBeginningVal ) {
 		return  CityHome.getCitiesListByNameLike( strSearchBeginningVal );
 	}
 	
 	@Override
+	@Deprecated
 	public List<City> getCitiesListByName( String strSearchBeginningVal ) {
 		return  CityHome.getCitiesListByName( strSearchBeginningVal );
 	}
