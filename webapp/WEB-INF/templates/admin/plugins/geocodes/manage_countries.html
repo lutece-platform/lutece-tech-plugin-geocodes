@@ -15,6 +15,7 @@
 			<#assign page >ManageCountries</#assign>
 			<#include "search_geocodes.html"/>
 			<@tabContent>
+				<@paginationAdmin paginator=paginator combo=1 />
 				<@table id='country-table'>
 					<@tr>
 						<@th params='onclick="sortTable(0, \'country-table\')"'>#i18n{geocodes.manage_countries.columnCode}</@th>
@@ -227,7 +228,7 @@
 				</@table>
 			</@tabContent>
 		</@tabs>
-		<@paginationAdmin paginator=paginator combo=1 />
+		<@paginationAdmin paginator=paginator />
 	</@pageColumn>
 </@pageContainer>
 <script src="./js/admin/plugins/identitystore/table.js"></script>

@@ -14,6 +14,7 @@
 		<@tabs> 
 			<@tabsList2 tab="city" />
 			<@tabContent>
+				<@paginationAdmin paginator=paginator combo=1 />
 				<#assign page >ManageCities</#assign>
 				<#include "search_geocodes.html"/>
 				<@table id='city-table' headBody=true>
@@ -255,7 +256,7 @@
 				</@table>
 			</@tabContent>
 		</@tabs>
-		<@paginationAdmin paginator=paginator combo=1 />
+		<@paginationAdmin paginator=paginator />
 	</@pageColumn>
 </@pageContainer>
 <script src="./js/admin/plugins/identitystore/table.js"></script>
