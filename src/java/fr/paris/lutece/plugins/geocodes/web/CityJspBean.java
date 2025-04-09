@@ -38,6 +38,7 @@ package fr.paris.lutece.plugins.geocodes.web;
 import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.business.CityChanges;
 import fr.paris.lutece.plugins.geocodes.business.CityHome;
+import fr.paris.lutece.plugins.geocodes.business.CityMapper;
 import fr.paris.lutece.plugins.geocodes.business.GeocodesChangesStatusEnum;
 import fr.paris.lutece.plugins.geocodes.service.CsvExportService;
 import fr.paris.lutece.plugins.geocodes.utils.Batch;
@@ -70,16 +71,17 @@ import java.util.zip.ZipOutputStream;
 public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
 {
     // Templates
-    private static final String TEMPLATE_MANAGE_CITYS = "/admin/plugins/geocodes/manage_cities.html";
+    private static final String TEMPLATE_MANAGE_CITIES = "/admin/plugins/geocodes/manage_cities.html";
     private static final String TEMPLATE_CREATE_CITY = "/admin/plugins/geocodes/create_city.html";
     private static final String TEMPLATE_MODIFY_CITY = "/admin/plugins/geocodes/modify_city.html";
 
     // Parameters
     private static final String PARAMETER_ID_CITY = "id";
-    private static final String PARAMETER_ID_CHANGES = "idChanges";
+    private static final String PARAMETER_CODE_CHANGES = "codeChanges";
+    private static final String PARAMETER_DATE_CHANGES = "dateChanges";
 
     // Properties for page titles
-    private static final String PROPERTY_PAGE_TITLE_MANAGE_CITYS = "geocodes.manage_cities.pageTitle";
+    private static final String PROPERTY_PAGE_TITLE_MANAGE_CITIES = "geocodes.manage_cities.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_MODIFY_CITY = "geocodes.modify_city.pageTitle";
     private static final String PROPERTY_PAGE_TITLE_CREATE_CITY = "geocodes.create_city.pageTitle";
 
@@ -87,7 +89,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     private static final String MARK_CITY_LIST = "city_list";
     private static final String MARK_CITY = "city";
 
-    private static final String JSP_MANAGE_CITYS = "jsp/admin/plugins/geocodes/ManageCities.jsp";
+    private static final String JSP_MANAGE_CITIES = "jsp/admin/plugins/geocodes/ManageCities.jsp";
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_CITY = "geocodes.message.confirmRemoveCity";
@@ -96,7 +98,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "geocodes.model.entity.city.attribute.";
 
     // Views
-    private static final String VIEW_MANAGE_CITYS = "manageCities";
+    private static final String VIEW_MANAGE_CITIES = "manageCities";
     private static final String VIEW_CREATE_CITY = "createCity";
     private static final String VIEW_MODIFY_CITY = "modifyCity";
 
@@ -116,7 +118,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     
     // Errors
     private static final String ERROR_RESOURCE_NOT_FOUND = "Resource not found";
-    private static final String ERROR_MULTIPLE_CITIES_RETURNED = "Multiple cities returned";
+    private static final String ERROR_NO_CITY_RETURNED = "No city returned";
 
     // City mapping
     private static final String CITY_CODE = "code";
@@ -143,7 +145,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
      * @param request The HTTP request
      * @return The page
      */
-    @View( value = VIEW_MANAGE_CITYS, defaultView = true )
+    @View( value = VIEW_MANAGE_CITIES, defaultView = true )
     public String getManageCities( HttpServletRequest request )
     {
         _city = null;
@@ -159,10 +161,10 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
             _listIdCities = CityHome.getIdCitiesList( this.cleanLabel( cityLabel ), cityCode, placeCode, approximate );
         }
 
-        final Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITYS, this.cleanLabel( cityLabel ),
+        final Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITIES, this.cleanLabel( cityLabel ),
                 cityCode, null, null, placeCode, approximate );
 
-        return getPage( PROPERTY_PAGE_TITLE_MANAGE_CITYS, TEMPLATE_MANAGE_CITYS, model );
+        return getPage( PROPERTY_PAGE_TITLE_MANAGE_CITIES, TEMPLATE_MANAGE_CITIES, model );
     }
 
 	/**
@@ -177,11 +179,11 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
 
         for( City city : CityHome.getCitiesListByIds( listIds ) )
         {
-            city.setListChanges(CityHome.selectCityChangesListByCityId(city.getId()));
+            city.setCityChanges(CityHome.getCityChangesByCodeAndDate(city.getCode(), city.getDateValidityStart()));
             city.setPendingChanges(0);
-            for(CityChanges cityChanges : city.getListChanges())
+            if(city.getCityChanges() != null)
             {
-                city.setPendingChanges(city.getPendingChanges() + (StringUtils.equals(cityChanges.getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0));
+                city.setPendingChanges( StringUtils.equals(city.getCityChanges().getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0);
             }
             listCity.add( city );
         }
@@ -240,7 +242,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         catch ( final ParseException e )
         {
             addError(e.getMessage());
-            return redirectView( request, VIEW_MANAGE_CITYS );
+            return redirectView( request, VIEW_MANAGE_CITIES);
         }
 
         // Check constraints
@@ -249,11 +251,11 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
             return redirectView( request, VIEW_CREATE_CITY );
         }
         City city = CityHome.create( _city );
-        CityHome.addCityChanges(city, this.getUser().getLastName(), GeocodesChangesStatusEnum.APPLIED.toString());
+        CityHome.addCityChanges(city, this.getUser().getEmail(), GeocodesChangesStatusEnum.APPLIED.toString());
         addInfo( INFO_CITY_CREATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_CITYS );
+        return redirectView( request, VIEW_MANAGE_CITIES);
     }
 
     /**
@@ -291,44 +293,46 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         addInfo( INFO_CITY_REMOVED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_CITYS );
+        return redirectView( request, VIEW_MANAGE_CITIES);
     }
 
     @Action(ACTION_APPLY_CITY_CHANGES)
     public String doApplyCityModification ( HttpServletRequest request )
     {
-        CityChanges cityChanges = CityHome.getChangesFromChangesId( Integer.parseInt(request.getParameter(PARAMETER_ID_CHANGES) ) );
+        String code = request.getParameter(PARAMETER_CODE_CHANGES);
+        Date date = this.extractDate(request.getParameter(PARAMETER_DATE_CHANGES));
+        CityChanges cityChanges = CityHome.getCityChangesByCodeAndDate( code, date  );
+        City city = CityHome.getCityByCodeAndDate( code, date );
 
-        List<Integer> listCityId = new ArrayList<>();
-        listCityId.add( cityChanges.getId() );
-        List<City> listCity = CityHome.getCitiesListByIds(listCityId);
-
-        if(listCity.size() == 1 )
+        if(city != null )
         {
-            City city = this.updateCity(listCity.get( 0 ), cityChanges);
+            city = this.updateCity(city, cityChanges);
 
             CityHome.update( city );
             cityChanges.setDateLastUpdate(new Date());
+            cityChanges.setAuthor(this.getUser( ).getEmail( ) );
             cityChanges.setStatus(GeocodesChangesStatusEnum.APPLIED.toString());
             CityHome.updateChanges(cityChanges);
         }
         else
         {
-            throw new AppException( ERROR_MULTIPLE_CITIES_RETURNED);
+            throw new AppException(ERROR_NO_CITY_RETURNED);
         }
 
-        return redirectView( request, VIEW_MANAGE_CITYS );
+        return redirectView( request, VIEW_MANAGE_CITIES);
     }
 
     @Action( ACTION_DENY_CHANGES )
     public String doRefuseModification ( HttpServletRequest request )
     {
-        CityChanges cityChanges = CityHome.getChangesFromChangesId( Integer.parseInt(request.getParameter(PARAMETER_ID_CHANGES) ) );
+        String code = request.getParameter(PARAMETER_CODE_CHANGES);
+        Date date = this.extractDate(request.getParameter(PARAMETER_DATE_CHANGES));
+        CityChanges cityChanges = CityHome.getCityChangesByCodeAndDate( code, date  );
 
         cityChanges.setStatus(GeocodesChangesStatusEnum.REFUSED.toString());
         CityHome.updateChanges(cityChanges);
 
-        return redirectView( request, VIEW_MANAGE_CITYS );
+        return redirectView( request, VIEW_MANAGE_CITIES);
     }
 
     /**
@@ -378,7 +382,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         catch ( final ParseException e )
         {
             addError(e.getMessage());
-            return redirectView( request, VIEW_MANAGE_CITYS );
+            return redirectView( request, VIEW_MANAGE_CITIES);
         }
 
         // Check constraints
@@ -387,12 +391,18 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
             return redirect( request, VIEW_MODIFY_CITY, PARAMETER_ID_CITY, _city.getId( ) );
         }
 
-        CityHome.update( _city );
-        CityHome.addCityChanges(_city, this.getUser().getLastName(), GeocodesChangesStatusEnum.APPLIED.toString());
+        if(CityHome.getChangesExistence( _city ))
+        {
+            CityHome.updateChanges(CityMapper.cityIntoCityChanges( _city, this.getUser().getEmail(), GeocodesChangesStatusEnum.PENDING.toString() ));
+        }
+        else
+        {
+            CityHome.addCityChanges(_city, this.getUser().getEmail(), GeocodesChangesStatusEnum.PENDING.toString());
+        }
         addInfo( INFO_CITY_UPDATED, getLocale(  ) );
         resetListId( );
 
-        return redirectView( request, VIEW_MANAGE_CITYS );
+        return redirectView( request, VIEW_MANAGE_CITIES);
     }
 
     @Action( ACTION_EXPORT_CITIES )
@@ -422,7 +432,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         catch( final Exception e )
         {
             addError( e.getMessage( ) );
-            redirectView( request, VIEW_MANAGE_CITYS );
+            redirectView( request, VIEW_MANAGE_CITIES);
         }
     }
 
@@ -441,48 +451,5 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         city.setValueMinComplete( request.getParameter( CITY_VALUE_MIN_COMPLETE ) );
         city.setDeprecated( Objects.equals( request.getParameter( CITY_DEPRECATED ), "true" ) );
         city.setDateLastUpdate( new Date( ) );
-    }
-
-    private City updateCity(City city, CityChanges changes)
-    {
-        if(!StringUtils.equals(city.getCodeCountry(), changes.getCodeCountry()))
-        {
-            city.setCodeCountry( changes.getCodeCountry() );
-        }
-        if(!StringUtils.equals(city.getCode(), changes.getCode()))
-        {
-            city.setCode( changes.getCode() );
-        }
-        if(!StringUtils.equals(city.getValue(), changes.getValue()))
-        {
-            city.setValue( changes.getValue() );
-        }
-        if(!StringUtils.equals(city.getCodeZone(), changes.getCodeZone()))
-        {
-            city.setCodeZone( changes.getCodeZone() );
-        }
-        if(!city.getDateValidityStart().equals(changes.getDateValidityStart()))
-        {
-            city.setDateValidityStart( changes.getDateValidityStart() );
-        }
-        if(!city.getDateValidityEnd().equals(changes.getDateValidityEnd()))
-        {
-            city.setDateValidityEnd( changes.getDateValidityEnd() );
-        }
-        if(!StringUtils.equals(city.getValueMin(), changes.getValueMin()))
-        {
-            city.setValueMin( changes.getValueMin() );
-        }
-        if(!StringUtils.equals(city.getValueMinComplete(), changes.getValueMinComplete()))
-        {
-            city.setValueMinComplete( changes.getValueMinComplete() );
-        }
-        if(city.isDeprecated() != changes.isDeprecated())
-        {
-            city.setDeprecated( changes.isDeprecated() );
-        }
-        city.setDateLastUpdate( new Date( ) );
-
-        return city;
     }
 }

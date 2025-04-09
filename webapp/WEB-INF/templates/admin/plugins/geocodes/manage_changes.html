@@ -1,0 +1,280 @@
+<#include "managegeocodes_tabs.html"/>
+<@pageContainer>
+    <@pageColumn>
+        <@pageHeader title='#i18n{geocodes.manage_changes.title}'>
+        </@pageHeader>
+        <@messages infos=infos />
+        <@messages errors=errors />
+        <@tabs>
+            <@tabsList2 tab="changes" />
+            <@tabContent>
+                <#assign page >ManageChanges</#assign>
+                <#include "search_geocodes.html"/>
+                <@table id='city-table' headBody=true>
+                    <@tr>
+                        <@th params='onclick="sortTable(1, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCode}</@th>
+                        <@th params='onclick="sortTable(3, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
+                        <@th params='onclick="sortTable(2, \'city-table\')"'>#i18n{geocodes.manage_cities.columnValue}</@th>
+                        <@th>#i18n{portal.util.labelActions}</@th>
+                    </@tr>
+                    <@tableHeadBodySeparator />
+                    <@paginationAdmin paginator=paginator combo=1 />
+                    <#list city_group_list as city_group >
+                    <#assign offcanvaTitle >
+                        ${city_group.code!''}
+                        <#list city_group.cityList as city >
+                            ; ${city.value!''}
+                        </#list>
+                    </#assign>
+                        <@tr>
+                            <@td>
+                                ${city_group.code!''}
+                            </@td>
+                            <@td>
+                                ${city_group.codeZone!''}
+                            </@td>
+                            <@td>
+                                <#list city_group.cityList as city >
+                                    ${city.value!''} (${city.dateValidityStart!''}) <br />
+                                </#list>
+                            </@td>
+                            <@td>
+                                <@offcanvas id="changes-${city_group.code!}" title="<i class='ti ti-history fs-2'></i> ${offcanvaTitle}" btnTitle="" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${city_group.pendingChanges}">
+                                    <#list city_group.cityList as city >
+                                        <@table headBody=true>
+                                            <@tr>
+                                                <@th>#i18n{geocodes.manage_cities.columnCodeCountry}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnCode}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnValue}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnDateValidityStart}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnDateValidityEnd}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.labelValueMin}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.labelValueMinComplete}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnAuthor}</@th>
+                                                <@th>#i18n{geocodes.manage_cities.columnStatus}</@th>
+                                                <@th>#i18n{portal.util.labelActions}</@th>
+                                            </@tr>
+                                            <@tableHeadBodySeparator />
+                                            <@tr>
+                                                <@th>
+                                                    ${city.codeCountry!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.code!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.value!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.codeZone!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.dateValidityStart!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.dateValidityEnd!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.valueMin!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.valueMinComplete!''}
+                                                </@th>
+                                                <@th>
+                                                    ${city.dateLastUpdate!''}
+                                                </@th>
+                                                <@th>
+                                                    -
+                                                </@th>
+                                                <@th>
+                                                    -
+                                                </@th>
+                                                <@th>
+                                                    -
+                                                </@th>
+                                            </@tr>
+                                            <@tableHeadBodySeparator />
+                                            <#if city.cityChanges?has_content >
+                                                <@tr>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.codeCountry == city.codeCountry>
+                                                        <#if equals>
+                                                            ${city.cityChanges.codeCountry!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.codeCountry!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.code == city.code>
+                                                        <#if equals>
+                                                            ${city.cityChanges.code!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.code!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.value == city.value>
+                                                        <#if equals>
+                                                            ${city.cityChanges.value!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.value!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.codeZone == city.codeZone>
+                                                        <#if equals>
+                                                            ${city.cityChanges.codeZone!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.codeZone!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.dateValidityStart == city.dateValidityStart>
+                                                        <#if equals>
+                                                            ${city.cityChanges.dateValidityStart!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.dateValidityStart!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.dateValidityEnd == city.dateValidityEnd>
+                                                        <#if equals>
+                                                            ${city.cityChanges.dateValidityEnd!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.dateValidityEnd!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.valueMin == city.valueMin>
+                                                        <#if equals>
+                                                            ${city.cityChanges.valueMin!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.valueMin!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.valueMinComplete == city.valueMinComplete>
+                                                        <#if equals>
+                                                            ${city.cityChanges.valueMinComplete!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.valueMinComplete!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        <#assign equals= city.cityChanges.dateLastUpdate == city.dateLastUpdate>
+                                                        <#if equals>
+                                                            ${city.cityChanges.dateLastUpdate!''}
+                                                        <#else>
+                                                            <@tag color="warning">${city.cityChanges.dateLastUpdate!''}</@tag>
+                                                        </#if>
+                                                    </@td>
+                                                    <@td>
+                                                        ${city.cityChanges.author!''}
+                                                    </@td>
+                                                    <@td>
+                                                        <#switch city.cityChanges.status>
+                                                            <#case "APPLIED">
+                                                                <@tag color="success">#i18n{geocodes.manage_cities.columnApplied.applied}</@tag><#break>
+                                                            <#case "PENDING">
+                                                                <@tag color="warning">#i18n{geocodes.manage_cities.columnApplied.pending}</@tag><#break>
+                                                            <#case "REFUSED">
+                                                                <@tag color="danger">#i18n{geocodes.manage_cities.columnApplied.refused}</@tag><#break>
+                                                            <#default>
+                                                                ${city.cityChanges.status!''}<#break>
+                                                        </#switch>
+                                                    </@td>
+                                                    <@td>
+                                                        <#if city.cityChanges.status == "PENDING" >
+                                                            <@aButton href='jsp/admin/plugins/geocodes/ManageChanges.jsp?action=applyCityChanges&codeChanges=${city.cityChanges.code}&dateChanges=${city.cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
+                                                            <@aButton href='jsp/admin/plugins/geocodes/ManageChanges.jsp?action=denyChanges&codeChanges=${city.cityChanges.code}&dateChanges=${city.cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='trash' hideTitle=['all'] />
+                                                        </#if>
+                                                    </@td>
+                                                </@tr>
+                                            </#if>
+                                        </@table>
+                                        <br/>
+                                        <br/>
+                                    </#list>
+                                    <h2><span>#i18n{geocodes.manage_changes.new.city}</span></h2>
+                                    <@table headBody=true>
+                                        <@tr>
+                                            <@th>#i18n{geocodes.manage_cities.columnCodeCountry}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnCode}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnValue}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnDateValidityStart}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnDateValidityEnd}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.labelValueMin}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.labelValueMinComplete}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnAuthor}</@th>
+                                            <@th>#i18n{geocodes.manage_cities.columnStatus}</@th>
+                                            <@th>#i18n{portal.util.labelActions}</@th>
+                                        </@tr>
+                                        <@tableHeadBodySeparator />
+                                        <#list city_group.newCities as cityChanges >
+                                            <@tr>
+                                                <@td>
+                                                    ${cityChanges.codeCountry!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.code!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.value!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.codeZone!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.dateValidityStart!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.dateValidityEnd!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.valueMin!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.valueMinComplete!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.dateLastUpdate!''}
+                                                </@td>
+                                                <@td>
+                                                    ${cityChanges.author!''}
+                                                </@td>
+                                                <@td>
+                                                    <#switch cityChanges.status>
+                                                        <#case "APPLIED">
+                                                            <@tag color="success">#i18n{geocodes.manage_cities.columnApplied.applied}</@tag><#break>
+                                                        <#case "PENDING">
+                                                            <@tag color="warning">#i18n{geocodes.manage_cities.columnApplied.pending}</@tag><#break>
+                                                        <#case "REFUSED">
+                                                            <@tag color="danger">#i18n{geocodes.manage_cities.columnApplied.refused}</@tag><#break>
+                                                        <#default>
+                                                            ${cityChanges.status!''}<#break>
+                                                    </#switch>
+                                                </@td>
+                                                <@td>
+                                                    <#if cityChanges.status == "PENDING" >
+                                                        <@aButton href='jsp/admin/plugins/geocodes/ManageChanges.jsp?action=applyNewCity&codeChanges=${cityChanges.code}&dateChanges=${cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
+                                                        <@aButton href='jsp/admin/plugins/geocodes/ManageChanges.jsp?action=denyNewCity&codeChanges=${cityChanges.code}&dateChanges=${cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='trash' hideTitle=['all'] />
+                                                    </#if>
+                                                </@td>
+                                            </@tr>
+                                        </#list>
+                                    </@table>
+                                </@offcanvas>
+                            </@td>
+                        </@tr>
+                    </#list>
+                </@table>
+            </@tabContent>
+        </@tabs>
+        <@paginationAdmin paginator=paginator />
+    </@pageColumn>
+</@pageContainer>
+<script src="./js/admin/plugins/identitystore/table.js"></script>

@@ -91,21 +91,24 @@ public final class CityHome
         return city;
     }
 
-    public static List<CityChanges> selectCityChangesListByCityId(int id )
+    public static List<String> getAllCitiesWithChanges( final String cityLabel, final String cityCode, final String placeCode, final boolean approximateSearch, final String status)
     {
-        return _dao.selectCityChangesListByCityId( id, _plugin);
+        return _dao.searchCitiesChanges( _plugin, cityLabel, cityCode, placeCode, approximateSearch, status );
     }
 
-    public static CityChanges getChangesFromChangesId(int id )
+    public static CityChanges getCityChangesByCodeAndDate(String code, Date date )
     {
-        return _dao.selectCityChanges( id, _plugin );
+        return _dao.selectCityChangesByCodeAndDate( code, date, _plugin);
     }
 
-    public static CityChanges updateChanges(CityChanges history )
+    public static List<CityChanges> getChangesListByCode(String code )
+    {
+        return _dao.selectCityChangesListByCode( code, _plugin );
+    }
+
+    public static void updateChanges(CityChanges history )
     {
         _dao.storeChanges( history, _plugin );
-
-        return history;
     }
 
     /**
@@ -181,8 +184,8 @@ public final class CityHome
     {
         return _dao.selectCitiesReferenceList( _plugin );
     }
-    
-	
+
+
     /**
      * Load the data of all the avant objects and returns them as a list
      * @param listIds liste of ids
@@ -191,6 +194,16 @@ public final class CityHome
     public static List<City> getCitiesListByIds( List<Integer> listIds )
     {
         return _dao.selectCitiesListByIds( _plugin, listIds );
+    }
+
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     * @param listIds liste of ids
+     * @return the list which contains the data of all the avant objects
+     */
+    public static List<City> getCitiesListByCode( String code )
+    {
+        return _dao.getCitiesListByCode ( _plugin, code );
     }
     
     /**
@@ -246,5 +259,14 @@ public final class CityHome
         return _dao.selectCitiesListByLastDate( _plugin );
     }
 
+    public static boolean getChangesExistence( City city )
+    {
+        return _dao.getChangesExistence(city, _plugin);
+    }
+
+    public static City getCityByCodeAndDate(String code, Date date)
+    {
+        return _dao.selectCityByCodeAndDate(code, date, _plugin);
+    }
 }
 

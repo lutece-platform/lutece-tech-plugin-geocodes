@@ -41,7 +41,6 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 
 /**
  * This is the business class for the object City
@@ -90,7 +89,7 @@ public class City implements Serializable
 
     protected boolean _bDeprecated;
 
-    private List<CityChanges> listChanges;
+    private CityChanges cityChanges;
 
     private int pendingChanges;
 
@@ -316,14 +315,14 @@ public class City implements Serializable
 		this._bDeprecated = _bDeprecated;
 	}
 
-    public List<CityChanges> getListChanges()
+    public CityChanges getCityChanges()
     {
-        return listChanges;
+        return cityChanges;
     }
 
-    public void setListChanges(List<CityChanges> listChanges)
+    public void setCityChanges(CityChanges changes)
     {
-        this.listChanges = listChanges;
+        this.cityChanges = changes;
     }
 
     public int getPendingChanges()

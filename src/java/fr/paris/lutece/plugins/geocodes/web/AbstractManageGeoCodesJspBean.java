@@ -34,6 +34,8 @@
  
 package fr.paris.lutece.plugins.geocodes.web;
 
+import fr.paris.lutece.plugins.geocodes.business.City;
+import fr.paris.lutece.plugins.geocodes.business.CityChanges;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
@@ -43,6 +45,9 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +73,7 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
     public static final String QUERY_PARAM_INSEE_COUNTRY_CODE = "insee_country";
     public static final String QUERY_PARAM_INSEE_PLACE_CODE = "insee_place";
     public static final String QUERY_PARAM_APPROXIMATE = "approximate";
+    public static final String QUERY_PARAM_STATUS_SEARCH = "status_search";
 
     // Markers
     private static final String MARK_PAGINATOR = "paginator";
@@ -158,6 +164,11 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
         {
             parameters.put( QUERY_PARAM_INSEE_PLACE_CODE, placeCode );
         }
+        final String status = request.getParameter( QUERY_PARAM_STATUS_SEARCH );
+        if ( status != null )
+        {
+            parameters.put( QUERY_PARAM_STATUS_SEARCH, status );
+        }
 
         if ( ObjectUtils.allNull( cityLabel, cityCode, countryLabel, countryCode, placeCode ) )
         {
@@ -206,6 +217,11 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
         {
             request.removeAttribute(QUERY_PARAM_INSEE_PLACE_CODE);
         }
+        final String status = request.getParameter(QUERY_PARAM_STATUS_SEARCH);
+        if (status != null)
+        {
+            request.removeAttribute(QUERY_PARAM_STATUS_SEARCH);
+        }
     }
 
     protected String cleanLabel(String label)
@@ -215,6 +231,59 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
             return StringUtils.toRootUpperCase(StringUtils.stripAccents(label.replace('-', ' ')));
         }
         else {
+            return null;
+        }
+    }
+
+    protected City updateCity(City city, CityChanges changes)
+    {
+        if(!StringUtils.equals(city.getCodeCountry(), changes.getCodeCountry()))
+        {
+            city.setCodeCountry( changes.getCodeCountry() );
+        }
+        if(!StringUtils.equals(city.getCode(), changes.getCode()))
+        {
+            city.setCode( changes.getCode() );
+        }
+        if(!StringUtils.equals(city.getValue(), changes.getValue()))
+        {
+            city.setValue( changes.getValue() );
+        }
+        if(!StringUtils.equals(city.getCodeZone(), changes.getCodeZone()))
+        {
+            city.setCodeZone( changes.getCodeZone() );
+        }
+        if(!city.getDateValidityStart().equals(changes.getDateValidityStart()))
+        {
+            city.setDateValidityStart( changes.getDateValidityStart() );
+        }
+        if(!city.getDateValidityEnd().equals(changes.getDateValidityEnd()))
+        {
+            city.setDateValidityEnd( changes.getDateValidityEnd() );
+        }
+        if(!StringUtils.equals(city.getValueMin(), changes.getValueMin()))
+        {
+            city.setValueMin( changes.getValueMin() );
+        }
+        if(!StringUtils.equals(city.getValueMinComplete(), changes.getValueMinComplete()))
+        {
+            city.setValueMinComplete( changes.getValueMinComplete() );
+        }
+        if(city.isDeprecated() != changes.isDeprecated())
+        {
+            city.setDeprecated( changes.isDeprecated() );
+        }
+        city.setDateLastUpdate( new Date( ) );
+
+        return city;
+    }
+
+    protected Date extractDate(String dateString)
+    {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            return dateFormat.parse(dateString);
+        } catch (ParseException var4) {
             return null;
         }
     }

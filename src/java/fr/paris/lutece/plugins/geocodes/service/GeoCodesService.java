@@ -7,7 +7,9 @@ import java.util.List;
 import java.util.Optional;
 
 import fr.paris.lutece.plugins.geocodes.business.City;
+import fr.paris.lutece.plugins.geocodes.business.CityChanges;
 import fr.paris.lutece.plugins.geocodes.business.CityHome;
+import fr.paris.lutece.plugins.geocodes.business.CityMapper;
 import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.business.CountryHome;
 import fr.paris.lutece.plugins.geocodes.provider.GeoCodeProviderService;
@@ -292,9 +294,19 @@ public class GeoCodesService
 	 * 
 	 * @param cityUpdate : the city to update
 	 */
-	public static void updateCity( City cityUpdate, String author, String applied )
+	public static void addCityChanges(City cityUpdate, String author, String status )
 	{
-		CityHome.addCityChanges(cityUpdate, author, applied);
+		CityHome.addCityChanges(cityUpdate, author, status);
+	}
+
+	/**
+	 * update the city changes informations
+	 *
+	 * @param cityUpdate : the city to update
+	 */
+	public static void updateCityChanges(City cityUpdate, String author, String status )
+	{
+		CityHome.updateChanges(CityMapper.cityIntoCityChanges( cityUpdate, author, status));
 	}
 	
 	/**
@@ -304,8 +316,8 @@ public class GeoCodesService
 	 */
 	public static void createCity( City cityNew, String author, String applied )
 	{
-		City city = CityHome.create( cityNew );
-		CityHome.addCityChanges(city, author, applied);
+		//City city = CityHome.create( cityNew );
+		CityHome.addCityChanges(cityNew, author, applied);
 	}
 	
 	public static Date checkDateValidityStart( Date dateCheck )
@@ -317,6 +329,11 @@ public class GeoCodesService
 			return dateMin;
 		}
 		return dateCheck;
+	}
+
+	public static boolean checkChangesExistence( City city )
+	{
+		return CityHome.getChangesExistence( city );
 	}
 	
 }

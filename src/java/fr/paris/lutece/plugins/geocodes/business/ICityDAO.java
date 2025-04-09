@@ -62,11 +62,18 @@ public interface ICityDAO
 
     /**
      * Load the data of all the city objects and returns them as a list
+     * @param plugin the Plugin
+     * @return The list which contains the data of all the cities that have changes
+     */
+    List<String> searchCitiesChanges(Plugin plugin, String cityLabel, String cityCode, String placeCode, boolean approximateSearch, String status);
+
+    /**
+     * Load the data of all the city objects and returns them as a list
      * @param idCity The identifier of the City's History to get
      * @param plugin the Plugin
      * @return The list which contains the data of all the city objects
      */
-    List<CityChanges> selectCityChangesListByCityId(int idCity, Plugin plugin );
+    CityChanges selectCityChangesByCodeAndDate(String code, Date date, Plugin plugin );
 
     /**
      * Load the data of the city object and returns it
@@ -74,7 +81,7 @@ public interface ICityDAO
      * @param plugin the Plugin
      * @return The list which contains the data of all the city objects
      */
-    CityChanges selectCityChanges(int idHistoryCity, Plugin plugin);
+    List<CityChanges> selectCityChangesListByCode(String code, Plugin plugin);
 
     /**
      * Load the data of the city object and returns it
@@ -153,6 +160,14 @@ public interface ICityDAO
      */
 	List<City> selectCitiesListByIds( Plugin _plugin, List<Integer> listIds );
 
+    /**
+     * Load the data of all the avant objects and returns them as a list
+     * @param plugin the Plugin
+     * @param code
+     * @return The list which contains the data of all the avant objects
+     */
+	List<City> getCitiesListByCode( Plugin _plugin, String code );
+
 	/**
      * Load the data from the table
      * @param strCode The identifier of the city
@@ -204,4 +219,8 @@ public interface ICityDAO
      * @return The list which contains the data of all the city objects
      */
 	List<City> selectCitiesListByValueLike( String strVal, Plugin plugin );
+
+    boolean getChangesExistence( City city, Plugin plugin );
+
+    City selectCityByCodeAndDate(String code, Date date, Plugin plugin);
 }

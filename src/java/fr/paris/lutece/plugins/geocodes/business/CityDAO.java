@@ -66,14 +66,17 @@ public final class CityDAO implements ICityDAO
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_city SET code_country = ?, code = ?, value = ?, code_zone = ?, date_validity_start = ?, date_validity_end = ?, value_min = ?, value_min_complete = ?, date_last_update = ?, deprecated = ? WHERE id_city = ?";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_city FROM geocodes_city";
+    private static final String SQL_QUERY_SELECTALL_CITIES_WITH_CODE = "SELECT result.code FROM ( SELECT changes.code, row_number() over (partition by changes.code order by changes.code) as row FROM geocodes_city_changes AS changes WHERE ${status} AND (${cityLabel} OR ${cityLabelMin} OR ${cityLabelMinComplete}) AND ${cityCode} AND ${placeCode} ORDER BY changes.date_update DESC) AS result WHERE result.row = 1";
     private static final String SQL_QUERY_SEARCH_ID = "SELECT city.id_city FROM geocodes_city AS city WHERE (${cityLabel} OR ${cityLabelMin} OR ${cityLabelMinComplete}) AND ${cityCode} AND ${placeCode}";
     private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE id_city IN (  ";
-    private static final String SQL_QUERY_SELECTALL_BY_LAST_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city order by date_last_update, code limit 5";
-	private static final String SQL_QUERY_INSERT_HISTORY = "INSERT INTO geocodes_city_changes (id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, deprecated, date_update, author, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
-	private static final String SQL_QUERY_SELECT_HISTORY_BY_CITY_ID = "SELECT * FROM geocodes_city_changes WHERE id_city = ?";
-	private static final String SQL_QUERY_SELECT_HISTORY_BY_HISTORY_ID = "SELECT * FROM geocodes_city_changes WHERE id_city_history = ?";
-	private static final String SQL_QUERY_UPDATE_HISTORY = "UPDATE geocodes_city_changes SET code_country = ?, code = ?, value = ?, code_zone = ?, date_validity_start = ?, date_validity_end = ?, value_min = ?, value_min_complete = ?, date_update = ?, deprecated = ?, author = ?, status = ? WHERE id_city_history = ?";
-
+    private static final String SQL_QUERY_SELECTALL_BY_ONE_CODE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE code = ? AND deprecated = ? ORDER BY date_validity_start";
+    private static final String SQL_QUERY_SELECTALL_BY_LAST_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city order by date_last_update, code";
+	private static final String SQL_QUERY_INSERT_HISTORY = "INSERT INTO geocodes_city_changes (code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, deprecated, date_update, author, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+	private static final String SQL_QUERY_SELECT_HISTORY_BY_CODE_AND_DATE = "SELECT * FROM geocodes_city_changes WHERE code = ? AND date_validity_start = ? ORDER BY date_update DESC";
+	private static final String SQL_QUERY_SELECT_CITY_BY_CODE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, deprecated, date_last_update FROM geocodes_city WHERE code = ? AND date_validity_start = ? AND deprecated = ? ORDER BY date_last_update DESC";
+	private static final String SQL_QUERY_SELECT_HISTORY_BY_CODE = "SELECT * FROM geocodes_city_changes WHERE code = ? ORDER BY date_validity_start";
+	private static final String SQL_QUERY_UPDATE_HISTORY = "UPDATE geocodes_city_changes SET code_country = ?, code = ?, value = ?, code_zone = ?, date_validity_start = ?, date_validity_end = ?, value_min = ?, value_min_complete = ?, date_update = ?, deprecated = ?, author = ?, status = ? WHERE code = ? AND date_validity_start = ?";
+	private static final String SQL_QUERY_VERIFY_CHANGE_EXISTENCE = "SELECT code_country FROM geocodes_city_changes WHERE code = ? AND date_validity_start = ?";
 
 	/**
      * {@inheritDoc }
@@ -93,7 +96,7 @@ public final class CityDAO implements ICityDAO
             daoUtil.setString( nIndex++ , city.getValueMin( ) );
             daoUtil.setString( nIndex++ , city.getValueMinComplete( ) );
             daoUtil.setDate( nIndex++, new java.sql.Date( city.getDateLastUpdate( ).getTime( ) ) );
-            daoUtil.setBoolean( nIndex++, city.isDeprecated( ) );
+            daoUtil.setBoolean( nIndex, city.isDeprecated( ) );
             
             daoUtil.executeUpdate( );
             if ( daoUtil.nextGeneratedKey( ) ) 
@@ -113,7 +116,6 @@ public final class CityDAO implements ICityDAO
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_INSERT_HISTORY, Statement.RETURN_GENERATED_KEYS, plugin ) )
         {
             int nIndex = 1;
-			daoUtil.setInt(nIndex++, city.getId( ) );
             daoUtil.setString( nIndex++ , city.getCodeCountry( ) );
             daoUtil.setString( nIndex++ , city.getCode( ) );
             daoUtil.setString( nIndex++ , city.getValue( ) );
@@ -135,12 +137,89 @@ public final class CityDAO implements ICityDAO
 	 * {@inheritDoc }
 	 */
 	@Override
-	public List<CityChanges> selectCityChangesListByCityId(int idCity, Plugin plugin )
+	public List<String> searchCitiesChanges(Plugin plugin, String cityLabel, String cityCode, String placeCode, boolean approximateSearch, String status)
+	{
+		final String sql;
+		if (approximateSearch) {
+			sql = SQL_QUERY_SELECTALL_CITIES_WITH_CODE.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value LIKE '%" + cityLabel.replace( " ", "%") + "%'" : "1=1" ) )
+					.replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min LIKE '%" + cityLabel.replace( " ", "%") + "%'" : "1=1" ) )
+					.replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min_complete LIKE '%" + cityLabel.replace( " ", "%") + "%'" : "1=1" ) )
+					.replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "changes.code = '" + cityCode + "'" : "1=1" ) )
+					.replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "changes.code_zone = '" + placeCode + "'" : "1=1" ) )
+					.replace( "${status}", (StringUtils.isNotBlank( status ) ? "changes.status ='" +status + "'" : "1=1" ) );
+		} else {
+			sql = SQL_QUERY_SELECTALL_CITIES_WITH_CODE.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value = '" + cityLabel + "'" : "1=1" ) )
+					.replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min = '" + cityLabel + "'" : "1=1" ) )
+					.replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min_complete = '" + cityLabel + "'" : "1=1" ) )
+					.replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "changes.code = '" + cityCode + "'" : "1=1" ) )
+					.replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "changes.code_zone = '" + placeCode + "'" : "1=1" ) )
+					.replace( "${status}", (StringUtils.isNotBlank( status ) ? "changes.status ='" +status + "'" : "1=1" ) );
+		}
+
+		List<String> codeList = new ArrayList<>(  );
+		try( DAOUtil daoUtil = new DAOUtil(sql, plugin ) )
+		{
+
+			daoUtil.executeQuery(  );
+
+			while ( daoUtil.next(  ) )
+			{
+				int nIndex = 1;
+				codeList.add(daoUtil.getString( nIndex ));
+			}
+
+			return codeList;
+		}
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public CityChanges selectCityChangesByCodeAndDate(String code, Date date, Plugin plugin )
+	{
+		try( DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_HISTORY_BY_CODE_AND_DATE, plugin ) )
+		{
+			daoUtil.setString( 1 , code );
+			daoUtil.setDate( 2 , new java.sql.Date( date.getTime( ) ) );
+
+			daoUtil.executeQuery(  );
+
+			if ( daoUtil.next(  ) )
+			{
+				CityChanges cityChanges = new CityChanges(  );
+				int nIndex = 1;
+
+				cityChanges.setCodeCountry( daoUtil.getString( nIndex++ ) );
+				cityChanges.setCode( daoUtil.getString( nIndex++ ) );
+				cityChanges.setCodeZone( daoUtil.getString( nIndex++ ) );
+				cityChanges.setValue( daoUtil.getString( nIndex++ ) );
+				cityChanges.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+				cityChanges.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+				cityChanges.setValueMin( daoUtil.getString( nIndex++ ) );
+				cityChanges.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+				cityChanges.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
+				cityChanges.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+				cityChanges.setAuthor( daoUtil.getString( nIndex++ ) );
+				cityChanges.setStatus( daoUtil.getString( nIndex ) );
+
+				return cityChanges;
+			}
+
+			return null;
+		}
+	}
+
+	/**
+	 * {@inheritDoc }
+	 */
+	@Override
+	public List<CityChanges> selectCityChangesListByCode(String code, Plugin plugin)
 	{
 		List<CityChanges> cityList = new ArrayList<>(  );
-		try( DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_HISTORY_BY_CITY_ID, plugin ) )
+		try( DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_HISTORY_BY_CODE, plugin ) )
 		{
-			daoUtil.setInt( 1 , idCity );
+			daoUtil.setString( 1 , code );
 
 			daoUtil.executeQuery(  );
 
@@ -149,8 +228,6 @@ public final class CityDAO implements ICityDAO
 				CityChanges cityChanges = new CityChanges(  );
 				int nIndex = 1;
 
-				cityChanges.setIdChanges( daoUtil.getInt( nIndex++ ) );
-				cityChanges.setId( daoUtil.getInt( nIndex++ ) );
 				cityChanges.setCodeCountry( daoUtil.getString( nIndex++ ) );
 				cityChanges.setCode( daoUtil.getString( nIndex++ ) );
 				cityChanges.setCodeZone( daoUtil.getString( nIndex++ ) );
@@ -163,48 +240,9 @@ public final class CityDAO implements ICityDAO
 				cityChanges.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
 				cityChanges.setAuthor( daoUtil.getString( nIndex++ ) );
 				cityChanges.setStatus( daoUtil.getString( nIndex ) );
-
-				cityList.add(cityChanges);
+				cityList.add( cityChanges );
 			}
-
 			return cityList;
-		}
-	}
-
-	/**
-	 * {@inheritDoc }
-	 */
-	@Override
-	public CityChanges selectCityChanges(int idHistoryCity, Plugin plugin)
-	{
-		CityChanges cityChanges = new CityChanges(  );
-		try( DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_HISTORY_BY_HISTORY_ID, plugin ) )
-		{
-			daoUtil.setInt( 1 , idHistoryCity );
-
-			daoUtil.executeQuery(  );
-
-			while ( daoUtil.next(  ) )
-			{
-				int nIndex = 1;
-
-				cityChanges.setIdChanges( daoUtil.getInt( nIndex++ ) );
-				cityChanges.setId( daoUtil.getInt( nIndex++ ) );
-				cityChanges.setCodeCountry( daoUtil.getString( nIndex++ ) );
-				cityChanges.setCode( daoUtil.getString( nIndex++ ) );
-				cityChanges.setCodeZone( daoUtil.getString( nIndex++ ) );
-				cityChanges.setValue( daoUtil.getString( nIndex++ ) );
-				cityChanges.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
-				cityChanges.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
-				cityChanges.setValueMin( daoUtil.getString( nIndex++ ) );
-				cityChanges.setValueMinComplete( daoUtil.getString( nIndex++ ) );
-				cityChanges.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
-				cityChanges.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
-				cityChanges.setAuthor( daoUtil.getString( nIndex++ ) );
-				cityChanges.setStatus( daoUtil.getString( nIndex ) );
-
-			}
-			return cityChanges;
 		}
 	}
 
@@ -230,7 +268,8 @@ public final class CityDAO implements ICityDAO
 			daoUtil.setBoolean( nIndex++, cityChanges.isDeprecated( ) );
 			daoUtil.setString( nIndex++, cityChanges.getAuthor());
 			daoUtil.setString( nIndex++, cityChanges.getStatus());
-			daoUtil.setInt( nIndex , cityChanges.getIdChanges( ) );
+			daoUtil.setString( nIndex++ , cityChanges.getCode( ) );
+			daoUtil.setDate( nIndex, new java.sql.Date( cityChanges.getDateValidityStart( ).getTime( ) ) );
 
 			daoUtil.executeUpdate( );
 		}
@@ -496,6 +535,58 @@ public final class CityDAO implements ICityDAO
         }
     }
 
+	@Override
+	public boolean getChangesExistence(City city, Plugin plugin)
+	{
+		try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_VERIFY_CHANGE_EXISTENCE, plugin ) )
+		{
+			int nIndex = 1;
+
+			daoUtil.setString( nIndex++ , city.getCode( ) );
+			daoUtil.setDate( nIndex, new java.sql.Date( city.getDateValidityStart( ).getTime( ) ) );
+
+			daoUtil.executeQuery(  );
+
+            return daoUtil.next();
+        }
+	}
+
+	@Override
+	public City selectCityByCodeAndDate(String code, Date date, Plugin plugin)
+	{
+
+		try( DAOUtil daoUtil = new DAOUtil(SQL_QUERY_SELECT_CITY_BY_CODE_AND_DATE, plugin ) )
+		{
+			daoUtil.setString( 1 , code );
+			daoUtil.setDate( 2 , new java.sql.Date( date.getTime( ) ) );
+			daoUtil.setBoolean( 3 , false );
+
+			daoUtil.executeQuery(  );
+
+			if ( daoUtil.next(  ) )
+			{
+				City city = new CityChanges(  );
+				int nIndex = 1;
+
+				city.setId( daoUtil.getInt( nIndex++ ) );
+				city.setCodeCountry( daoUtil.getString( nIndex++ ) );
+				city.setCode( daoUtil.getString( nIndex++ ) );
+				city.setValue( daoUtil.getString( nIndex++ ) );
+				city.setCodeZone( daoUtil.getString( nIndex++ ) );
+				city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+				city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+				city.setValueMin( daoUtil.getString( nIndex++ ) );
+				city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+				city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
+				city.setDateLastUpdate( daoUtil.getDate( nIndex ) );
+
+				return city;
+			}
+
+			return null;
+		}
+	}
+
 	/**
 	 * {@inheritDoc }
 	 */
@@ -604,6 +695,7 @@ public final class CityDAO implements ICityDAO
     @Override
     public List<Integer> selectIdCitiesList( final Plugin plugin, final String cityLabel, final String cityCode, final String placeCode, final boolean approximateSearch )
     {
+
         final String sql;
         if (approximateSearch) {
             sql = SQL_QUERY_SEARCH_ID.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value LIKE '%" + cityLabel + "%'" : "1=1" ) )
@@ -705,7 +797,47 @@ public final class CityDAO implements ICityDAO
 	        }
 	    }
 		return cityList;
+	}
 
+	@Override
+	public List<City> getCitiesListByCode(Plugin plugin, String code)
+	{
+		List<City> cityList = new ArrayList<>(  );
+
+		if ( !code.isEmpty( ) )
+		{
+			try ( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECTALL_BY_ONE_CODE, plugin ) )
+			{
+				int index = 1;
+					daoUtil.setString(  index++, code );
+					daoUtil.setBoolean(  index, false );
+
+				daoUtil.executeQuery(  );
+				while ( daoUtil.next(  ) )
+				{
+					City city = new City(  );
+					int nIndex = 1;
+
+					city.setId( daoUtil.getInt( nIndex++ ) );
+					city.setCodeCountry( daoUtil.getString( nIndex++ ) );
+					city.setCode( daoUtil.getString( nIndex++ ) );
+					city.setValue( daoUtil.getString( nIndex++ ) );
+					city.setCodeZone( daoUtil.getString( nIndex++ ) );
+					city.setDateValidityStart( daoUtil.getDate( nIndex++ ) );
+					city.setDateValidityEnd( daoUtil.getDate( nIndex++ ) );
+					city.setValueMin( daoUtil.getString( nIndex++ ) );
+					city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+					city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
+					city.setDeprecated( daoUtil.getBoolean( nIndex ) );
+
+					cityList.add( city );
+				}
+
+				daoUtil.free( );
+
+			}
+		}
+		return cityList;
 	}
 
 	/**

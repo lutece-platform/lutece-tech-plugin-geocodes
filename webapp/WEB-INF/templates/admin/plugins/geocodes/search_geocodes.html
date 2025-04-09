@@ -7,7 +7,7 @@
     <div class="input-group">
         <@table responsive=false params='style="width: 100%;"'>
         <tr>
-            <#if page=="ManageCities">
+            <#if page=="ManageCities" || page=="ManageChanges">
                 <th>#i18n{geocodes.search.city.label}</th>
                 <th>#i18n{geocodes.search.city.code}</th>
                 <th>#i18n{geocodes.search.place.code}</th>
@@ -15,12 +15,15 @@
                 <th>#i18n{geocodes.search.country.label}</th>
                 <th>#i18n{geocodes.search.country.code}</th>
             </#if>
+            <#if page=="ManageChanges">
+                <th>#i18n{geocodes.search.change.status}</th>
+            </#if>
             <th></th>
             <th></th>
         </tr>
         <@tableHeadBodySeparator />
         <tr>
-            <#if page=="ManageCities">
+            <#if page=="ManageCities" || page=="ManageChanges">
                 <td>
                     <input class="form-control search-field" type="text" name="insee_city_label" placeholder="#i18n{geocodes.search.city.label}" value="${insee_city_label!''}" />
                 </td>
@@ -36,6 +39,18 @@
                 </td>
                 <td>
                     <input class="form-control search-field" type="text" name="insee_country" placeholder="#i18n{geocodes.search.country.code}" value="${insee_country!''}" />
+                </td>
+            </#if>
+            <#if page=="ManageChanges">
+                <td>
+                    <@select id='status_search' name='status_search'>
+                        <#if status_list?? && status_list?has_content>
+                            <#list status_list as status>
+                                <option value="${status!}" <#if status_search! == status> selected="selected"</#if>>${status!}</option>
+                            </#list>
+                            <option value="" >#i18n{geocodes.search.change.status.all}</option>
+                        </#if>
+                    </@select>
                 </td>
             </#if>
             <td>

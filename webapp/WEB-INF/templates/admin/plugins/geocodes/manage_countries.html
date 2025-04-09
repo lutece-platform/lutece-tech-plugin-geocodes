@@ -68,7 +68,7 @@
 							<@td>
 								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view=modifyCountry&id=${country.id}" targetElement="#modify-country-form" redirectForm=false id="modify-country-${country.id}" title="#i18n{geocodes.modify_country.title}" btnIcon="edit" position="end" />
 
-								<@offcanvas id="changes-${country.id}" title="<i class='ti ti-history fs-2'></i> ${country.value}" btnTitle="Historique du champ" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${country.pendingChanges}">
+								<@offcanvas id="changes-${country.id}" title="<i class='ti ti-history fs-2'></i> ${country.value}" btnTitle="" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${country.pendingChanges}">
 									<@table headBody=true>
 										<@tr>
 											<@td>
