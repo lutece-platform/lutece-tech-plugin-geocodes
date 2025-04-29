@@ -135,7 +135,7 @@ public final class CityHome
      * @param nKey The city primary key
      * @return an instance of City
      */
-    public static Optional<City> findByCode( String strCode )
+    public static List<City> findByCode( String strCode )
     {
         return _dao.loadByCode( strCode, _plugin );
     }

@@ -25,7 +25,7 @@ public class GeoCodesLocal implements IGeoCodeProvider{
 	
 	@Override
 	@Deprecated
-	public Optional<City> getCityByCode( String strCode ) {
+	public List<City> getCityByCode( String strCode ) {
 		return  CityHome.findByCode( strCode );
 	}
 

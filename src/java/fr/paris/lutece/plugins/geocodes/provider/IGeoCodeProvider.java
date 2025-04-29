@@ -77,7 +77,7 @@ public interface IGeoCodeProvider {
 	 * @return the city (as Optional)
 	 */
 	@Deprecated
-	Optional<City> getCityByCode( String strCode );
+	List<City> getCityByCode( String strCode );
 
 	/**
 	 * Get list of city codes by date

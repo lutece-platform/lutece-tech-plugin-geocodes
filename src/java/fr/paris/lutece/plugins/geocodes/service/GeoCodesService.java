@@ -62,8 +62,7 @@ public class GeoCodesService
 	 * @param strCodel
 	 * @return the city (as Optional)
 	 */
-	@Deprecated
-	public Optional<City> getCityByCode( String strCode )
+	public List<City> getCityByCode( String strCode )
 	{
 		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCityCache( strCode );
 		
@@ -71,11 +70,19 @@ public class GeoCodesService
 		{
 			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
 			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
-			Optional<City> city = geoCodeLocal.getCityByCode( strCode );
-			_cacheGeoCode.putCityInCache( strCode , city );
-			return city;
+			List<City> cities = geoCodeLocal.getCityByCode( strCode );
+			for( City city : cities )
+			{
+				_cacheGeoCode.putCityInCache(strCode, city);
+			}
+			return cities;
 		}
-		else return cityCache;
+		else
+		{
+			List<City> cities = new ArrayList<>();
+			cities.add(cityCache.orElse(null));
+			return cities;
+		}
 	}
 	
 	/**
@@ -253,6 +260,17 @@ public class GeoCodesService
 			_cacheGeoCode.putCountryInCache( strSearchBeginningVal + dateRef, lstCountries );
 		}
 		
+		return lstCountries;
+	}
+
+	public List<Country> getCountriesListByName(String strCountryName)
+	{
+		List<Country> lstCountries = ( List<Country> ) _cacheGeoCode.getFromCountryCache( strCountryName );
+
+		if ( lstCountries == null || lstCountries.isEmpty( ) )
+		{
+			lstCountries =  CountryHome.getCountriesListByName(strCountryName);
+		}
 		return lstCountries;
 	}
 	

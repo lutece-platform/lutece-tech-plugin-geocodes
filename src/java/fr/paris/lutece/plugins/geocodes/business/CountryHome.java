@@ -166,6 +166,15 @@ public final class CountryHome
         return _dao.selectCountriesListByValueAndDate(strSearch, dateRef, _plugin);
     }
 
+    /**
+     * Load the data of all the country objects and returns them as a list
+     * @return the list which contains the data of all the country objects
+     */
+    public static List<Country> getCountriesListByName(String strSearch)
+    {
+        return _dao.selectCountriesListByValue(strSearch, _plugin);
+    }
+
     
     /**
      * Load the id of all the country objects and returns them as a list

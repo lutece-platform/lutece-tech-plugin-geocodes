@@ -56,7 +56,7 @@ public final class CountryDAO implements ICountryDAO
 	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_country, code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country = ?";
 	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE code = ?";
 	private static final String SQL_QUERY_SELECT_BY_CODE_AND_ATTACHED = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE code = ? and is_attached = ?";
-	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE LOWER(value) like LOWER(?) and deprecated = 0 order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') and deprecated = 0 order by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE  TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_country WHERE id_country = ? ";
@@ -407,6 +407,37 @@ public final class CountryDAO implements ICountryDAO
 	            countryList.add( country );
 	        }
 	
+	        return countryList;
+        }
+    }
+
+    /**
+     * {@inheritDoc }
+     */
+    @Override
+    public List<Country> selectCountriesListByValue(String strVal, Plugin plugin)
+    {
+        List<Country> countryList = new ArrayList<>(  );
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_VALUE, plugin ) )
+        {
+        	daoUtil.setString( 1 , strVal + "%" );
+	        daoUtil.executeQuery(  );
+
+	        while ( daoUtil.next(  ) )
+	        {
+	            Country country = new Country(  );
+	            int nIndex = 1;
+
+	            country.setId( daoUtil.getInt( nIndex++ ) );
+			    country.setCode( daoUtil.getString( nIndex++ ) );
+			    country.setValue( daoUtil.getString( nIndex++ ) );
+			    country.setValueMinComplete( daoUtil.getString( nIndex++ ) );
+			    country.setAttached( daoUtil.getBoolean( nIndex++ ) );
+			    country.setDeprecated( daoUtil.getBoolean( nIndex ) );
+
+	            countryList.add( country );
+	        }
+
 	        return countryList;
         }
     }

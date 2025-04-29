@@ -54,7 +54,7 @@ public final class CityDAO implements ICityDAO
 {
     // Constants
 	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE id_city = ?";
-	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE code = ? AND date_validity_start <= ? AND date_validity_end > ? ";
+	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE code = ? ";
 	private static final String SQL_QUERY_SELECT_BETWEEN_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE date_validity_start <= ? AND date_validity_end > ? and code = ? ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE LOWER(value) = LOWER(?) AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE ( LOWER(value_min) like LOWER(?) OR LOWER(value_min_complete) like LOWER(?) ) AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
@@ -314,19 +314,17 @@ public final class CityDAO implements ICityDAO
      * {@inheritDoc }
      */
     @Override
-    public Optional<City> loadByCode( String strCode, Plugin plugin )
+    public List<City> loadByCode( String strCode, Plugin plugin )
     {
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_SELECT_BY_CODE, plugin ) )
         {
 	        daoUtil.setString( 1 , strCode );
-	        daoUtil.setDate( 2, new java.sql.Date(System.currentTimeMillis( ) ) );
-	        daoUtil.setDate( 3, new java.sql.Date(System.currentTimeMillis( ) ) );
 	        daoUtil.executeQuery( );
-	        City city = null;
+	        List<City> cities = new ArrayList<>();
 
-	        if ( daoUtil.next( ) )
+	        while ( daoUtil.next( ) )
 	        {
-	            city = new City();
+	            City city = new City();
 	            int nIndex = 1;
 
 	            city.setId( daoUtil.getInt( nIndex++ ) );
@@ -339,10 +337,11 @@ public final class CityDAO implements ICityDAO
 			    city.setValueMin( daoUtil.getString( nIndex++ ) );
 			    city.setValueMinComplete( daoUtil.getString( nIndex++ ) );
 			    city.setDateLastUpdate( daoUtil.getDate( nIndex++ ) );
-			    city.setDeprecated( daoUtil.getBoolean( nIndex++ ) );
+			    city.setDeprecated( daoUtil.getBoolean( nIndex ) );
+				cities.add( city );
 	        }
 
-	        return Optional.ofNullable( city );
+	        return cities;
         }
     }
 

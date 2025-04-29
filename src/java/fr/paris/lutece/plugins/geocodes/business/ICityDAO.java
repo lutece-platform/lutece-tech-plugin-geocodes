@@ -122,7 +122,7 @@ public interface ICityDAO
      * @param plugin the Plugin
      * @return The instance of the city
      */
-    Optional<City> loadByCode( String strCode, Plugin plugin );
+    List<City> loadByCode( String strCode, Plugin plugin );
 
     /**
      * Load the data of all the city objects and returns them as a list
