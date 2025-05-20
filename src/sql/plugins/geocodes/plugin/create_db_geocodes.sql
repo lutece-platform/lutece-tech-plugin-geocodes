@@ -16,9 +16,9 @@ value_min_complete varchar(255) default '',
 PRIMARY KEY (id_country)
 );
 
-ALTER TABLE geocodes_country 
-ADD INDEX IDX_COUNTRY_CODE (code ASC) ,
-ADD INDEX IDX_COUNTRY_NAME (value ASC)  ;
+CREATE INDEX IDX_COUNTRY_CODE on geocodes_country ( code ASC );
+CREATE INDEX IDX_COUNTRY_NAME on geocodes_country ( value ASC ); 
+
 
 --
 -- Structure for table geocodes_city
@@ -40,9 +40,11 @@ deprecated SMALLINT DEFAULT 0,
 PRIMARY KEY (id_city)
 );
 
-ALTER TABLE geocodes_city 
-ADD INDEX IDX_CITY_CODE (code ASC) ,
-ADD INDEX IDX_CITY_NAME (value ASC) ,
-ADD INDEX IDX_COUNTRY_CODE_CITIES (code_country ASC),
-ADD INDEX IDX_VALUE_MIN_CITY ( value_min ASC),
-ADD INDEX IDX_VALUE_MIN_COMPLETE_CITY ( value_min_complete ASC);
+CREATE INDEX IDX_CITY_CODE on geocodes_city (code ASC) ;
+CREATE INDEX IDX_CITY_NAME on geocodes_city (value ASC) ;
+CREATE INDEX IDX_COUNTRY_CODE_CITIES on geocodes_city (code_country ASC);
+CREATE INDEX IDX_VALUE_MIN_CITY on geocodes_city ( value_min ASC);
+CREATE INDEX IDX_VALUE_MIN_COMPLETE_CITY on geocodes_city ( value_min_complete ASC);
+
+
+
