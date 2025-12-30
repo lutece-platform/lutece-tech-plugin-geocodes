@@ -62,27 +62,14 @@ public class GeoCodesService
 	 * @param strCodel
 	 * @return the city (as Optional)
 	 */
+    	@Deprecated
 	public List<City> getCityByCode( String strCode )
 	{
-		Optional<City> cityCache = (Optional<City>) _cacheGeoCode.getFromCityCache( strCode );
+		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+		List<City> cities = geoCodeLocal.getCityByCode( strCode );
 		
-		if ( cityCache == null || cityCache.isEmpty( ) )
-		{
-			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
-			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
-			List<City> cities = geoCodeLocal.getCityByCode( strCode );
-			for( City city : cities )
-			{
-				_cacheGeoCode.putCityInCache(strCode, city);
-			}
-			return cities;
-		}
-		else
-		{
-			List<City> cities = new ArrayList<>();
-			cities.add(cityCache.orElse(null));
-			return cities;
-		}
+		return cities;
 	}
 	
 	/**
@@ -92,21 +79,15 @@ public class GeoCodesService
 	 * @return the list
 	 */
 	@Deprecated
-	public List<City> getCitiesListByName( String strSearchBeginningVal )
+	public List<City> getCitiesListByName( String strSearchVal )
 	{
-		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCode.getFromCityCache( strSearchBeginningVal );
-		
-		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
-		{
-			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
 	    	List<City> lstCities = new ArrayList<>( );
 	        
 	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
-	    	lstCities = geoCodeLocal.getCitiesListByName( strSearchBeginningVal );
-	    	_cacheGeoCode.putCityInCache( strSearchBeginningVal, lstCitiesCache );
+	    	lstCities = geoCodeLocal.getCitiesListByName( strSearchVal );
+	    	
 	    	return lstCities;
-		}
-		return lstCitiesCache;
 	}
 	
 	/**
@@ -118,19 +99,13 @@ public class GeoCodesService
 	@Deprecated
 	public List<City> getCitiesListByNameLike( String strSearchBeginningVal )
 	{
-		List<City> lstCitiesCache = ( List<City> ) _cacheGeoCodeLike.getFromCache( strSearchBeginningVal );
-		
-		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
-		{
-			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
 	    	List<City> lstCities = new ArrayList<>( );
 	        
 	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 	    	lstCities = geoCodeLocal.getCitiesListByNameLike( strSearchBeginningVal );
-	    	_cacheGeoCodeLike.putInCache( strSearchBeginningVal, lstCities );
+	    	
 	    	return lstCities;
-		}
-		return lstCitiesCache;
 	}
 	
 	/**
@@ -148,12 +123,12 @@ public class GeoCodesService
 		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
 		{
 			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
-	    	List<City> lstCities = new ArrayList<>( );
+			List<City> lstCities = new ArrayList<>( );
 	        
-	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
-	    	lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
-	    	_cacheGeoCode.putCityInCache( strSearchBeginningVal + dateCity, lstCities );
-	    	return lstCities;
+			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+			lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
+			_cacheGeoCode.putCityInCache( strSearchBeginningVal + dateCity, lstCities );
+			return lstCities;
 		}
 		return lstCitiesCache;
 	}
@@ -173,12 +148,13 @@ public class GeoCodesService
 		if ( lstCitiesCache == null || lstCitiesCache.isEmpty( ) )
 		{
 			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
-	    	List<City> lstCities = new ArrayList<>( );
+			List<City> lstCities = new ArrayList<>( );
 	        
-	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
-	    	lstCities = geoCodeLocal.getCitiesListByNameAndDateLike( strSearchBeginningVal, dateCity );
-	    	_cacheGeoCodeLike.putInCache( strSearchBeginningVal + dateCity, lstCities );
-	    	return lstCities;
+			IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
+			lstCities = geoCodeLocal.getCitiesListByNameAndDateLike( strSearchBeginningVal, dateCity );
+			_cacheGeoCodeLike.putInCache( strSearchBeginningVal + dateCity, lstCities );
+			
+			return lstCities;
 		}
 		return lstCitiesCache;
 	}
