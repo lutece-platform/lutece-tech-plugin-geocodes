@@ -66,7 +66,7 @@ CREATE TABLE geocodes_city_changes (
 
 DROP TABLE IF EXISTS geocodes_country_changes;
 CREATE TABLE geocodes_country_changes (
-    id_country_history SERIAL,
+    id_country_history int AUTO_INCREMENT,
     id_country int DEFAULT 0,
     code varchar(10) default '' NOT NULL,
     value varchar(255) default '' NOT NULL,
