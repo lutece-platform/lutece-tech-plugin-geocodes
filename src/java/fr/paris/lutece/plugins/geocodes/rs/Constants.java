@@ -38,7 +38,9 @@ package fr.paris.lutece.plugins.geocodes.rs;
  */
 public final class Constants 
 {
-    public static final String API_PATH = "geocodes/api";
+	public static final String DATE_FORMAT_PATTERN = "\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])";
+	
+	public static final String API_PATH = "geocodes/api";
     public static final String VERSION_PATH = "/v{" + Constants.VERSION + "}";
     public static final String ID_PATH = "/{" + Constants.ID + "}";
     public static final String VERSION = "version";
