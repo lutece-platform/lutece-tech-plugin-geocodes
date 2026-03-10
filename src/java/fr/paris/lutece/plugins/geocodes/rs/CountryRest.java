@@ -165,7 +165,14 @@ public class CountryRest
                     .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.NOT_FOUND.name( ), Constants.ERROR_DATE_RESOURCE ) ) )
                     .build( );
         }
-    	
+    	if ( !GeoCodesService.checkDateFormat( strDateCountry ) )
+        {
+            AppLogService.error( Constants.ERROR_FORMAT_DATE_RESOURCE );
+            return Response.status( Response.Status.BAD_REQUEST )
+                    .entity( JsonUtil.buildJsonResponse( new ErrorJsonResponse( Response.Status.BAD_REQUEST.name( ), Constants.ERROR_FORMAT_DATE_RESOURCE ) ) )
+                    .build( );
+        }
+
     	DateFormat formatter = null;
     	if ( nVersion == VERSION_1 )
         {

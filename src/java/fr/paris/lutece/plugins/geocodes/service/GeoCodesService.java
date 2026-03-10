@@ -330,4 +330,12 @@ public class GeoCodesService
 		return CityHome.getChangesExistence( city );
 	}
 	
+	public static boolean checkDateFormat( String strDateCity )
+	{
+		if ( strDateCity.length( ) != 10 || !strDateCity.matches( Constants.DATE_FORMAT_PATTERN ) )
+        {
+            return false;
+        }
+		return true;
+	}
 }
