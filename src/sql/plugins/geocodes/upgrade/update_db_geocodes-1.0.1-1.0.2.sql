@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:update_db_geocodes-1.0.1-1.0.2.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 alter table geocodes_country add column is_attached SMALLINT DEFAULT 0;
 
 update geocodes_country set is_attached = 1 where code = '99501' and value != 'AUSTRALIE';

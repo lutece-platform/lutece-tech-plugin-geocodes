@@ -17,43 +17,21 @@ import fr.paris.lutece.plugins.geocodes.rs.Constants;
 import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheService;
 import fr.paris.lutece.plugins.geocodes.service.cache.GeoCodeCacheServiceLike;
 import fr.paris.lutece.util.date.DateUtil;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.enterprise.inject.spi.CDI;
 
+@ApplicationScoped
 public class GeoCodesService 
 {
-	private GeoCodeCacheService _cacheGeoCode = GeoCodeCacheService.getInstance( );
-	private GeoCodeCacheServiceLike _cacheGeoCodeLike = GeoCodeCacheServiceLike.getInstance( );
+	@Inject
+	private GeoCodeCacheService _cacheGeoCode;
+
+	@Inject
+	private GeoCodeCacheServiceLike _cacheGeoCodeLike;
 	private static final Date dateMin = DateUtil.parseIsoDate( "1943-01-01 00:00:00" );
 	private static final SimpleDateFormat citiesCodesDateFormat = new SimpleDateFormat( "yyyy-MM-dd" );
-	private static GeoCodesService _singleton;
-	
-	
-	/** Creates a new instance of CalendarService */
-    private GeoCodesService( )
-    {
-        init( );
-    }
-    
-    /**
-     * Initialize the CalendarService
-     */
-    private void init( )
-    {
-        _cacheGeoCode.initCache( );
-        _cacheGeoCodeLike.initCache( );
-    }
-    
-    /**
-     * Get the instance of GeoCodeService
-     * @return an instance of GeoCodeService
-     */
-    public static GeoCodesService getInstance(  )
-    {
-    	if ( _singleton == null )
-    	{
-    		_singleton = new GeoCodesService(  );
-    	}
-    	return _singleton;
-    }
+
 	
 	/**
 	 * get city by code
@@ -64,7 +42,7 @@ public class GeoCodesService
     	@Deprecated
 	public List<City> getCityByCode( String strCode )
 	{
-		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		GeoCodeProviderService instance = CDI.current( ).select( GeoCodeProviderService.class ).get( );
 		IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 		List<City> cities = geoCodeLocal.getCityByCode( strCode );
 		
@@ -80,7 +58,7 @@ public class GeoCodesService
 	@Deprecated
 	public List<City> getCitiesListByName( String strSearchVal )
 	{
-		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		GeoCodeProviderService instance = CDI.current( ).select( GeoCodeProviderService.class ).get( );
 	    	List<City> lstCities = new ArrayList<>( );
 	        
 	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
@@ -98,7 +76,7 @@ public class GeoCodesService
 	@Deprecated
 	public List<City> getCitiesListByNameLike( String strSearchBeginningVal )
 	{
-		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		GeoCodeProviderService instance = CDI.current( ).select( GeoCodeProviderService.class ).get( );
 	    	List<City> lstCities = new ArrayList<>( );
 	        
 	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
@@ -121,7 +99,7 @@ public class GeoCodesService
 		
 		if ( lstCities == null || lstCities.isEmpty( ) )
 		{
-			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+			GeoCodeProviderService instance = CDI.current( ).select( GeoCodeProviderService.class ).get( );
 			
         	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
         	    	lstCities = geoCodeLocal.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
@@ -145,18 +123,18 @@ public class GeoCodesService
 	public List<City> getCitiesListByNameAndDateLike( String strSearchBeginningVal, Date dateCity )
 	{
 		dateCity = checkDateValidityStart( dateCity );
-		List<City> lstCities = ( List<City> ) _cacheGeoCodeLike.getFromCache( strSearchBeginningVal + dateCity);
+		List<City> lstCities = ( List<City> ) _cacheGeoCodeLike.get( strSearchBeginningVal + dateCity);
 		
 		if ( lstCities == null || lstCities.isEmpty( ) )
 		{
-			GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+			GeoCodeProviderService instance = CDI.current( ).select( GeoCodeProviderService.class ).get( );
         	    	
         	    	IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
         	    	lstCities = geoCodeLocal.getCitiesListByNameAndDateLike( strSearchBeginningVal, dateCity );
         	    	
         	    	if ( !lstCities.isEmpty( ) )
         	    	{
-        	    	    _cacheGeoCodeLike.putInCache( strSearchBeginningVal + dateCity, lstCities );
+        	    	    _cacheGeoCodeLike.put( strSearchBeginningVal + dateCity, lstCities );
         	    	}
 		}
 		
@@ -178,7 +156,7 @@ public class GeoCodesService
  		
 		if ( listCityCodes == null || listCityCodes.isEmpty( ) )
 		{
-		    final GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		    final GeoCodeProviderService instance = CDI.current( ).select( GeoCodeProviderService.class ).get( );
 		    final IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 		    listCityCodes = geoCodeLocal.getCitiesCodesListByDate( dateCity );
 		    if ( listCityCodes != null && !listCityCodes.isEmpty( ) )
@@ -210,12 +188,12 @@ public class GeoCodesService
 	}
 	
 	/**
-	 * get country by code
+	 * get country by code, restricted to the countries attached or not attached to another one
 	 * 
 	 * @param strCode
+	 * @param bAttached the attachment the country must have
 	 * @return  the country (as Optional)
 	 */
-	@Deprecated
 	public Optional<Country> getCountryByCode( String strCode, boolean bAttached )
 	{
 	    return CountryHome.findByCode( strCode, bAttached );
@@ -269,7 +247,7 @@ public class GeoCodesService
 		    return Optional.of ( city );
 		}
 		
-		GeoCodeProviderService instance = GeoCodeProviderService.getInstance( );
+		GeoCodeProviderService instance = CDI.current( ).select( GeoCodeProviderService.class ).get( );
 		IGeoCodeProvider geoCodeLocal = instance.find( Constants.ID_PROVIDER_GEOCODE_LOCAL );
 		Optional<City> cityOpt = geoCodeLocal.getCityByDateAndCode( dateCity, strCode );
 			

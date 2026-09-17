@@ -42,13 +42,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.service.GeoCodesService;
@@ -57,11 +57,14 @@ import fr.paris.lutece.portal.service.util.AppLogService;
 import fr.paris.lutece.util.json.ErrorJsonResponse;
 import fr.paris.lutece.util.json.JsonResponse;
 import fr.paris.lutece.util.json.JsonUtil;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * CityRest
  */
 @Path( RestConstants.BASE_PATH + Constants.API_PATH + Constants.VERSION_PATH + Constants.CITY_PATH )
+@ApplicationScoped
 public class CityRest
 {
     private static final int VERSION_1 = 1;
@@ -131,7 +134,7 @@ public class CityRest
      */
     private Response getCityCodeListV1ByDate( Date dateCity )
     {
-        final GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+        final GeoCodesService geoCodesService = CDI.current( ).select( GeoCodesService.class ).get( );
 
         final List<String> lstCities = geoCodesService.getCitiesCodesListByDate( dateCity );
 
@@ -206,7 +209,7 @@ public class CityRest
                     .build( );
         }
         
-        GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+        GeoCodesService geoCodesService = CDI.current( ).select( GeoCodesService.class ).get( );
         List<City> lstCities = new ArrayList<>( );
         
         lstCities = geoCodesService.getCitiesListByNameAndDate( strSearchBeginningVal, dateCity );
@@ -285,7 +288,7 @@ public class CityRest
                     .build( );
         }
         
-        GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+        GeoCodesService geoCodesService = CDI.current( ).select( GeoCodesService.class ).get( );
         List<City> lstCities = new ArrayList<>( );
         
         lstCities = geoCodesService.getCitiesListByNameAndDateLike( strSearchBeginningVal, dateCity );
@@ -361,7 +364,7 @@ public class CityRest
     private Response getCityByDateAndCodeV1( Date dateCity, String strCode )
     {
     	Optional<City> optCity = Optional.empty();
-    	GeoCodesService geoCodesService = GeoCodesService.getInstance( );
+    	GeoCodesService geoCodesService = CDI.current( ).select( GeoCodesService.class ).get( );
     	
     	optCity = geoCodesService.getCityByDateAndCode ( dateCity, strCode );
     	

@@ -41,13 +41,13 @@ import fr.paris.lutece.plugins.geocodes.service.CsvExportService;
 import fr.paris.lutece.plugins.geocodes.utils.Batch;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
-import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.url.UrlItem;
 import fr.paris.lutece.util.html.AbstractPaginator;
@@ -64,15 +64,20 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.business.CountryHome;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
+import java.util.Locale;
 
 /**
  * This class provides the user interface to manage Country features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageCountries.jsp", controllerPath = "jsp/admin/plugins/geocodes/", right = "GEOCODES_MANAGEMENT" )
+@SessionScoped
+@Named
+@Controller( controllerJsp = "ManageCountries.jsp", controllerPath = "jsp/admin/plugins/geocodes/", right = "GEOCODES_MANAGEMENT", securityTokenEnabled = true )
 public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Country>
 {
     // Templates
@@ -148,7 +153,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
      * @return The page
      */
     @View( value = VIEW_MANAGE_COUNTRYS, defaultView = true )
-    public String getManageCountries( HttpServletRequest request )
+    public String getManageCountries( HttpServletRequest request, Models model )
     {
         _country = null;
         final Map<String, String> queryParameters = this.getQueryParameters( request );
@@ -156,12 +161,12 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         final String countryCode = queryParameters.get( QUERY_PARAM_INSEE_COUNTRY_CODE );
         final boolean approximate = Boolean.parseBoolean( queryParameters.get( QUERY_PARAM_APPROXIMATE ) );
 
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listIdCountries.isEmpty( ) )
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listIdCountries == null || _listIdCountries.isEmpty( ) )
         {
             _listIdCountries = CountryHome.getIdCountriesList( this.cleanLabel( countryLabel ), countryCode, approximate );
         }
 
-        Map<String, Object> model = getPaginatedListModel( request, MARK_COUNTRY_LIST, _listIdCountries, JSP_MANAGE_COUNTRYS, null, null,
+        getPaginatedListModel( request, MARK_COUNTRY_LIST, _listIdCountries, JSP_MANAGE_COUNTRYS, model, null, null,
                 this.cleanLabel( countryLabel ), countryCode, null, approximate );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_COUNTRYS, TEMPLATE_MANAGE_COUNTRYS, model );
@@ -183,7 +188,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
             country.setPendingChanges(0);
             for(CountryChanges countryChanges : country.getListChanges())
             {
-                country.setPendingChanges(country.getPendingChanges() + (StringUtils.equals(countryChanges.getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0));
+                country.setPendingChanges(country.getPendingChanges() + (Strings.CS.equals(countryChanges.getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0));
             }
             listCountry.add( country );
         }
@@ -208,13 +213,11 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
      * @return the html code of the country form
      */
     @View( VIEW_CREATE_COUNTRY )
-    public String getCreateCountry( HttpServletRequest request )
+    public String getCreateCountry( HttpServletRequest request, Models model )
     {
         _country = ( _country != null ) ? _country : new Country(  );
 
-        Map<String, Object> model = getModel(  );
         model.put( MARK_COUNTRY, _country );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_COUNTRY ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_COUNTRY, TEMPLATE_CREATE_COUNTRY, model );
     }
@@ -232,10 +235,6 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         this.populateCountry( _country, request);
         
 
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_COUNTRY ) )
-        {
-            throw new AccessDeniedException ( "Invalid security token" );
-        }
 
         // Check constraints
         if ( !validateBean( _country, VALIDATION_ATTRIBUTES_PREFIX ) )
@@ -296,7 +295,7 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
      * @return The HTML form to update info
      */
     @View( VIEW_MODIFY_COUNTRY )
-    public String getModifyCountry( HttpServletRequest request )
+    public String getModifyCountry( HttpServletRequest request, Models model )
     {
         int nId = Integer.parseInt( request.getParameter( PARAMETER_ID_COUNTRY ) );
 
@@ -307,11 +306,9 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         }
 
 
-        Map<String, Object> model = getModel(  );
         model.put( MARK_COUNTRY, _country );
         model.put( COUNTRY_STR_DATE_VALIDITY_START, DateUtil.getDateString( _country.getDateValidityStart(), request.getLocale( ) ) );
         model.put( COUNTRY_STR_DATE_VALIDITY_END, DateUtil.getDateString( _country.getDateValidityEnd(), request.getLocale( ) ) );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_COUNTRY ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_COUNTRY, TEMPLATE_MODIFY_COUNTRY, model );
     }
@@ -329,10 +326,6 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         this.populateCountry( _country, request );
 		
 		
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_COUNTRY ) )
-        {
-            throw new AccessDeniedException ( "Invalid security token" );
-        }
 
         // Check constraints
         if ( !validateBean( _country, VALIDATION_ATTRIBUTES_PREFIX ) )
@@ -423,24 +416,24 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
         country.setValueMinComplete( request.getParameter( COUNTRY_VALUE_MIN_COMPLETE ) );
         country.setAttached( Objects.equals( request.getParameter( COUNTRY_ATTACHED ), "true" ) );
         final String dateValidityStart = request.getParameter( COUNTRY_DATE_VALIDITY_START );
-        country.setDateValidityStart( DateUtil.formatDate( dateValidityStart, request.getLocale( ) ) );
+        country.setDateValidityStart( parseSubmittedDate( dateValidityStart, request.getLocale( ) ) );
         final String dateValidityEnd = request.getParameter( COUNTRY_DATE_VALIDITY_END );
-        country.setDateValidityEnd(DateUtil.formatDate( dateValidityEnd, request.getLocale( ) ));
+        country.setDateValidityEnd(parseSubmittedDate( dateValidityEnd, request.getLocale( ) ));
         country.setDeprecated( Objects.equals( request.getParameter( COUNTRY_DEPRECATED ), "true" ) );
         
     }
 
     private Country updateCountry(Country country, CountryChanges changes)
     {
-        if(!StringUtils.equals(country.getCode(), changes.getCode()))
+        if(!Strings.CS.equals(country.getCode(), changes.getCode()))
         {
             country.setCode( changes.getCode() );
         }
-        if(!StringUtils.equals(country.getValue(), changes.getValue()))
+        if(!Strings.CS.equals(country.getValue(), changes.getValue()))
         {
             country.setValue( changes.getValue() );
         }
-        if(!StringUtils.equals(country.getValueMinComplete(), changes.getValue()))
+        if(!Strings.CS.equals(country.getValueMinComplete(), changes.getValue()))
         {
             country.setValue( changes.getValueMinComplete() );
         }
@@ -463,4 +456,25 @@ public class CountryJspBean extends AbstractManageGeoCodesJspBean <Integer, Coun
 
         return country;
     }
+
+    /**
+     * Reads a date submitted by the back-office date picker.
+     *
+     * The v8 picker displays the date in the admin's locale but submits its hidden field in the ISO pattern
+     * whatever that locale is, so the ISO pattern is read first. The locale short format stays accepted for a
+     * value posted by anything else.
+     *
+     * @param strDate
+     *            the submitted value
+     * @param locale
+     *            the request locale
+     * @return the date, or null when neither pattern matches
+     */
+    private static Date parseSubmittedDate( String strDate, Locale locale )
+    {
+        Date date = DateUtil.parseIsoDate( strDate );
+
+        return date != null ? date : DateUtil.formatDate( strDate, locale );
+    }
+
 }

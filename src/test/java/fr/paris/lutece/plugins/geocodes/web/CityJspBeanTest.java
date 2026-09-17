@@ -34,9 +34,9 @@
 
 package fr.paris.lutece.plugins.geocodes.web;
 
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletConfig;
+import fr.paris.lutece.test.mocks.MockHttpServletRequest;
+import fr.paris.lutece.test.mocks.MockHttpServletResponse;
+import fr.paris.lutece.test.mocks.MockServletConfig;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.admin.AdminAuthenticationService;
@@ -44,15 +44,19 @@ import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import java.util.List;
 import java.io.IOException;
 import fr.paris.lutece.test.LuteceTestCase;
-import fr.paris.lutece.portal.service.security.SecurityTokenService;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
+import jakarta.inject.Inject;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.business.CityHome;
+import org.junit.jupiter.api.Test;
 /**
  * This is the business class test for the object City
  */
 public class CityJspBeanTest extends LuteceTestCase
 {
+    @Inject
+    private Models models;
     private static final String CODECOUNTRY1 = "CodeCountry1";
     private static final String CODECOUNTRY2 = "CodeCountry2";
     private static final String CODE1 = "Code1";
@@ -62,7 +66,9 @@ public class CityJspBeanTest extends LuteceTestCase
     private static final String CODEZONE1 = "CodeZone1";
     private static final String CODEZONE2 = "CodeZone2";
 
-public void testJspBeans(  ) throws AccessDeniedException, IOException
+
+    @Test
+    public void testJspBeans(  ) throws AccessDeniedException, IOException
 	{	
      	MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -70,11 +76,11 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
 
 		//display admin City management JSP
 		CityJspBean jspbean = new CityJspBean();
-		String html = jspbean.getManageCities( request );
+		String html = jspbean.getManageCities( request, models );
 		assertNotNull(html);
 
 		//display admin City creation JSP
-		html = jspbean.getCreateCity( request );
+		html = jspbean.getCreateCity( request, models );
 		assertNotNull(html);
 
 		//action create City
@@ -89,8 +95,9 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "code" , CODE1 );
         request.addParameter( "value" , VALUE1 );
         request.addParameter( "code_zone" , CODEZONE1 );
+        request.addParameter( "date_validity_start", "01/01/1970" );
+        request.addParameter( "date_validity_end", "01/01/2100" );
 		request.addParameter("action","createCity");
-        request.addParameter( "token", SecurityTokenService.getInstance( ).getToken( request, "createCity" ));
 		request.setMethod( "POST" );
         
 		
@@ -123,7 +130,7 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		jspbean = new CityJspBean();
 		
-		assertNotNull( jspbean.getModifyCity( request ) );	
+		assertNotNull( jspbean.getModifyCity( request, models ) );	
 
 		//action modify City
 		request = new MockHttpServletRequest();
@@ -138,8 +145,9 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "code_zone" , CODEZONE2 );
 		request.setRequestURI("jsp/admin/plugins/example/ManageCities.jsp");
 		//important pour que MVCController sache quelle action effectuer, sinon, il redirigera vers createCity, qui est l'action par défaut
+        request.addParameter( "date_validity_start", "01/01/1970" );
+        request.addParameter( "date_validity_end", "01/01/2100" );
 		request.addParameter("action","modifyCity");
-		request.addParameter( "token", SecurityTokenService.getInstance( ).getToken( request, "modifyCity" ));
 
 		try 
 		{
@@ -164,7 +172,7 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		jspbean = new CityJspBean();
 		request.addParameter("action","confirmRemoveCity");
-		assertNotNull( jspbean.getModifyCity( request ) );
+		assertNotNull( jspbean.getModifyCity( request, models ) );
 				
 		//do remove City
 		request = new MockHttpServletRequest();
@@ -172,7 +180,6 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
 		request.setRequestURI("jsp/admin/plugins/example/ManageCityts.jsp");
 		//important pour que MVCController sache quelle action effectuer, sinon, il redirigera vers createCity, qui est l'action par défaut
 		request.addParameter("action","removeCity");
-		request.addParameter( "token", SecurityTokenService.getInstance( ).getToken( request, "removeCity" ));
 		request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		request.setMethod("POST");
 		adminUser = new AdminUser();

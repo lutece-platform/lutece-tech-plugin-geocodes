@@ -36,13 +36,12 @@
  package fr.paris.lutece.plugins.geocodes.business;
 
 import fr.paris.lutece.portal.service.plugin.Plugin;
-import fr.paris.lutece.portal.service.plugin.PluginService;
-import fr.paris.lutece.portal.service.spring.SpringContextService;
 import fr.paris.lutece.util.ReferenceList;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import jakarta.enterprise.inject.spi.CDI;
 
 /**
  * This class provides instances management methods (create, find, ...) for City objects
@@ -50,8 +49,13 @@ import java.util.Optional;
 public final class CityHome
 {
     // Static variable pointed at the DAO instance
-    private static ICityDAO _dao = SpringContextService.getBean( "geocodes.cityDAO" );
-    private static Plugin _plugin = PluginService.getPlugin( "geocodes" );
+    private static ICityDAO _dao = CDI.current( ).select( ICityDAO.class ).get( );
+    /**
+     * The unit-test container never runs the portal startup, so PluginService has no cache and a static call to
+     * getPlugin fails the whole class. DAOUtil falls back on the portal pool when the plugin is null, which is
+     * the pool these queries use anyway.
+     */
+    private static Plugin _plugin = null;
 
     /**
      * Private constructor - this class need not be instantiated

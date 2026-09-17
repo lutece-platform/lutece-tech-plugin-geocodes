@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:update_db_geocodes-1.0.3-1.0.4.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 update geocodes_city set code = LPAD(code,5,'0') where length(code) = 4;
 
 INSERT INTO geocodes_city ( code_country, code, code_zone, value, date_validity_start, date_validity_end, value_min, value_min_complete) VALUES ('99100','97501','0','MIQUELON LANGLADE','1943-01-01','2999-12-31','Miquelon-Langlade','Miquelon-Langlade'),

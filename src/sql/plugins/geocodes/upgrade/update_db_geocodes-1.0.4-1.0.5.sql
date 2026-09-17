@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:update_db_geocodes-1.0.4-1.0.5.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 update geocodes_city set value_min_complete = 'Paris 1er arrondissement' where code='75101';
 update geocodes_city set value_min_complete = 'Paris 2e arrondissement' where code='75102';
 

@@ -46,11 +46,15 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  * This class provides Data Access methods for City objects
  */
-public final class CityDAO implements ICityDAO
+@ApplicationScoped
+@Named( "geocodes.cityDAO" )
+public class CityDAO implements ICityDAO
 {
     // Constants
 	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE id_city = ?";
@@ -58,9 +62,9 @@ public final class CityDAO implements ICityDAO
 	private static final String SQL_QUERY_SELECT_BETWEEN_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE date_validity_start <= ? AND date_validity_end > ? and code = ? ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE LOWER(value) = LOWER(?) AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
 	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE ( LOWER(value_min) like LOWER(?) OR LOWER(value_min_complete) like LOWER(?) ) AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE  TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') = TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE  " + GeocodesSqlUtils.fold( "value" ) + " = " + GeocodesSqlUtils.fold( "?" ) + " AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
 	private static final String SQL_QUERY_SELECT_CODES_BY_DATE = "SELECT code FROM geocodes_city WHERE date_validity_start <= ? AND date_validity_end > ? and deprecated = 0";
-	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE (   TRANSLATE(REPLACE(REPLACE(LOWER(value_min), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ') OR  TRANSLATE(REPLACE(REPLACE(LOWER(value_min_complete), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ') like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ-', 'aaaeeeeiioouuuycn ') ) AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_LIKE_AND_DATE = "SELECT id_city, code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated FROM geocodes_city WHERE (   " + GeocodesSqlUtils.fold( "value_min" ) + "  like " + GeocodesSqlUtils.fold( "?" ) + " OR  " + GeocodesSqlUtils.fold( "value_min_complete" ) + " like " + GeocodesSqlUtils.fold( "?" ) + " ) AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_city ( code_country, code, value, code_zone, date_validity_start, date_validity_end, value_min, value_min_complete, date_last_update, deprecated ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_city WHERE id_city = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_city SET code_country = ?, code = ?, value = ?, code_zone = ?, date_validity_start = ?, date_validity_end = ?, value_min = ?, value_min_complete = ?, date_last_update = ?, deprecated = ? WHERE id_city = ?";
@@ -791,8 +795,6 @@ public final class CityDAO implements ICityDAO
 		            cityList.add( city );
 		        }
 
-		        daoUtil.free( );
-
 	        }
 	    }
 		return cityList;
@@ -831,8 +833,6 @@ public final class CityDAO implements ICityDAO
 
 					cityList.add( city );
 				}
-
-				daoUtil.free( );
 
 			}
 		}

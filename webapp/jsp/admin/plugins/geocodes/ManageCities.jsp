@@ -1,9 +1,9 @@
-<jsp:useBean id="managegeocodesCity" scope="session" class="fr.paris.lutece.plugins.geocodes.web.CityJspBean" />
-<% String strContent = managegeocodesCity.processController ( request , response ); %>
-
 <%@ page errorPage="../../ErrorPage.jsp" %>
+
+${ pageContext.setAttribute( 'strContent', cityJspBean.processController( pageContext.request , pageContext.response ) ) }
+
 <jsp:include page="../../AdminHeader.jsp" />
 
-<%= strContent %>
+${ pageContext.getAttribute( 'strContent' ) }
 
 <%@ include file="../../AdminFooter.jsp" %>

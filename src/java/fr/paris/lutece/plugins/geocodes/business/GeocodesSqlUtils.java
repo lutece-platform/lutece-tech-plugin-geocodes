@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2002-2022, City of Paris
+ * Copyright (c) 2002-2023, City of Paris
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,66 +31,41 @@
  *
  * License 1.0
  */
-package fr.paris.lutece.plugins.geocodes.provider;
-
-import java.util.List;
-
-import fr.paris.lutece.portal.service.util.AppLogService;
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.enterprise.inject.Instance;
-import jakarta.inject.Inject;
+package fr.paris.lutece.plugins.geocodes.business;
 
 /**
- * <p>
- * This class is a service for geocodes providers
- * </p>
- * <p>
- * Designed as a singleton
- * </p>
- *
+ * SQL fragments shared by the geocodes DAOs.
  */
-@ApplicationScoped
-public class GeoCodeProviderService
+public final class GeocodesSqlUtils
 {
-    @Inject
-    private Instance<IGeoCodeProvider> _geoCodeProviders;
+    private static final String ACCENTS = "àâäéèêëîïôöùûüÿçñ";
+    private static final String PLAIN = "aaaeeeeiioouuuycn";
 
-
-    /**
-     * Gives the geocodes providers
-     * 
-     * @return the list of geocodes providers
-     */
-    public List<IGeoCodeProvider> getGeoCodeProviders( )
+    private GeocodesSqlUtils( )
     {
-        return _geoCodeProviders.stream( ).toList( );
     }
 
     /**
-     * Finds a NotifyGru marker provider with the specified id
-     * 
-     * @param strId
-     *            the NotifyGru marker provider id
-     * @return the NotifyGru marker provider
+     * Wraps a SQL expression in the accent folding the searches compare on: lower case, the two ligatures spelled
+     * out, and every accented letter replaced by its plain one.
+     *
+     * Written with REPLACE only. The former expression used TRANSLATE, which MariaDB and MySQL do not have: the
+     * statement failed at the server and the driver reported it as a null pointer while closing the statement,
+     * so every search answered an internal error whose message named nothing.
+     *
+     * @param strExpression
+     *            the SQL expression to fold, a column name or a placeholder
+     * @return the folded expression
      */
-    public IGeoCodeProvider find( String strId )
+    public static String fold( String strExpression )
     {
-        IGeoCodeProvider geoCodeProvider = null;
+        StringBuilder sbFolded = new StringBuilder( "REPLACE( REPLACE( LOWER( " ).append( strExpression ).append( " ), 'œ', 'oe' ), 'æ', 'ae' )" );
 
-        for ( IGeoCodeProvider geoCodeProviderItem : _geoCodeProviders )
+        for ( int i = 0; i < ACCENTS.length( ); i++ )
         {
-            if ( geoCodeProviderItem.getId( ).equals( strId ) )
-            {
-                geoCodeProvider = geoCodeProviderItem;
-                break;
-            }
+            sbFolded.insert( 0, "REPLACE( " ).append( ", '" ).append( ACCENTS.charAt( i ) ).append( "', '" ).append( PLAIN.charAt( i ) ).append( "' )" );
         }
 
-        if ( geoCodeProvider == null )
-        {
-            AppLogService.error( "Unable to find the GeoCodeProvider: {}", strId );
-        }
-
-        return geoCodeProvider;
+        return sbFolded.toString( );
     }
 }

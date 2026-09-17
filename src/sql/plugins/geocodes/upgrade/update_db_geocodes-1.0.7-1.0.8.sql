@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:update_db_geocodes-1.0.7-1.0.8.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 ALTER TABLE geocodes_country
     ADD COLUMN value_min_complete VARCHAR(255);
 

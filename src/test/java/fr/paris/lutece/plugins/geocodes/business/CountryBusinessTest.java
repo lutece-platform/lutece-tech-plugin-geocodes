@@ -36,7 +36,9 @@ package fr.paris.lutece.plugins.geocodes.business;
 
 import fr.paris.lutece.test.LuteceTestCase;
 
+import java.util.Date;
 import java.util.Optional;
+import org.junit.jupiter.api.Test;
 
 
 /**
@@ -48,16 +50,21 @@ public class CountryBusinessTest extends LuteceTestCase
     private static final String CODE2 = "Code2";
     private static final String VALUE1 = "Value1";
     private static final String VALUE2 = "Value2";
+    private static final Date DATE_START = new Date( 0L );
+    private static final Date DATE_END = new Date( 4102444800000L );
 
 	/**
 	* test Country
 	*/
+    @Test
     public void testBusiness(  )
     {
         // Initialize an object
         Country country = new Country();
         country.setCode( CODE1 );
         country.setValue( VALUE1 );
+        country.setDateValidityStart( DATE_START );
+        country.setDateValidityEnd( DATE_END );
 
         // Create test
         CountryHome.create( country );
