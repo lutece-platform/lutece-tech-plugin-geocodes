@@ -45,29 +45,35 @@ import fr.paris.lutece.plugins.geocodes.utils.Batch;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.message.AdminMessage;
 import fr.paris.lutece.portal.service.message.AdminMessageService;
-import fr.paris.lutece.portal.service.security.SecurityTokenService;
 import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
+import java.util.Date;
+import java.util.Locale;
 
 /**
  * This class provides the user interface to manage City features ( manage, create, modify, remove )
  */
-@Controller( controllerJsp = "ManageCities.jsp", controllerPath = "jsp/admin/plugins/geocodes/", right = "GEOCODES_MANAGEMENT" )
+@SessionScoped
+@Named
+@Controller( controllerJsp = "ManageCities.jsp", controllerPath = "jsp/admin/plugins/geocodes/", right = "GEOCODES_MANAGEMENT", securityTokenEnabled = true )
 public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
 {
     // Templates
@@ -146,7 +152,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
      * @return The page
      */
     @View( value = VIEW_MANAGE_CITIES, defaultView = true )
-    public String getManageCities( HttpServletRequest request )
+    public String getManageCities( HttpServletRequest request, Models model )
     {
         _city = null;
 
@@ -156,12 +162,12 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         final String placeCode = queryParameters.get( QUERY_PARAM_INSEE_PLACE_CODE );
         final boolean approximate = Boolean.parseBoolean( queryParameters.get( QUERY_PARAM_APPROXIMATE ) );
 
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listIdCities.isEmpty( ) )
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listIdCities == null || _listIdCities.isEmpty( ) )
         {
             _listIdCities = CityHome.getIdCitiesList( this.cleanLabel( cityLabel ), cityCode, placeCode, approximate );
         }
 
-        final Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITIES, this.cleanLabel( cityLabel ),
+        getPaginatedListModel( request, MARK_CITY_LIST, _listIdCities, JSP_MANAGE_CITIES, model, this.cleanLabel( cityLabel ),
                 cityCode, null, null, placeCode, approximate );
 
         return getPage( PROPERTY_PAGE_TITLE_MANAGE_CITIES, TEMPLATE_MANAGE_CITIES, model );
@@ -183,7 +189,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
             city.setPendingChanges(0);
             if(city.getCityChanges() != null)
             {
-                city.setPendingChanges( StringUtils.equals(city.getCityChanges().getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0);
+                city.setPendingChanges( Strings.CS.equals(city.getCityChanges().getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0);
             }
             listCity.add( city );
         }
@@ -209,13 +215,11 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
      * @return the html code of the city form
      */
     @View( VIEW_CREATE_CITY )
-    public String getCreateCity( HttpServletRequest request )
+    public String getCreateCity( HttpServletRequest request, Models model )
     {
         _city = ( _city != null ) ? _city : new City(  );
 
-        final Map<String, Object> model = getModel(  );
         model.put( MARK_CITY, _city );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_CREATE_CITY ) );
 
         return getPage( PROPERTY_PAGE_TITLE_CREATE_CITY, TEMPLATE_CREATE_CITY, model );
     }
@@ -230,10 +234,6 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     @Action( ACTION_CREATE_CITY )
     public String doCreateCity( HttpServletRequest request ) throws AccessDeniedException
     {
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_CREATE_CITY ) )
-        {
-            throw new AccessDeniedException ( "Invalid security token" );
-        }
 
         try
         {
@@ -342,7 +342,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
      * @return The HTML form to update info
      */
     @View( VIEW_MODIFY_CITY )
-    public String getModifyCity( HttpServletRequest request )
+    public String getModifyCity( HttpServletRequest request, Models model )
     {
         int nId = Integer.parseInt( request.getParameter( PARAMETER_ID_CITY ) );
 
@@ -352,11 +352,9 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
             _city = optCity.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
         }
 
-        final Map<String, Object> model = getModel(  );
         model.put( MARK_CITY, _city );
         model.put( CITY_STR_DATE_VALIDITY_START, DateUtil.getDateString( _city.getDateValidityStart(), request.getLocale( ) ) );
         model.put( CITY_STR_DATE_VALIDITY_END, DateUtil.getDateString( _city.getDateValidityEnd(), request.getLocale( ) ) );
-        model.put( SecurityTokenService.MARK_TOKEN, SecurityTokenService.getInstance( ).getToken( request, ACTION_MODIFY_CITY ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_CITY, TEMPLATE_MODIFY_CITY, model );
     }
@@ -371,10 +369,6 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     @Action( ACTION_MODIFY_CITY )
     public String doModifyCity( HttpServletRequest request ) throws AccessDeniedException, ParseException
     {
-        if ( !SecurityTokenService.getInstance( ).validate( request, ACTION_MODIFY_CITY ) )
-        {
-            throw new AccessDeniedException ( "Invalid security token" );
-        }
         try
         {
             this.populateCity( _city, request );
@@ -444,12 +438,33 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         city.setValue( request.getParameter( CITY_VALUE ) );
         city.setCodeZone( request.getParameter( CITY_CODE_ZONE ) );
         final String dateValidityStart = request.getParameter( CITY_DATE_VALIDITY_START );
-        city.setDateValidityStart( DateUtil.formatDate( dateValidityStart, request.getLocale( ) ) );
+        city.setDateValidityStart( parseSubmittedDate( dateValidityStart, request.getLocale( ) ) );
         final String dateValidityEnd = request.getParameter( CITY_DATE_VALIDITY_END );
-        city.setDateValidityEnd( DateUtil.formatDate( dateValidityEnd, request.getLocale( ) ) );
+        city.setDateValidityEnd( parseSubmittedDate( dateValidityEnd, request.getLocale( ) ) );
         city.setValueMin( request.getParameter( CITY_VALUE_MIN ) );
         city.setValueMinComplete( request.getParameter( CITY_VALUE_MIN_COMPLETE ) );
         city.setDeprecated( Objects.equals( request.getParameter( CITY_DEPRECATED ), "true" ) );
         city.setDateLastUpdate( new Date( ) );
     }
+
+    /**
+     * Reads a date submitted by the back-office date picker.
+     *
+     * The v8 picker displays the date in the admin's locale but submits its hidden field in the ISO pattern
+     * whatever that locale is, so the ISO pattern is read first. The locale short format stays accepted for a
+     * value posted by anything else.
+     *
+     * @param strDate
+     *            the submitted value
+     * @param locale
+     *            the request locale
+     * @return the date, or null when neither pattern matches
+     */
+    private static Date parseSubmittedDate( String strDate, Locale locale )
+    {
+        Date date = DateUtil.parseIsoDate( strDate );
+
+        return date != null ? date : DateUtil.formatDate( strDate, locale );
+    }
+
 }

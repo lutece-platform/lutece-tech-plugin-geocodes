@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:update_db_geocodes-1.0.5-1.0.6.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 ALTER TABLE geocodes_city 
 ADD INDEX IDX_VALUE_MIN_CITY ( value_min ASC),
 ADD INDEX IDX_VALUE_MIN_COMPLETE_CITY ( value_min_complete ASC);

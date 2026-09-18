@@ -1,7 +1,5 @@
-<div style="padding: .5rem .5rem;">
-    <a class="btn btn-primary btn-empty" title="#i18n{geocodes.search.emptyFields}">
-        <i class="fa fa-trash"></i>
-    </a>
+<div class="p-2">
+    <@aButton href='#' class='btn-empty' title='#i18n{geocodes.search.emptyFields}' buttonIcon='trash' hideTitle=['all'] />
 </div>
 <form class="form-inline" action="jsp/admin/plugins/geocodes/${page}.jsp">
     <div class="input-group">
@@ -69,18 +67,16 @@
                 </@listGroupItem>
             </td>
             <td>
-                <span class="input-group-btn">
-                    <button class="btn btn-default" type="submit">
-                        <span class="fa fa-search"></span>
-                    </button>
-                </span>
+                <@button type='submit' color='primary' title='#i18n{geocodes.search.submit}' buttonIcon='search' hideTitle=['all'] />
             </td>
         </tr>
     </@table>
     </div>
 </form>
 <script>
-    $('.btn-empty').click(function () {
-        $('.search-field').val('');
-    });
+document.querySelectorAll( '.btn-empty' ).forEach( function( button ) {
+    button.addEventListener( 'click', function( ) {
+        document.querySelectorAll( '.search-field' ).forEach( function( field ) { field.value = ''; } );
+    } );
+} );
 </script>

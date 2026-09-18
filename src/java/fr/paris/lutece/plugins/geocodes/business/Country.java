@@ -33,8 +33,8 @@
  */
 package fr.paris.lutece.plugins.geocodes.business;
 
-import javax.validation.constraints.Size;
-import javax.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.NotEmpty;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;

@@ -10,7 +10,9 @@ import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.business.CountryHome;
 import fr.paris.lutece.plugins.geocodes.provider.IGeoCodeProvider;
 import fr.paris.lutece.plugins.geocodes.rs.Constants;
+import jakarta.enterprise.context.ApplicationScoped;
 
+@ApplicationScoped
 public class GeoCodesLocal implements IGeoCodeProvider{
 	
 	@Override

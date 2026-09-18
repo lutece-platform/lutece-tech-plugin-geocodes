@@ -38,13 +38,15 @@ import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.business.CityChanges;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.portal.web.util.LocalizedPaginator;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -89,9 +91,10 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
      * @param strBookmark The bookmark
      * @param list The list of item
      * @param strManageJsp The JSP
+     * @param model The model of the view, filled with the list and the paginator
      * @return The model
      */
-    protected <T> Map<String, Object> getPaginatedListModel( HttpServletRequest request, String strBookmark, List<S> list, String strManageJsp,
+    protected <T> Models getPaginatedListModel( HttpServletRequest request, String strBookmark, List<S> list, String strManageJsp, Models model,
             String cityLabel, String cityCode, String countryLabel, String countryCode, String placeCode, boolean approximate )
     {
         int nDefaultItemsPerPage = AppPropertiesService.getPropertyInt( PROPERTY_DEFAULT_LIST_ITEM_PER_PAGE, 50 );
@@ -103,8 +106,6 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
 
         // PAGINATOR
         LocalizedPaginator<S> paginator = new LocalizedPaginator<>( list, _nItemsPerPage, strUrl, PARAMETER_PAGE_INDEX, _strCurrentPageIndex, getLocale(  ) );
-
-        Map<String, Object> model = getModel(  );
 
         model.put( QUERY_PARAM_INSEE_CITY_LABEL, cityLabel );
         model.put( QUERY_PARAM_INSEE_CITY_CODE, cityCode );
@@ -237,19 +238,19 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
 
     protected City updateCity(City city, CityChanges changes)
     {
-        if(!StringUtils.equals(city.getCodeCountry(), changes.getCodeCountry()))
+        if(!Strings.CS.equals(city.getCodeCountry(), changes.getCodeCountry()))
         {
             city.setCodeCountry( changes.getCodeCountry() );
         }
-        if(!StringUtils.equals(city.getCode(), changes.getCode()))
+        if(!Strings.CS.equals(city.getCode(), changes.getCode()))
         {
             city.setCode( changes.getCode() );
         }
-        if(!StringUtils.equals(city.getValue(), changes.getValue()))
+        if(!Strings.CS.equals(city.getValue(), changes.getValue()))
         {
             city.setValue( changes.getValue() );
         }
-        if(!StringUtils.equals(city.getCodeZone(), changes.getCodeZone()))
+        if(!Strings.CS.equals(city.getCodeZone(), changes.getCodeZone()))
         {
             city.setCodeZone( changes.getCodeZone() );
         }
@@ -261,11 +262,11 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
         {
             city.setDateValidityEnd( changes.getDateValidityEnd() );
         }
-        if(!StringUtils.equals(city.getValueMin(), changes.getValueMin()))
+        if(!Strings.CS.equals(city.getValueMin(), changes.getValueMin()))
         {
             city.setValueMin( changes.getValueMin() );
         }
-        if(!StringUtils.equals(city.getValueMinComplete(), changes.getValueMinComplete()))
+        if(!Strings.CS.equals(city.getValueMinComplete(), changes.getValueMinComplete()))
         {
             city.setValueMinComplete( changes.getValueMinComplete() );
         }

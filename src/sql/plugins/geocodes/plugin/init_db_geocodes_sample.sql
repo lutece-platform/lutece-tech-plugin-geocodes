@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:init_db_geocodes_sample.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 -- Europe sample
 INSERT INTO geocodes_country (code, value) VALUES 
 ('99100', 'FRANCE'),

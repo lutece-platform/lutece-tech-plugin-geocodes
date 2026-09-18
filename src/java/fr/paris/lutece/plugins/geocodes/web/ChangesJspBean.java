@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.business.CityChanges;
@@ -21,8 +21,13 @@ import fr.paris.lutece.portal.service.util.AppException;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.util.html.AbstractPaginator;
+import jakarta.enterprise.context.SessionScoped;
+import jakarta.inject.Named;
 
+@SessionScoped
+@Named
 @Controller( controllerJsp = "ManageChanges.jsp", controllerPath = "jsp/admin/plugins/geocodes/", right = "GEOCODES_MANAGEMENT" )
 public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityGroup>
 {
@@ -66,7 +71,7 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
     private String _status;
 
     @View( value = VIEW_MANAGE_CHANGES, defaultView = true )
-    public String getManageChanges( HttpServletRequest request )
+    public String getManageChanges( HttpServletRequest request, Models model )
     {
         final Map<String, String> queryParameters = this.getQueryParameters( request );
         final String cityLabel = queryParameters.get( QUERY_PARAM_INSEE_CITY_LABEL );
@@ -75,12 +80,12 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
         _status = (queryParameters.get( QUERY_PARAM_STATUS_SEARCH ) == null ? GeocodesChangesStatusEnum.PENDING.name() : queryParameters.get( QUERY_PARAM_STATUS_SEARCH ) );
         final boolean approximate = Boolean.parseBoolean( queryParameters.get( QUERY_PARAM_APPROXIMATE ) );
 
-        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listCityCodesChanges.isEmpty( ) )
+        if ( request.getParameter( AbstractPaginator.PARAMETER_PAGE_INDEX ) == null || _listCityCodesChanges == null || _listCityCodesChanges.isEmpty( ) )
         {
             _listCityCodesChanges = CityHome.getAllCitiesWithChanges( this.cleanLabel( cityLabel ), cityCode, placeCode, approximate, _status );
         }
 
-        final Map<String, Object> model = getPaginatedListModel( request, MARK_CITY_LIST, _listCityCodesChanges, JSP_MANAGE_CHANGES, this.cleanLabel( cityLabel ),
+        getPaginatedListModel( request, MARK_CITY_LIST, _listCityCodesChanges, JSP_MANAGE_CHANGES, model, this.cleanLabel( cityLabel ),
                 cityCode, null, null, placeCode, approximate );
 
         model.put(MARK_PAGE_TITLE, "#i18n{"+PROPERTY_TITLE_MANAGE_CHANGES+"}");
@@ -109,11 +114,11 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
                 int iterator = 0;
                 for( CityChanges cityChanges : cityChangesListCopy )
                 {
-                    if(StringUtils.equals( city.getCode(), cityChanges.getCode() ) && city.getDateValidityStart().compareTo(cityChanges.getDateValidityStart()) == 0 )
+                    if(Strings.CS.equals( city.getCode(), cityChanges.getCode() ) && city.getDateValidityStart().compareTo(cityChanges.getDateValidityStart()) == 0 )
                     {
                         city.setCityChanges(cityChanges);
                         cityChangesList.remove( iterator );
-                        cityGroup.setPendingChanges(cityGroup.getPendingChanges() + (StringUtils.equals(cityChanges.getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0));
+                        cityGroup.setPendingChanges(cityGroup.getPendingChanges() + (Strings.CS.equals(cityChanges.getStatus(), GeocodesChangesStatusEnum.PENDING.toString()) ? 1 : 0));
                     }
                     iterator++;
                 }

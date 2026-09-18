@@ -34,9 +34,9 @@
 
 package fr.paris.lutece.plugins.geocodes.web;
 
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.mock.web.MockServletConfig;
+import fr.paris.lutece.test.mocks.MockHttpServletRequest;
+import fr.paris.lutece.test.mocks.MockHttpServletResponse;
+import fr.paris.lutece.test.mocks.MockServletConfig;
 import fr.paris.lutece.portal.business.user.AdminUser;
 import fr.paris.lutece.portal.service.admin.AccessDeniedException;
 import fr.paris.lutece.portal.service.admin.AdminAuthenticationService;
@@ -44,21 +44,36 @@ import fr.paris.lutece.portal.service.security.UserNotSignedException;
 import java.util.List;
 import java.io.IOException;
 import fr.paris.lutece.test.LuteceTestCase;
-import fr.paris.lutece.portal.service.security.SecurityTokenService;
+import fr.paris.lutece.portal.web.cdi.mvc.Models;
+import jakarta.inject.Inject;
 import fr.paris.lutece.portal.web.LocalVariables;
 import fr.paris.lutece.plugins.geocodes.business.Country;
 import fr.paris.lutece.plugins.geocodes.business.CountryHome;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import fr.paris.lutece.portal.service.template.CommonsService;
 /**
  * This is the business class test for the object Country
  */
 public class CountryJspBeanTest extends LuteceTestCase
 {
+    @Inject
+    private Models models;
     private static final String CODE1 = "Code1";
     private static final String CODE2 = "Code2";
     private static final String VALUE1 = "Value1";
     private static final String VALUE2 = "Value2";
 
-public void testJspBeans(  ) throws AccessDeniedException, IOException
+
+    @BeforeEach
+    protected void setUp( ) throws Exception
+    {
+        super.setUp( );
+        CommonsService.activateCommons( CommonsService.getCurrentCommonsKey( ) );
+    }
+
+    @Test
+    public void testJspBeans(  ) throws AccessDeniedException, IOException
 	{	
      	MockHttpServletRequest request = new MockHttpServletRequest();
 		MockHttpServletResponse response = new MockHttpServletResponse();
@@ -66,11 +81,11 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
 
 		//display admin Country management JSP
 		CountryJspBean jspbean = new CountryJspBean();
-		String html = jspbean.getManageCountries( request );
+		String html = jspbean.getManageCountries( request, models );
 		assertNotNull(html);
 
 		//display admin Country creation JSP
-		html = jspbean.getCreateCountry( request );
+		html = jspbean.getCreateCountry( request, models );
 		assertNotNull(html);
 
 		//action create Country
@@ -83,8 +98,9 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         
         request.addParameter( "code" , CODE1 );
         request.addParameter( "value" , VALUE1 );
+        request.addParameter( "date_validity_start", "01/01/1970" );
+        request.addParameter( "date_validity_end", "01/01/2100" );
 		request.addParameter("action","createCountry");
-        request.addParameter( "token", SecurityTokenService.getInstance( ).getToken( request, "createCountry" ));
 		request.setMethod( "POST" );
         
 		
@@ -115,7 +131,7 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		jspbean = new CountryJspBean();
 		
-		assertNotNull( jspbean.getModifyCountry( request ) );	
+		assertNotNull( jspbean.getModifyCountry( request, models ) );	
 
 		//action modify Country
 		request = new MockHttpServletRequest();
@@ -128,8 +144,9 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "value" , VALUE2 );
 		request.setRequestURI("jsp/admin/plugins/example/ManageCountrys.jsp");
 		//important pour que MVCController sache quelle action effectuer, sinon, il redirigera vers createCountry, qui est l'action par défaut
+        request.addParameter( "date_validity_start", "01/01/1970" );
+        request.addParameter( "date_validity_end", "01/01/2100" );
 		request.addParameter("action","modifyCountry");
-		request.addParameter( "token", SecurityTokenService.getInstance( ).getToken( request, "modifyCountry" ));
 
 		try 
 		{
@@ -154,7 +171,7 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
         request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		jspbean = new CountryJspBean();
 		request.addParameter("action","confirmRemoveCountry");
-		assertNotNull( jspbean.getModifyCountry( request ) );
+		assertNotNull( jspbean.getModifyCountry( request, models ) );
 				
 		//do remove Country
 		request = new MockHttpServletRequest();
@@ -162,7 +179,6 @@ public void testJspBeans(  ) throws AccessDeniedException, IOException
 		request.setRequestURI("jsp/admin/plugins/example/ManageCountryts.jsp");
 		//important pour que MVCController sache quelle action effectuer, sinon, il redirigera vers createCountry, qui est l'action par défaut
 		request.addParameter("action","removeCountry");
-		request.addParameter( "token", SecurityTokenService.getInstance( ).getToken( request, "removeCountry" ));
 		request.addParameter( "id", String.valueOf( listIds.get( 0 ) ) );
 		request.setMethod("POST");
 		adminUser = new AdminUser();

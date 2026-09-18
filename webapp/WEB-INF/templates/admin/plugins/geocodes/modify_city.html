@@ -9,7 +9,6 @@
 				<@boxHeader title='#i18n{geocodes.modify_city.title}' />
 				<@tform class="form-horizontal" id="modify-city-form" method="post" name="modify_city" action="jsp/admin/plugins/geocodes/ManageCities.jsp" >
 					<@input type="hidden" id="id" name="id" value="${city.id}"/>
-					<@input type="hidden" value="${token}" name="token" />
 					<@formGroup labelFor='code_country' labelKey='#i18n{geocodes.modify_city.labelCodeCountry}' mandatory=true>
 						<@input type='text' id='code_country' name='code_country'  maxlength=255 value='${city.codeCountry!\'\'}' tabIndex='0' />
 					</@formGroup>

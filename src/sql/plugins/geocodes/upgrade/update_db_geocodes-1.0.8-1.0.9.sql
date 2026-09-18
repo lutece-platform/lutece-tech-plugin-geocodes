@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:update_db_geocodes-1.0.8-1.0.9.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 DROP TABLE IF EXISTS geocodes_city_changes;
 CREATE TABLE geocodes_city_changes (
                                        code_country varchar(10) default '' NOT NULL,

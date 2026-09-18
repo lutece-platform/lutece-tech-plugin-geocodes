@@ -46,20 +46,25 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Named;
 
 /**
  * This class provides Data Access methods for Country objects
  */
-public final class CountryDAO implements ICountryDAO
+@ApplicationScoped
+@Named( "geocodes.countryDAO" )
+public class CountryDAO implements ICountryDAO
 {
     // Constants
 	private static final String SQL_QUERY_SELECT_BY_ID = "SELECT id_country, code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country = ?";
 	private static final String SQL_QUERY_SELECT_BY_CODE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE code = ?";
 	private static final String SQL_QUERY_SELECT_BY_CODE_AND_ATTACHED = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE code = ? and is_attached = ?";
-	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') and deprecated = 0 order by value ";
-	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE  TRANSLATE(REPLACE(REPLACE(LOWER(value), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn')  like TRANSLATE(REPLACE(REPLACE(LOWER(?), 'œ', 'oe'), 'æ', 'ae'), 'àâäéèêëîïôöùûüÿçñ', 'aaaeeeeiioouuuycn') AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE " + GeocodesSqlUtils.fold( "value" ) + "  like " + GeocodesSqlUtils.fold( "?" ) + " and deprecated = 0 order by value ";
+	private static final String SQL_QUERY_SELECT_BY_VALUE_AND_DATE = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country WHERE  " + GeocodesSqlUtils.fold( "value" ) + "  like " + GeocodesSqlUtils.fold( "?" ) + " AND date_validity_start <= ? AND date_validity_end > ? and deprecated = 0 order by value ";
     private static final String SQL_QUERY_INSERT = "INSERT INTO geocodes_country ( code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated ) VALUES ( ?, ?, ?, ?, ?, ?, ? ) ";
     private static final String SQL_QUERY_DELETE = "DELETE FROM geocodes_country WHERE id_country = ? ";
+    private static final String SQL_QUERY_DELETE_CHANGES = "DELETE FROM geocodes_country_changes WHERE id_country = ? ";
     private static final String SQL_QUERY_UPDATE = "UPDATE geocodes_country SET code = ?, value = ?, value_min_complete = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ? WHERE id_country = ?";
     private static final String SQL_QUERY_SELECTALL = "SELECT id_country, code, value, value_min_complete, is_attached, deprecated FROM geocodes_country";
     private static final String SQL_QUERY_SELECTALL_ID = "SELECT id_country FROM geocodes_country";
@@ -314,10 +319,18 @@ public final class CountryDAO implements ICountryDAO
     
     /**
      * {@inheritDoc }
+     *
+     * The change history references the country, so it goes first: the foreign key forbids leaving it behind.
      */
     @Override
     public void delete( int nKey, Plugin plugin )
     {
+        try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE_CHANGES, plugin ) )
+        {
+            daoUtil.setInt( 1 , nKey );
+            daoUtil.executeUpdate( );
+        }
+
         try( DAOUtil daoUtil = new DAOUtil( SQL_QUERY_DELETE, plugin ) )
         {
 	        daoUtil.setInt( 1 , nKey );
@@ -536,8 +549,6 @@ public final class CountryDAO implements ICountryDAO
 		            
 		            countryList.add( country );
 		        }
-		
-		        daoUtil.free( );
 		        
 	        }
 	    }

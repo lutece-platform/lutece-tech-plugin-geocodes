@@ -1,3 +1,6 @@
+-- liquibase formatted sql
+-- changeset geocodes:update_db_geocodes-1.0.6-1.0.7.sql
+-- preconditions onFail:MARK_RAN onError:WARN
 DROP TABLE IF EXISTS geocodes_city_changes;
 CREATE TABLE geocodes_city_changes (
     id_city_history SERIAL,
