@@ -6,7 +6,6 @@
 		<@tabs> 
 			<@tabsList2 tab="city" />
 			<@tabContent>
-				<@boxHeader title='#i18n{geocodes.modify_city.title}' />
 				<@tform class="form-horizontal" id="modify-city-form" method="post" name="modify_city" action="jsp/admin/plugins/geocodes/ManageCities.jsp" >
 					<@input type="hidden" id="id" name="id" value="${city.id}"/>
 					<@formGroup labelFor='code_country' labelKey='#i18n{geocodes.modify_city.labelCodeCountry}' mandatory=true>
@@ -24,13 +23,13 @@
 					<@formGroup labelFor='date_validity_start' labelKey='#i18n{geocodes.modify_city.labelDateValidityStart}' mandatory=true>
 						<@inputGroup>
 							<@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
-							<@input type='date' id='date_validity_start' name='date_validity_start' value='${str_date_validity_start!\'\'}' tabIndex='4' />
+							<@input type='date' id='date_validity_start' name='date_validity_start' value='' defaultDate=(city.dateValidityStart?? && city.dateValidityStart?is_date)?then(city.dateValidityStart?date, '') tabIndex='4' />
 						</@inputGroup>
 					</@formGroup>
 					<@formGroup labelFor='date_validity_end' labelKey='#i18n{geocodes.modify_city.labelDateValidityEnd}' mandatory=true>
 						<@inputGroup>
 							<@inputGroupItem type='text'><@icon style='calendar' /></@inputGroupItem>
-							<@input type='date' id='date_validity_end' name='date_validity_end' value='${str_date_validity_end!\'\'}' tabIndex='5' />
+							<@input type='date' id='date_validity_end' name='date_validity_end' value='' defaultDate=(city.dateValidityEnd?? && city.dateValidityEnd?is_date)?then(city.dateValidityEnd?date, '') tabIndex='5' />
 						</@inputGroup>
 					</@formGroup>
 					<@formGroup labelFor='value_min' labelKey='#i18n{geocodes.modify_city.labelValueMin}' mandatory=true>
@@ -41,11 +40,11 @@
 					</@formGroup>
 					<@formGroup labelFor='deprecated' labelKey='#i18n{geocodes.modify_city.labelDeprecated}' mandatory=true>
 						<@select class="search-field form-select select-type" id="deprecated" name="deprecated" default_value="${city.deprecated?c!''}" tabIndex=9>
-							<option value="false" <#if city.deprecated != true> selected="selected"</#if>>#i18n{geocodes.modify_city.labelDeprecated.false}</option>
-							<option value="true" <#if city.deprecated == true> selected="selected"</#if>>#i18n{geocodes.modify_city.labelDeprecated.true}</option>
+							<@option value='false' label='#i18n{geocodes.modify_city.labelDeprecated.false}' selected=(city.deprecated != true) />
+							<@option value='true' label='#i18n{geocodes.modify_city.labelDeprecated.true}' selected=(city.deprecated == true) />
 						</@select>
 					</@formGroup>
-					<@actionButtons button1Name="action_modifyCity" button2Name="view_manageCity"/>
+					<@actionButtons button1Name="action_modifyCity" button2Name="view_manageCities"/>
 				</@tform>
 			</@tabContent>
 		</@tabs>

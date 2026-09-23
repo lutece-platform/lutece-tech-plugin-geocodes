@@ -36,6 +36,8 @@ package fr.paris.lutece.plugins.geocodes.web;
 
 import fr.paris.lutece.plugins.geocodes.business.City;
 import fr.paris.lutece.plugins.geocodes.business.CityChanges;
+import fr.paris.lutece.portal.service.message.AdminMessage;
+import fr.paris.lutece.portal.service.message.AdminMessageService;
 import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.MVCAdminJspBean;
 import fr.paris.lutece.portal.web.cdi.mvc.Models;
@@ -277,6 +279,30 @@ public abstract class AbstractManageGeoCodesJspBean <S, T> extends MVCAdminJspBe
         city.setDateLastUpdate( new Date( ) );
 
         return city;
+    }
+
+    /**
+     * Redirects to a confirmation message whose validation posts the given action with the request parameters.
+     *
+     * @param request
+     *            the HTTP request
+     * @param strMessageKey
+     *            the i18n key of the confirmation message
+     * @param strAction
+     *            the action posted on validation
+     * @param parameterNames
+     *            the request parameters forwarded to the action
+     * @return the redirection to the confirmation message
+     */
+    protected String redirectToConfirmation( HttpServletRequest request, String strMessageKey, String strAction, String... parameterNames )
+    {
+        UrlItem url = new UrlItem( getActionUrl( strAction ) );
+        for ( String strName : parameterNames )
+        {
+            url.addParameter( strName, request.getParameter( strName ) );
+        }
+
+        return redirect( request, AdminMessageService.getMessageUrl( request, strMessageKey, url.getUrl( ), AdminMessage.TYPE_CONFIRMATION ) );
     }
 
     protected Date extractDate(String dateString)

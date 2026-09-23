@@ -40,11 +40,11 @@
 					</@formGroup>
 					<@formGroup labelFor='deprecated' labelKey='#i18n{geocodes.create_city.labelDeprecated}' mandatory=true>
 						<@select class="search-field form-select select-type" id="deprecated" name="deprecated" default_value="" tabIndex=9>
-							<option value="false" selected="selected" >#i18n{geocodes.create_city.labelDeprecated.false}</option>
-							<option value="true" >#i18n{geocodes.create_city.labelDeprecated.true}</option>
+							<@option value='false' label='#i18n{geocodes.create_city.labelDeprecated.false}' selected=true />
+							<@option value='true' label='#i18n{geocodes.create_city.labelDeprecated.true}' />
 						</@select>
 					</@formGroup>           
-					<@actionButtons button1Name="action_createCity" button2Name="view_manageCity"/>
+					<@actionButtons button1Name="action_createCity" button2Name="view_manageCities"/>
 				</@tform>
 			</@tabContent>
 		</@tabs>

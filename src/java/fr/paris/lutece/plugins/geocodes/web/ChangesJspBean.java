@@ -28,7 +28,7 @@ import jakarta.inject.Named;
 
 @SessionScoped
 @Named
-@Controller( controllerJsp = "ManageChanges.jsp", controllerPath = "jsp/admin/plugins/geocodes/", right = "GEOCODES_MANAGEMENT" )
+@Controller( controllerJsp = "ManageChanges.jsp", controllerPath = "jsp/admin/plugins/geocodes/", right = "GEOCODES_MANAGEMENT", securityTokenEnabled = true )
 public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityGroup>
 {
 
@@ -40,6 +40,12 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
     private static final String PARAMETER_DATE_CHANGES = "dateChanges";
 
     // Views
+    private static final String VIEW_CONFIRM_APPLY_CITY_CHANGES = "confirmApplyCityChanges";
+    private static final String VIEW_CONFIRM_DENY_CHANGES = "confirmDenyChanges";
+    private static final String VIEW_CONFIRM_APPLY_NEW_CITY = "confirmApplyNewCity";
+    private static final String VIEW_CONFIRM_DENY_NEW_CITY = "confirmDenyNewCity";
+    private static final String MESSAGE_CONFIRM_APPLY_CHANGES = "geocodes.message.confirmApplyChanges";
+    private static final String MESSAGE_CONFIRM_DENY_CHANGES = "geocodes.message.confirmDenyChanges";
     private static final String VIEW_MANAGE_CHANGES = "manageChanges";
 
     //Actions
@@ -136,6 +142,19 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
         return cityGroupList;
     }
 
+    /**
+     * Asks confirmation before applying a pending change of a city.
+     *
+     * @param request
+     *            the HTTP request
+     * @return the redirection to the confirmation message
+     */
+    @View( value = VIEW_CONFIRM_APPLY_CITY_CHANGES, securityTokenAction = ACTION_APPLY_CITY_CHANGES )
+    public String getConfirmApplyCityChanges( HttpServletRequest request )
+    {
+        return redirectToConfirmation( request, MESSAGE_CONFIRM_APPLY_CHANGES, ACTION_APPLY_CITY_CHANGES, PARAMETER_CODE_CHANGES, PARAMETER_DATE_CHANGES );
+    }
+
     @Action(ACTION_APPLY_CITY_CHANGES)
     public String doApplyCityModification ( HttpServletRequest request )
     {
@@ -163,6 +182,19 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
         return redirectView( request, VIEW_MANAGE_CHANGES);
     }
 
+    /**
+     * Asks confirmation before refusing a pending change of a city.
+     *
+     * @param request
+     *            the HTTP request
+     * @return the redirection to the confirmation message
+     */
+    @View( value = VIEW_CONFIRM_DENY_CHANGES, securityTokenAction = ACTION_DENY_CHANGES )
+    public String getConfirmDenyChanges( HttpServletRequest request )
+    {
+        return redirectToConfirmation( request, MESSAGE_CONFIRM_DENY_CHANGES, ACTION_DENY_CHANGES, PARAMETER_CODE_CHANGES, PARAMETER_DATE_CHANGES );
+    }
+
     @Action( ACTION_DENY_CHANGES )
     public String doRefuseModification ( HttpServletRequest request )
     {
@@ -174,6 +206,19 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
         CityHome.updateChanges(cityChanges);
 
         return redirectView( request, VIEW_MANAGE_CHANGES);
+    }
+
+    /**
+     * Asks confirmation before creating a proposed new city.
+     *
+     * @param request
+     *            the HTTP request
+     * @return the redirection to the confirmation message
+     */
+    @View( value = VIEW_CONFIRM_APPLY_NEW_CITY, securityTokenAction = ACTION_APPLY_NEW_CITY )
+    public String getConfirmApplyNewCity( HttpServletRequest request )
+    {
+        return redirectToConfirmation( request, MESSAGE_CONFIRM_APPLY_CHANGES, ACTION_APPLY_NEW_CITY, PARAMETER_CODE_CHANGES, PARAMETER_DATE_CHANGES );
     }
 
     @Action( ACTION_APPLY_NEW_CITY )
@@ -198,6 +243,19 @@ public class ChangesJspBean extends AbstractManageGeoCodesJspBean <String, CityG
         CityHome.updateChanges(cityChanges);
 
         return redirectView( request, VIEW_MANAGE_CHANGES);
+    }
+
+    /**
+     * Asks confirmation before refusing a proposed new city.
+     *
+     * @param request
+     *            the HTTP request
+     * @return the redirection to the confirmation message
+     */
+    @View( value = VIEW_CONFIRM_DENY_NEW_CITY, securityTokenAction = ACTION_DENY_NEW_CITY )
+    public String getConfirmDenyNewCity( HttpServletRequest request )
+    {
+        return redirectToConfirmation( request, MESSAGE_CONFIRM_DENY_CHANGES, ACTION_DENY_NEW_CITY, PARAMETER_CODE_CHANGES, PARAMETER_DATE_CHANGES );
     }
 
     @Action( ACTION_DENY_NEW_CITY )

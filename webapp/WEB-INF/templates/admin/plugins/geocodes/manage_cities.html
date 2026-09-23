@@ -2,79 +2,46 @@
 <@pageContainer>
 	<@pageColumn>
 		<@pageHeader title='#i18n{geocodes.manage_cities.title}'>
-			<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCities.jsp?view_createCity" targetElement="#create-city-form" redirectForm=false id="create-city" title="#i18n{geocodes.create_city.title}" btnTitle="#i18n{geocodes.manage_cities.buttonAdd}" btnIcon="plus" position="end" />
-			<@headerButtons>
-				<form class="form-inline pull-right" method="post" name="manage_cities" action="jsp/admin/plugins/geocodes/ManageCities.jsp">
-					<@button type='submit' name='action_exportCities' buttonIcon='plus' title='#i18n{geocodes.manage_cities.buttonExport}' />
-				</form>
-			</@headerButtons>
+			<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?view=createCity' title='#i18n{geocodes.manage_cities.buttonAdd}' buttonIcon='plus' color='primary' />
+			<@tform method='get' name='export_cities' action='jsp/admin/plugins/geocodes/ExportCities.jsp'>
+				<@button type='submit' buttonIcon='download' title='#i18n{geocodes.manage_cities.buttonExport}' />
+			</@tform>
 		</@pageHeader>
 		<@messages infos=infos />
 		<@messages errors=errors />
 		<@tabs> 
 			<@tabsList2 tab="city" />
 			<@tabContent>
-				<@paginationAdmin paginator=paginator combo=1 />
 				<#assign page >ManageCities</#assign>
 				<#include "search_geocodes.html"/>
-				<@table id='city-table' headBody=true>
-					<@tr>
-						<@th params='onclick="sortTable(0, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCodeCountry}</@th>
-						<@th params='onclick="sortTable(1, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCode}</@th>
-						<@th params='onclick="sortTable(2, \'city-table\')"'>#i18n{geocodes.manage_cities.columnValue}</@th>
-						<@th params='onclick="sortTable(3, \'city-table\')"'>#i18n{geocodes.manage_cities.columnCodeZone}</@th>
-						<@th params='onclick="sortTable(4, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDateValidityStart}</@th>
-						<@th params='onclick="sortTable(5, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDateValidityEnd}</@th>
-						<@th params='onclick="sortTable(6, \'city-table\')"'>#i18n{geocodes.manage_cities.labelValueMin}</@th>
-						<@th params='onclick="sortTable(7, \'city-table\')"'>#i18n{geocodes.manage_cities.labelValueMinComplete}</@th>
-						<@th params='onclick="sortTable(8, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDateLastUpdate}</@th>
-						<@th params='onclick="sortTable(9, \'city-table\')"'>#i18n{geocodes.manage_cities.columnDeprecated}</@th>
-						<@th>#i18n{portal.util.labelActions}</@th>
-					</@tr>
-					<@tableHeadBodySeparator />
+				<#if city_list?has_content>
+				<@paginationAdmin paginator=paginator combo=1 class='gap-3 mt-3' />
+				<@manageFeature>
 					<#list city_list as city >
-						<@tr>
-							<@td>
-								${city.codeCountry}
-							</@td>
-							<@td>
-								${city.code}
-							</@td>
-							<@td>
-								${city.value}
-								</@td>
-							<@td>
-								${city.codeZone}
-							</@td>
-							<@td>
-								${city.dateValidityStart}
-							</@td>
-							<@td>
-								${city.dateValidityEnd}
-							</@td>
-							<@td>
-								${city.valueMin}
-							</@td>
-							<@td>
-								${city.valueMinComplete}
-							</@td>
-							<@td>
-								${city.dateLastUpdate}
-							</@td>
-							<@td>
-								<#switch city.deprecated>
-									<#case false>
-										#i18n{geocodes.manage_cities.columnDeprecated.false}<#break>
-									<#case true>
-										#i18n{geocodes.manage_cities.columnDeprecated.true}<#break>
-									<#default>
-										${city.deprecated}<#break>
-								</#switch>
-							</@td>
-
-							<@td>
-								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCities.jsp?view=modifyCity&id=${city.id}" targetElement="#modify-city-form" redirectForm=false id="modify-city-${city.id}" title="#i18n{geocodes.modify_city.title}" btnIcon="edit" position="end" />
-								<@offcanvas id="changes-${city.id}" title="<i class='ti ti-history fs-2'></i> ${city.value}" btnTitle="" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${city.pendingChanges}">
+						<@manageFeatureItem>
+							<@manageFeatureItemColumn dir='column'>
+								<@p class='mb-0'><strong>${city.value}</strong></@p>
+								<@p class='mb-0'>#i18n{geocodes.manage_cities.columnCode} : ${city.code} - #i18n{geocodes.manage_cities.columnCodeCountry} : ${city.codeCountry} - #i18n{geocodes.manage_cities.columnCodeZone} : ${city.codeZone}</@p>
+							</@manageFeatureItemColumn>
+							<@manageFeatureItemColumn dir='column'>
+								<@p class='mb-0'>#i18n{geocodes.manage_cities.labelValueMin} : ${city.valueMin}</@p>
+								<@p class='mb-0'>#i18n{geocodes.manage_cities.labelValueMinComplete} : ${city.valueMinComplete}</@p>
+							</@manageFeatureItemColumn>
+							<@manageFeatureItemColumn dir='column'>
+								<@p class='mb-0'>#i18n{geocodes.manage_cities.columnDateValidityStart} : ${city.dateValidityStart}</@p>
+								<@p class='mb-0'>#i18n{geocodes.manage_cities.columnDateValidityEnd} : ${city.dateValidityEnd}</@p>
+							</@manageFeatureItemColumn>
+							<@manageFeatureItemColumn dir='column'>
+								<@p class='mb-0'>#i18n{geocodes.manage_cities.columnDateLastUpdate} : ${city.dateLastUpdate}</@p>
+								<@p class='mb-0'>#i18n{geocodes.manage_cities.columnDeprecated} : <#if city.deprecated>#i18n{geocodes.manage_cities.columnDeprecated.true}<#else>#i18n{geocodes.manage_cities.columnDeprecated.false}</#if></@p>
+							</@manageFeatureItemColumn>
+							<@manageFeatureItemColumn align='end'>
+								<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?view=modifyCity&amp;id=${city.id}' title='#i18n{geocodes.modify_city.title}' buttonIcon='edit' hideTitle=['all'] />
+								<@button type='button' buttonIcon='history' title='#i18n{geocodes.manage_cities.columnStatus}' hideTitle=['all'] params='data-bs-toggle="modal" data-bs-target="#changes-${city.id}"' />
+								<#if (city.pendingChanges > 0)><span class="badge bg-warning">${city.pendingChanges}</span></#if>
+								<@modal id="changes-${city.id}" size="xl">
+								<@modalHeader modalTitle="${city.value}" />
+								<@modalBody params='class="p-0"'>
 
 									<@table headBody=true>
 										<@tr>
@@ -233,22 +200,27 @@
 												</@td>
 												<@td>
 													<#if city.cityChanges.status == "PENDING" >
-														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=applyCityChanges&codeChanges=${city.cityChanges.code}&dateChanges=${city.cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
-														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=denyChanges&codeChanges=${city.cityChanges.code}&dateChanges=${city.cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='trash' hideTitle=['all'] />
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?view=confirmApplyCityChanges&amp;codeChanges=${city.cityChanges.code}&amp;dateChanges=${city.cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?view=confirmDenyChanges&amp;codeChanges=${city.cityChanges.code}&amp;dateChanges=${city.cityChanges.dateValidityStart}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='x' hideTitle=['all'] />
 													</#if>
 												</@td>
 											</@tr>
 										</#if>
 									</@table>
-								</@offcanvas>
-								<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=confirmRemoveCity&id=${city.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger' />
-							</@td>
-						</@tr>
+								</@modalBody>
+								</@modal>
+								<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?view=confirmRemoveCity&amp;id=${city.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='danger' />
+							</@manageFeatureItemColumn>
+						</@manageFeatureItem>
 					</#list>
-				</@table>
+				</@manageFeature>
+				<@paginationAdmin paginator=paginator form=0 showcount=0 class='mt-3' />
+				<#else>
+				<@card>
+					<@empty title='#i18n{geocodes.search.noResult}' subtitle='#i18n{geocodes.search.noResult.help}' />
+				</@card>
+				</#if>
 			</@tabContent>
 		</@tabs>
-		<@paginationAdmin paginator=paginator />
 	</@pageColumn>
 </@pageContainer>
-<script src="./js/admin/plugins/geocodes/table.js"></script>

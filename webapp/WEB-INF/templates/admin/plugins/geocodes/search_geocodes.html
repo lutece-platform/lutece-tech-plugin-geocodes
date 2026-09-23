@@ -1,78 +1,46 @@
-<div class="p-2">
-    <@aButton href='#' class='btn-empty' title='#i18n{geocodes.search.emptyFields}' buttonIcon='trash' hideTitle=['all'] />
-</div>
-<form class="form-inline" action="jsp/admin/plugins/geocodes/${page}.jsp">
-    <div class="input-group">
-        <@table responsive=false params='style="width: 100%;"'>
-        <tr>
-            <#if page=="ManageCities" || page=="ManageChanges">
-                <th>#i18n{geocodes.search.city.label}</th>
-                <th>#i18n{geocodes.search.city.code}</th>
-                <th>#i18n{geocodes.search.place.code}</th>
-            <#else>
-                <th>#i18n{geocodes.search.country.label}</th>
-                <th>#i18n{geocodes.search.country.code}</th>
-            </#if>
-            <#if page=="ManageChanges">
-                <th>#i18n{geocodes.search.change.status}</th>
-            </#if>
-            <th></th>
-            <th></th>
-        </tr>
-        <@tableHeadBodySeparator />
-        <tr>
-            <#if page=="ManageCities" || page=="ManageChanges">
-                <td>
-                    <input class="form-control search-field" type="text" name="insee_city_label" placeholder="#i18n{geocodes.search.city.label}" value="${insee_city_label!''}" />
-                </td>
-                <td>
-                    <input class="form-control search-field" type="text" name="insee_city" placeholder="#i18n{geocodes.search.city.code}" value="${insee_city!''}" />
-                </td>
-                <td>
-                    <input class="form-control search-field" type="text" name="insee_place" placeholder="#i18n{geocodes.search.place.code}" value="${insee_place!''}" />
-                </td>
-            <#else>
-                <td>
-                    <input class="form-control search-field" type="text" name="insee_country_label" placeholder="#i18n{geocodes.search.country.label}" value="${insee_country_label!''}" />
-                </td>
-                <td>
-                    <input class="form-control search-field" type="text" name="insee_country" placeholder="#i18n{geocodes.search.country.code}" value="${insee_country!''}" />
-                </td>
-            </#if>
-            <#if page=="ManageChanges">
-                <td>
-                    <@select id='status_search' name='status_search'>
-                        <#if status_list?? && status_list?has_content>
-                            <#list status_list as status>
-                                <option value="${status!}" <#if status_search! == status> selected="selected"</#if>>${status!}</option>
-                            </#list>
-                            <option value="" >#i18n{geocodes.search.change.status.all}</option>
-                        </#if>
-                    </@select>
-                </td>
-            </#if>
-            <td>
-                <#assign checked=true />
-                <#if approximate?exists>
-                    <#if approximate>
-                        <#assign checked=true />
-                    <#else>
-                        <#assign checked=false />
-                    </#if>
-                <#else>
-                    <#assign checked=true />
+<@tform method='get' name='search_geocodes' action='jsp/admin/plugins/geocodes/${page}.jsp'>
+    <#if page=="ManageCities" || page=="ManageChanges">
+        <@formGroup labelFor='insee_city_label' labelKey='#i18n{geocodes.search.city.label}'>
+            <@input type='text' id='insee_city_label' name='insee_city_label' class='search-field' value='${insee_city_label!\'\'}' />
+        </@formGroup>
+        <@formGroup labelFor='insee_city' labelKey='#i18n{geocodes.search.city.code}'>
+            <@input type='text' id='insee_city' name='insee_city' class='search-field' value='${insee_city!\'\'}' />
+        </@formGroup>
+        <@formGroup labelFor='insee_place' labelKey='#i18n{geocodes.search.place.code}'>
+            <@input type='text' id='insee_place' name='insee_place' class='search-field' value='${insee_place!\'\'}' />
+        </@formGroup>
+    <#else>
+        <@formGroup labelFor='insee_country_label' labelKey='#i18n{geocodes.search.country.label}'>
+            <@input type='text' id='insee_country_label' name='insee_country_label' class='search-field' value='${insee_country_label!\'\'}' />
+        </@formGroup>
+        <@formGroup labelFor='insee_country' labelKey='#i18n{geocodes.search.country.code}'>
+            <@input type='text' id='insee_country' name='insee_country' class='search-field' value='${insee_country!\'\'}' />
+        </@formGroup>
+    </#if>
+    <#if page=="ManageChanges">
+        <@formGroup labelFor='status_search' labelKey='#i18n{geocodes.search.change.status}'>
+            <@select id='status_search' name='status_search'>
+                <#if status_list?? && status_list?has_content>
+                    <#list status_list as status>
+                        <@option value='${status!}' label='#i18n{geocodes.manage_cities.columnApplied.${status?lower_case}}' selected=(status_search! == status) />
+                    </#list>
+                    <@option value='' label='#i18n{geocodes.search.change.status.all}' />
                 </#if>
-                <@listGroupItem>
-                    <@checkBox orientation='switch' id='approximate' name='approximate' labelKey='#i18n{geocodes.search.approximate}' value='true' mandatory=false checked=checked/>
-                </@listGroupItem>
-            </td>
-            <td>
-                <@button type='submit' color='primary' title='#i18n{geocodes.search.submit}' buttonIcon='search' hideTitle=['all'] />
-            </td>
-        </tr>
-    </@table>
-    </div>
-</form>
+            </@select>
+        </@formGroup>
+    </#if>
+    <#assign checked=true />
+    <#if approximate?exists && !approximate>
+        <#assign checked=false />
+    </#if>
+    <@formGroup>
+        <@checkBox orientation='switch' id='approximate' name='approximate' labelKey='#i18n{geocodes.search.approximate}' value='true' mandatory=false checked=checked/>
+    </@formGroup>
+    <@formGroup>
+        <@button type='submit' color='primary' title='#i18n{geocodes.search.submit}' buttonIcon='search' />
+        <@button type='button' class='btn-empty' color='light' title='#i18n{geocodes.search.emptyFields}' buttonIcon='eraser' />
+    </@formGroup>
+</@tform>
 <script>
 document.querySelectorAll( '.btn-empty' ).forEach( function( button ) {
     button.addEventListener( 'click', function( ) {
