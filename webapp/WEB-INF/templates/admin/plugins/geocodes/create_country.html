@@ -15,14 +15,14 @@
 					<@formGroup labelFor='value' labelKey='#i18n{geocodes.modify_country.labelValue}' mandatory=true>
 						<@input type='text' id='value' name='value'  maxlength=255 value='' tabIndex='1' />
 					</@formGroup>
-					<@formGroup labelFor='valueMinComplete' labelKey='#i18n{geocodes.modify_country.labelValue}' mandatory=true>
+					<@formGroup labelFor='valueMinComplete' labelKey='#i18n{geocodes.manage_countries.columnValueMinComplete}' mandatory=true>
 						<@input type='text' id='valueMinComplete' name='valueMinComplete'  maxlength=255 value='' tabIndex='1' />
 					</@formGroup>
 
 					<@formGroup labelFor='attached' labelKey='#i18n{geocodes.manage_countries.columnAttached}' mandatory=true>
 						<@select class="search-field form-select select-type" id="attached" name="attached" default_value="" tabIndex=2>
-							<option value="false" selected="selected" >#i18n{geocodes.manage_countries.boolean.false}</option>
-							<option value="true">#i18n{geocodes.manage_countries.boolean.true}</option>
+							<@option value='false' label='#i18n{geocodes.manage_countries.boolean.false}' selected=true />
+							<@option value='true' label='#i18n{geocodes.manage_countries.boolean.true}' />
 						</@select>
 					</@formGroup>
 
@@ -42,11 +42,11 @@
 
 					<@formGroup labelFor='deprecated' labelKey='#i18n{geocodes.manage_countries.columnDeprecated}' mandatory=true>
 						<@select class="search-field form-select select-type" id="deprecated" name="deprecated" default_value="" tabIndex=5>
-							<option value="false" selected="selected" >#i18n{geocodes.manage_countries.boolean.false}</option>
-							<option value="true">#i18n{geocodes.manage_countries.boolean.true}</option>
+							<@option value='false' label='#i18n{geocodes.manage_countries.boolean.false}' selected=true />
+							<@option value='true' label='#i18n{geocodes.manage_countries.boolean.true}' />
 						</@select>
 					</@formGroup>
-					<@actionButtons button1Name="action_createCountry" button2Name="view_manageCountry"/>
+					<@actionButtons button1Name="action_createCountry" button2Name="view_manageCountries"/>
 				</@tform>
 			</@tabContent>
 		</@tabs>

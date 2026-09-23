@@ -50,14 +50,17 @@ import fr.paris.lutece.portal.service.util.AppPropertiesService;
 import fr.paris.lutece.portal.util.mvc.admin.annotations.Controller;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.Action;
 import fr.paris.lutece.portal.util.mvc.commons.annotations.View;
+import fr.paris.lutece.portal.util.mvc.utils.MVCUtils;
 import fr.paris.lutece.portal.web.cdi.mvc.Models;
 import fr.paris.lutece.util.date.DateUtil;
 import fr.paris.lutece.util.html.AbstractPaginator;
 import fr.paris.lutece.util.url.UrlItem;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Strings;
 
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.ByteArrayOutputStream;
+import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -99,23 +102,27 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
 
     // Properties
     private static final String MESSAGE_CONFIRM_REMOVE_CITY = "geocodes.message.confirmRemoveCity";
+    private static final String MESSAGE_RESOURCE_NOT_FOUND = "geocodes.message.resourceNotFound";
 
     // Validations
     private static final String VALIDATION_ATTRIBUTES_PREFIX = "geocodes.model.entity.city.attribute.";
 
     // Views
+    private static final String VIEW_CONFIRM_APPLY_CITY_CHANGES = "confirmApplyCityChanges";
+    private static final String VIEW_CONFIRM_DENY_CHANGES = "confirmDenyChanges";
+    private static final String MESSAGE_CONFIRM_APPLY_CHANGES = "geocodes.message.confirmApplyChanges";
+    private static final String MESSAGE_CONFIRM_DENY_CHANGES = "geocodes.message.confirmDenyChanges";
     private static final String VIEW_MANAGE_CITIES = "manageCities";
     private static final String VIEW_CREATE_CITY = "createCity";
     private static final String VIEW_MODIFY_CITY = "modifyCity";
+    private static final String VIEW_CONFIRM_REMOVE_CITY = "confirmRemoveCity";
 
     // Actions
     private static final String ACTION_CREATE_CITY = "createCity";
     private static final String ACTION_MODIFY_CITY = "modifyCity";
     private static final String ACTION_REMOVE_CITY = "removeCity";
-    private static final String ACTION_CONFIRM_REMOVE_CITY = "confirmRemoveCity";
     private static final String ACTION_APPLY_CITY_CHANGES = "applyCityChanges";
     private static final String ACTION_DENY_CHANGES = "denyChanges";
-    private static final String ACTION_EXPORT_CITIES = "exportCities";
 
     // Infos
     private static final String INFO_CITY_CREATED = "geocodes.info.city.created";
@@ -136,10 +143,10 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
     private static final String CITY_VALUE_MIN = "value_min";
     private static final String CITY_VALUE_MIN_COMPLETE = "value_min_complete";
     private static final String CITY_DEPRECATED = "deprecated";
-    private static final String CITY_STR_DATE_VALIDITY_START = "str_date_validity_start";
-    private static final String CITY_STR_DATE_VALIDITY_END = "str_date_validity_end";
 
     // Export properties
+    private static final String EXPORT_FILE_NAME = "cities.zip";
+    private static final String EXPORT_CONTENT_TYPE = "application/zip";
     private static final int EXPORT_BATCH_PARTITION_SIZE = AppPropertiesService.getPropertyInt("geocodes.export.cities.batch.size", 100);
 
     // Session variable to store working values
@@ -265,7 +272,7 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
      * @param request The Http request
      * @return the html code to confirm
      */
-    @Action( ACTION_CONFIRM_REMOVE_CITY )
+    @View( value = VIEW_CONFIRM_REMOVE_CITY, securityTokenAction = ACTION_REMOVE_CITY )
     public String getConfirmRemoveCity( HttpServletRequest request )
     {
         int nId = Integer.parseInt( request.getParameter( PARAMETER_ID_CITY ) );
@@ -296,6 +303,19 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         return redirectView( request, VIEW_MANAGE_CITIES);
     }
 
+    /**
+     * Asks confirmation before applying a pending change of a city.
+     *
+     * @param request
+     *            the HTTP request
+     * @return the redirection to the confirmation message
+     */
+    @View( value = VIEW_CONFIRM_APPLY_CITY_CHANGES, securityTokenAction = ACTION_APPLY_CITY_CHANGES )
+    public String getConfirmApplyCityChanges( HttpServletRequest request )
+    {
+        return redirectToConfirmation( request, MESSAGE_CONFIRM_APPLY_CHANGES, ACTION_APPLY_CITY_CHANGES, PARAMETER_CODE_CHANGES, PARAMETER_DATE_CHANGES );
+    }
+
     @Action(ACTION_APPLY_CITY_CHANGES)
     public String doApplyCityModification ( HttpServletRequest request )
     {
@@ -320,6 +340,19 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         }
 
         return redirectView( request, VIEW_MANAGE_CITIES);
+    }
+
+    /**
+     * Asks confirmation before refusing a pending change of a city.
+     *
+     * @param request
+     *            the HTTP request
+     * @return the redirection to the confirmation message
+     */
+    @View( value = VIEW_CONFIRM_DENY_CHANGES, securityTokenAction = ACTION_DENY_CHANGES )
+    public String getConfirmDenyChanges( HttpServletRequest request )
+    {
+        return redirectToConfirmation( request, MESSAGE_CONFIRM_DENY_CHANGES, ACTION_DENY_CHANGES, PARAMETER_CODE_CHANGES, PARAMETER_DATE_CHANGES );
     }
 
     @Action( ACTION_DENY_CHANGES )
@@ -349,12 +382,15 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         if ( _city == null || ( _city.getId(  ) != nId ) )
         {
             Optional<City> optCity = CityHome.findByPrimaryKey( nId );
-            _city = optCity.orElseThrow( ( ) -> new AppException( ERROR_RESOURCE_NOT_FOUND ) );
+            if ( optCity.isEmpty( ) )
+            {
+                addError( MESSAGE_RESOURCE_NOT_FOUND, getLocale( ) );
+                return redirectView( request, VIEW_MANAGE_CITIES );
+            }
+            _city = optCity.get( );
         }
 
         model.put( MARK_CITY, _city );
-        model.put( CITY_STR_DATE_VALIDITY_START, DateUtil.getDateString( _city.getDateValidityStart(), request.getLocale( ) ) );
-        model.put( CITY_STR_DATE_VALIDITY_END, DateUtil.getDateString( _city.getDateValidityEnd(), request.getLocale( ) ) );
 
         return getPage( PROPERTY_PAGE_TITLE_MODIFY_CITY, TEMPLATE_MODIFY_CITY, model );
     }
@@ -399,35 +435,40 @@ public class CityJspBean extends AbstractManageGeoCodesJspBean <Integer, City>
         return redirectView( request, VIEW_MANAGE_CITIES);
     }
 
-    @Action( ACTION_EXPORT_CITIES )
-    public void doExportCities( final HttpServletRequest request )
+    /**
+     * Streams the cities of the current listing as a zip of CSV files, outside the admin page chrome.
+     *
+     * @param request
+     *            the HTTP request
+     * @param response
+     *            the HTTP response the zip is written to
+     * @return an empty string, the content being written to the response
+     * @throws AccessDeniedException
+     *             if the user does not have the right of the feature
+     */
+    public String getExportCities( HttpServletRequest request, HttpServletResponse response ) throws AccessDeniedException
     {
-        try
+        init( request, RIGHT_MANAGEGEOCODES );
+
+        final List<Integer> listIds = ( _listIdCities == null || _listIdCities.isEmpty( ) ) ? CityHome.getIdCitiesList( null, null, null, true ) : _listIdCities;
+        MVCUtils.addDownloadHeaderToResponse( response, EXPORT_FILE_NAME, EXPORT_CONTENT_TYPE );
+
+        try ( ZipOutputStream zipOut = new ZipOutputStream( response.getOutputStream( ) ) )
         {
-            final List<City> cities = this.getItemsFromIds(_listIdCities);
-            final Batch<City> batches = Batch.ofSize(cities, EXPORT_BATCH_PARTITION_SIZE);
-
-            final ByteArrayOutputStream outputStream = new ByteArrayOutputStream( );
-            final ZipOutputStream zipOut = new ZipOutputStream(outputStream );
-
             int i = 0;
-            for ( final List<City> batch : batches )
+            for ( final List<Integer> batch : Batch.ofSize( listIds, EXPORT_BATCH_PARTITION_SIZE ) )
             {
-                final byte [ ] bytes = CsvExportService.instance().writeCities(batch);
-                final ZipEntry zipEntry = new ZipEntry("cities-" + ++i + ".csv" );
-                zipEntry.setSize( bytes.length );
-                zipOut.putNextEntry( zipEntry );
-                zipOut.write( bytes );
+                zipOut.putNextEntry( new ZipEntry( "cities-" + ++i + ".csv" ) );
+                zipOut.write( CsvExportService.instance( ).writeCities( CityHome.getCitiesListByIds( batch ) ) );
+                zipOut.closeEntry( );
             }
-            zipOut.closeEntry( );
-            zipOut.close( );
-            this.download( outputStream.toByteArray( ), "cities.zip", "application/zip" );
         }
-        catch( final Exception e )
+        catch( final IOException e )
         {
-            addError( e.getMessage( ) );
-            redirectView( request, VIEW_MANAGE_CITIES);
+            throw new AppException( e.getMessage( ), e );
         }
+
+        return StringUtils.EMPTY;
     }
 
 

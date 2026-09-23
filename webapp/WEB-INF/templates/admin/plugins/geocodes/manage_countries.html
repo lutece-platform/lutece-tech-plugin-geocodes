@@ -2,73 +2,42 @@
 <@pageContainer>
 	<@pageColumn>
 		<@pageHeader title='#i18n{geocodes.manage_countries.title}'>
-			<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view_createCountry" targetElement="#create-country-form" redirectForm=false id="create-country" title="#i18n{geocodes.create_country.title}" btnTitle="#i18n{geocodes.manage_countries.buttonAdd}" btnIcon="plus" position="end" />
-			<@headerButtons>
-				<form class="form-inline pull-right" method="post" name="manage_countries" action="jsp/admin/plugins/geocodes/ManageCountries.jsp">
-					<@button type='submit' name='action_exportCountries' buttonIcon='plus' title='#i18n{geocodes.manage_countries.buttonExport}' />
-				</form>
-			</@headerButtons>
+			<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?view=createCountry' title='#i18n{geocodes.manage_countries.buttonAdd}' buttonIcon='plus' color='primary' />
+			<@tform method='get' name='export_countries' action='jsp/admin/plugins/geocodes/ExportCountries.jsp'>
+				<@button type='submit' buttonIcon='download' title='#i18n{geocodes.manage_countries.buttonExport}' />
+			</@tform>
 		</@pageHeader>
 		<@messages infos=infos />
 		<@tabs> 
 			<@tabsList2 tab="country" />
-			<#assign page >ManageCountries</#assign>
-			<#include "search_geocodes.html"/>
 			<@tabContent>
-				<@paginationAdmin paginator=paginator combo=1 />
-				<@table id='country-table'>
-					<@tr>
-						<@th params='onclick="sortTable(0, \'country-table\')"'>#i18n{geocodes.manage_countries.columnCode}</@th>
-						<@th params='onclick="sortTable(1, \'country-table\')"'>#i18n{geocodes.manage_countries.columnValue}</@th>
-						<@th params='onclick="sortTable(2, \'country-table\')"'>#i18n{geocodes.manage_countries.columnValueMinComplete}</@th>
-						<@th params='onclick="sortTable(3, \'country-table\')"'>#i18n{geocodes.manage_countries.columnAttached}</@th>
-						<@th params='onclick="sortTable(4, \'country-table\')"'>#i18n{geocodes.manage_countries.columnDateValidityStart}</@th>
-						<@th params='onclick="sortTable(5, \'country-table\')"'>#i18n{geocodes.manage_countries.columnDateValidityEnd}</@th>
-						<@th params='onclick="sortTable(6, \'country-table\')"'>#i18n{geocodes.manage_countries.columnDeprecated}</@th>
-						<@th>#i18n{portal.util.labelActions}</@th>
-					</@tr>
-					<@tableHeadBodySeparator />
+				<#assign page >ManageCountries</#assign>
+				<#include "search_geocodes.html"/>
+				<#if country_list?has_content>
+				<@paginationAdmin paginator=paginator combo=1 class='gap-3 mt-3' />
+				<@manageFeature>
 					<#list country_list as country >
-						<@tr>
-							<@td>
-								${country.code}
-							</@td>
-							<@td>
-								${country.value}
-							</@td>
-							<@td>
-								${country.valueMinComplete}
-							</@td>
-							<@td>
-								<#switch country.attached>
-									<#case false>
-										#i18n{geocodes.manage_countries.boolean.false}<#break>
-									<#case true>
-										#i18n{geocodes.manage_countries.boolean.true}<#break>
-									<#default>
-										${country.attached}<#break>
-								</#switch>
-							</@td>
-							<@td>
-								${country.dateValidityStart}
-							</@td>
-							<@td>
-								${country.dateValidityEnd}
-							</@td>
-							<@td>
-								<#switch country.deprecated>
-									<#case false>
-										#i18n{geocodes.manage_countries.boolean.false}<#break>
-									<#case true>
-										#i18n{geocodes.manage_countries.boolean.true}<#break>
-									<#default>
-										${country.deprecated}<#break>
-								</#switch>
-							</@td>
-							<@td>
-								<@offcanvas targetUrl="jsp/admin/plugins/geocodes/ManageCountries.jsp?view=modifyCountry&id=${country.id}" targetElement="#modify-country-form" redirectForm=false id="modify-country-${country.id}" title="#i18n{geocodes.modify_country.title}" btnIcon="edit" position="end" />
+						<@manageFeatureItem>
+							<@manageFeatureItemColumn dir='column'>
+								<@p class='mb-0'><strong>${country.value}</strong></@p>
+								<@p class='mb-0'>#i18n{geocodes.manage_countries.columnCode} : ${country.code}<#if country.valueMinComplete?has_content> - #i18n{geocodes.manage_countries.columnValueMinComplete} : ${country.valueMinComplete}</#if></@p>
+							</@manageFeatureItemColumn>
+							<@manageFeatureItemColumn dir='column'>
+								<@p class='mb-0'>#i18n{geocodes.manage_countries.columnDateValidityStart} : ${country.dateValidityStart}</@p>
+								<@p class='mb-0'>#i18n{geocodes.manage_countries.columnDateValidityEnd} : ${country.dateValidityEnd}</@p>
+							</@manageFeatureItemColumn>
+							<@manageFeatureItemColumn dir='column'>
+								<@p class='mb-0'>#i18n{geocodes.manage_countries.columnAttached} : <#if country.attached>#i18n{geocodes.manage_countries.boolean.true}<#else>#i18n{geocodes.manage_countries.boolean.false}</#if></@p>
+								<@p class='mb-0'>#i18n{geocodes.manage_countries.columnDeprecated} : <#if country.deprecated>#i18n{geocodes.manage_countries.boolean.true}<#else>#i18n{geocodes.manage_countries.boolean.false}</#if></@p>
+							</@manageFeatureItemColumn>
+							<@manageFeatureItemColumn align='end'>
+								<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?view=modifyCountry&amp;id=${country.id}' title='#i18n{geocodes.modify_country.title}' buttonIcon='edit' hideTitle=['all'] />
 
-								<@offcanvas id="changes-${country.id}" title="<i class='ti ti-history fs-2'></i> ${country.value}" btnTitle="" size="auto" bodyClass="p-0" btnIcon="history" btnTitleShow=false badgeContent="${country.pendingChanges}">
+								<@button type='button' buttonIcon='history' title='#i18n{geocodes.manage_cities.columnStatus}' hideTitle=['all'] params='data-bs-toggle="modal" data-bs-target="#changes-${country.id}"' />
+								<#if (country.pendingChanges > 0)><span class="badge bg-warning">${country.pendingChanges}</span></#if>
+								<@modal id="changes-${country.id}" size="xl">
+								<@modalHeader modalTitle="${country.value}" />
+								<@modalBody params='class="p-0"'>
 									<@table headBody=true>
 										<@tr>
 											<@td>
@@ -213,22 +182,27 @@
 												</@td>
 												<@td>
 													<#if countryChanges.status == "PENDING" >
-														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=applyCountryChanges&idChanges=${countryChanges.idChanges}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
-														<@aButton href='jsp/admin/plugins/geocodes/ManageCities.jsp?action=denyChanges&idChanges=${countryChanges.idChanges}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='trash' hideTitle=['all'] />
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?view=confirmApplyCountryChanges&amp;idChanges=${countryChanges.idChanges}' title='#i18n{geocodes.manage_cities.apply}' buttonIcon='check' hideTitle=['all'] />
+														<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?view=confirmDenyChanges&amp;idChanges=${countryChanges.idChanges}' title='#i18n{geocodes.manage_cities.refuse}' buttonIcon='x' hideTitle=['all'] />
 													</#if>
 												</@td>
 											</@tr>
 										</#list>
 									</@table>
-								</@offcanvas>
-								<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?action=confirmRemoveCountry&id=${country.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='btn-danger'  />
-							</@td>
-						</@tr>
+								</@modalBody>
+								</@modal>
+								<@aButton href='jsp/admin/plugins/geocodes/ManageCountries.jsp?view=confirmRemoveCountry&amp;id=${country.id}' title='#i18n{portal.util.labelDelete}' buttonIcon='trash' hideTitle=['all'] color='danger' />
+							</@manageFeatureItemColumn>
+						</@manageFeatureItem>
 					</#list>
-				</@table>
+				</@manageFeature>
+				<@paginationAdmin paginator=paginator form=0 showcount=0 class='mt-3' />
+				<#else>
+				<@card>
+					<@empty title='#i18n{geocodes.search.noResult}' subtitle='#i18n{geocodes.search.noResult.help}' />
+				</@card>
+				</#if>
 			</@tabContent>
 		</@tabs>
-		<@paginationAdmin paginator=paginator />
 	</@pageColumn>
 </@pageContainer>
-<script src="./js/admin/plugins/geocodes/table.js"></script>

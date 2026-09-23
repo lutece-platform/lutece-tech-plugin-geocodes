@@ -143,37 +143,68 @@ public class CityDAO implements ICityDAO
 	@Override
 	public List<String> searchCitiesChanges(Plugin plugin, String cityLabel, String cityCode, String placeCode, boolean approximateSearch, String status)
 	{
-		final String sql;
-		if (approximateSearch) {
-			sql = SQL_QUERY_SELECTALL_CITIES_WITH_CODE.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value LIKE '%" + cityLabel.replace( " ", "%") + "%'" : "1=1" ) )
-					.replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min LIKE '%" + cityLabel.replace( " ", "%") + "%'" : "1=1" ) )
-					.replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min_complete LIKE '%" + cityLabel.replace( " ", "%") + "%'" : "1=1" ) )
-					.replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "changes.code = '" + cityCode + "'" : "1=1" ) )
-					.replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "changes.code_zone = '" + placeCode + "'" : "1=1" ) )
-					.replace( "${status}", (StringUtils.isNotBlank( status ) ? "changes.status ='" +status + "'" : "1=1" ) );
-		} else {
-			sql = SQL_QUERY_SELECTALL_CITIES_WITH_CODE.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value = '" + cityLabel + "'" : "1=1" ) )
-					.replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min = '" + cityLabel + "'" : "1=1" ) )
-					.replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "changes.value_min_complete = '" + cityLabel + "'" : "1=1" ) )
-					.replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "changes.code = '" + cityCode + "'" : "1=1" ) )
-					.replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "changes.code_zone = '" + placeCode + "'" : "1=1" ) )
-					.replace( "${status}", (StringUtils.isNotBlank( status ) ? "changes.status ='" +status + "'" : "1=1" ) );
-		}
+		final List<String> params = new ArrayList<>( );
+		final String labelOp = approximateSearch ? " LIKE ?" : " = ?";
+		final String labelValue = approximateSearch && StringUtils.isNotBlank( cityLabel ) ? "%" + cityLabel.replace( " ", "%" ) + "%" : cityLabel;
+
+		String sql = SQL_QUERY_SELECTALL_CITIES_WITH_CODE
+				.replace( "${status}", condition( "changes.status = ?", status, params ) )
+				.replace( "${cityLabel}", condition( "changes.value" + labelOp, labelValue, cityLabel, params ) )
+				.replace( "${cityLabelMin}", condition( "changes.value_min" + labelOp, labelValue, cityLabel, params ) )
+				.replace( "${cityLabelMinComplete}", condition( "changes.value_min_complete" + labelOp, labelValue, cityLabel, params ) )
+				.replace( "${cityCode}", condition( "changes.code = ?", cityCode, params ) )
+				.replace( "${placeCode}", condition( "changes.code_zone = ?", placeCode, params ) );
 
 		List<String> codeList = new ArrayList<>(  );
 		try( DAOUtil daoUtil = new DAOUtil(sql, plugin ) )
 		{
+			int nIndex = 1;
+			for ( String param : params )
+			{
+				daoUtil.setString( nIndex++, param );
+			}
 
 			daoUtil.executeQuery(  );
 
 			while ( daoUtil.next(  ) )
 			{
-				int nIndex = 1;
-				codeList.add(daoUtil.getString( nIndex ));
+				codeList.add(daoUtil.getString( 1 ));
 			}
 
 			return codeList;
 		}
+	}
+
+	/**
+	 * Builds a bound SQL condition or a neutral one, guarded by the tested value itself.
+	 *
+	 * @param boundCondition the condition holding a single ? placeholder
+	 * @param value the value tested for presence and bound to the placeholder
+	 * @param params the ordered list of bound values, appended when the condition is kept
+	 * @return the condition when the value is present, "1=1" otherwise
+	 */
+	private static String condition( String boundCondition, String value, List<String> params )
+	{
+		return condition( boundCondition, value, value, params );
+	}
+
+	/**
+	 * Builds a bound SQL condition or a neutral one, guarded by a separate presence flag.
+	 *
+	 * @param boundCondition the condition holding a single ? placeholder
+	 * @param boundValue the value bound to the placeholder when the condition is kept
+	 * @param presence the value whose presence decides whether the condition is kept
+	 * @param params the ordered list of bound values, appended when the condition is kept
+	 * @return the condition when presence is not blank, "1=1" otherwise
+	 */
+	private static String condition( String boundCondition, String boundValue, String presence, List<String> params )
+	{
+		if ( StringUtils.isBlank( presence ) )
+		{
+			return "1=1";
+		}
+		params.add( boundValue );
+		return boundCondition;
 	}
 
 	/**
@@ -699,24 +730,26 @@ public class CityDAO implements ICityDAO
     public List<Integer> selectIdCitiesList( final Plugin plugin, final String cityLabel, final String cityCode, final String placeCode, final boolean approximateSearch )
     {
 
-        final String sql;
-        if (approximateSearch) {
-            sql = SQL_QUERY_SEARCH_ID.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value LIKE '%" + cityLabel + "%'" : "1=1" ) )
-                .replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min LIKE '%" + cityLabel + "%'" : "1=1" ) )
-                .replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min_complete LIKE '%" + cityLabel + "%'" : "1=1" ) )
-                .replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "city.code = '" + cityCode + "'" : "1=1" ) )
-                .replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "city.code_zone = '" + placeCode + "'" : "1=1" ) );
-        } else {
-            sql = SQL_QUERY_SEARCH_ID.replace( "${cityLabel}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value = '" + cityLabel + "'" : "1=1" ) )
-                .replace( "${cityLabelMin}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min = '" + cityLabel + "'" : "1=1" ) )
-                .replace( "${cityLabelMinComplete}", ( StringUtils.isNotBlank( cityLabel ) ? "city.value_min_complete = '" + cityLabel + "'" : "1=1" ) )
-                .replace( "${cityCode}", ( StringUtils.isNotBlank( cityCode ) ? "city.code = '" + cityCode + "'" : "1=1" ) )
-                .replace( "${placeCode}", ( StringUtils.isNotBlank( placeCode ) ? "city.code_zone = '" + placeCode + "'" : "1=1" ) );
-        }
+        final List<String> params = new ArrayList<>( );
+        final String labelOp = approximateSearch ? " LIKE ?" : " = ?";
+        final String labelValue = approximateSearch && StringUtils.isNotBlank( cityLabel ) ? "%" + cityLabel + "%" : cityLabel;
+
+        String sql = SQL_QUERY_SEARCH_ID
+                .replace( "${cityLabel}", condition( "city.value" + labelOp, labelValue, cityLabel, params ) )
+                .replace( "${cityLabelMin}", condition( "city.value_min" + labelOp, labelValue, cityLabel, params ) )
+                .replace( "${cityLabelMinComplete}", condition( "city.value_min_complete" + labelOp, labelValue, cityLabel, params ) )
+                .replace( "${cityCode}", condition( "city.code = ?", cityCode, params ) )
+                .replace( "${placeCode}", condition( "city.code_zone = ?", placeCode, params ) );
 
         List<Integer> cityList = new ArrayList<>( );
         try( DAOUtil daoUtil = new DAOUtil( sql, plugin ) )
         {
+	        int nIndex = 1;
+	        for ( String param : params )
+	        {
+	            daoUtil.setString( nIndex++, param );
+	        }
+
 	        daoUtil.executeQuery(  );
 
 	        while ( daoUtil.next(  ) )

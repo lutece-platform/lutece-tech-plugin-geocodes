@@ -9,7 +9,7 @@
     <description>geocodes.plugin.description</description>
     <provider>geocodes.plugin.provider</provider>
     <provider-url>https://lutece.paris.fr</provider-url>
-    <icon-url>images/admin/skin/plugins/geocodes/globe.pngs</icon-url>
+    <icon-url>images/admin/skin/plugins/geocodes/globe.png</icon-url>
     <copyright>(c) mdp 2023</copyright>
     <db-pool-required>1</db-pool-required>
     
@@ -26,7 +26,7 @@
             <feature-description>geocodes.adminFeature.ManageGeoCodes.description</feature-description>
             <feature-level>1</feature-level>
             <feature-url>jsp/admin/plugins/geocodes/ManageCities.jsp</feature-url>
-            <feature-icon-url>images/admin/skin/plugins/geocodes/globe.png</feature-icon-url>
+            <icon-url>ti ti-world</icon-url>
         </admin-feature>
     </admin-features>
 

@@ -7,7 +7,7 @@
 --
 DELETE FROM core_admin_right WHERE id_right = 'GEOCODES_MANAGEMENT';
 INSERT INTO core_admin_right (id_right,name,level_right,admin_url,description,is_updatable,plugin_name,id_feature_group,icon_url,documentation_url, id_order ) VALUES 
-('GEOCODES_MANAGEMENT','geocodes.adminFeature.ManageGeoCodes.name',1,'jsp/admin/plugins/geocodes/ManageCities.jsp','geocodes.adminFeature.ManageGeoCodes.description',0,'geocodes',NULL,NULL,NULL,4);
+('GEOCODES_MANAGEMENT','geocodes.adminFeature.ManageGeoCodes.name',1,'jsp/admin/plugins/geocodes/ManageCities.jsp','geocodes.adminFeature.ManageGeoCodes.description',0,'geocodes',NULL,'ti ti-world',NULL,4);
 
 
 --

@@ -71,9 +71,10 @@ public class CountryDAO implements ICountryDAO
     private static final String SQL_QUERY_SEARCH_ID = "SELECT country.id_country FROM geocodes_country as country WHERE ${countryLabel} AND ${countryCode}";
     private static final String SQL_QUERY_SELECTALL_BY_IDS = "SELECT id_country, code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated FROM geocodes_country WHERE id_country IN (  ";
 	private static final String SQL_QUERY_INSERT_HISTORY = "INSERT INTO geocodes_country_changes (id_country, code, value, value_min_complete, is_attached, date_validity_start, date_validity_end, deprecated, date_update, author, status ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? ) ";
-	private static final String SQL_QUERY_SELECT_HISTORY_BY_COUNTRY_ID = "SELECT * FROM geocodes_country_changes WHERE id_country = ?";
-	private static final String SQL_QUERY_SELECT_HISTORY_BY_HISTORY_ID = "SELECT * FROM geocodes_country_changes WHERE id_country_history = ?";
-	private static final String SQL_QUERY_UPDATE_HISTORY = "UPDATE geocodes_country_changes SET code = ?, value = ?,  value_min_complete = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ?, date_update = ?, author = ?, status = ? WHERE id_city_history = ?";
+	private static final String SQL_QUERY_HISTORY_COLUMNS = "id_country_history, id_country, code, value, is_attached, date_validity_start, date_validity_end, deprecated, date_update, author, status, value_min_complete";
+	private static final String SQL_QUERY_SELECT_HISTORY_BY_COUNTRY_ID = "SELECT " + SQL_QUERY_HISTORY_COLUMNS + " FROM geocodes_country_changes WHERE id_country = ?";
+	private static final String SQL_QUERY_SELECT_HISTORY_BY_HISTORY_ID = "SELECT " + SQL_QUERY_HISTORY_COLUMNS + " FROM geocodes_country_changes WHERE id_country_history = ?";
+	private static final String SQL_QUERY_UPDATE_HISTORY = "UPDATE geocodes_country_changes SET code = ?, value = ?,  value_min_complete = ?, is_attached = ?, date_validity_start = ?, date_validity_end = ?, deprecated = ?, date_update = ?, author = ?, status = ? WHERE id_country_history = ?";
 
     /**
      * {@inheritDoc }
@@ -461,29 +462,50 @@ public class CountryDAO implements ICountryDAO
     @Override
     public List<Integer> selectIdCountriesList( final Plugin plugin, final String countryLabel, final String countryCode, final boolean approximateSearch )
     {
-        final String sql;
-        if (approximateSearch) {
-            sql = SQL_QUERY_SEARCH_ID
-                    .replace("${countryLabel}", (StringUtils.isNotBlank(countryLabel) ? "country.value LIKE '%" + countryLabel + "%'" : "1=1"))
-                    .replace("${countryCode}", (StringUtils.isNotBlank(countryCode) ? "country.code = '" + countryCode + "'" : "1=1"));
-        } else {
-            sql = SQL_QUERY_SEARCH_ID
-                    .replace("${countryLabel}", (StringUtils.isNotBlank(countryLabel) ? "country.value = '" + countryLabel + "'" : "1=1"))
-                    .replace("${countryCode}", (StringUtils.isNotBlank(countryCode) ? "country.code = '" + countryCode + "'" : "1=1"));
-        }
+        final List<String> params = new ArrayList<>( );
+        final String labelValue = approximateSearch && StringUtils.isNotBlank( countryLabel ) ? "%" + countryLabel + "%" : countryLabel;
+
+        String sql = SQL_QUERY_SEARCH_ID
+                .replace( "${countryLabel}", condition( "country.value" + ( approximateSearch ? " LIKE ?" : " = ?" ), labelValue, countryLabel, params ) )
+                .replace( "${countryCode}", condition( "country.code = ?", countryCode, countryCode, params ) );
 
         List<Integer> countryList = new ArrayList<>( );
         try( DAOUtil daoUtil = new DAOUtil( sql, plugin ) )
         {
+	        int nIndex = 1;
+	        for ( String param : params )
+	        {
+	            daoUtil.setString( nIndex++, param );
+	        }
+
 	        daoUtil.executeQuery(  );
-	
+
 	        while ( daoUtil.next(  ) )
 	        {
 	            countryList.add( daoUtil.getInt( 1 ) );
 	        }
-	
+
 	        return countryList;
         }
+    }
+
+    /**
+     * Builds a bound SQL condition or a neutral one, guarded by a presence flag.
+     *
+     * @param boundCondition the condition holding a single ? placeholder
+     * @param boundValue the value bound to the placeholder when the condition is kept
+     * @param presence the value whose presence decides whether the condition is kept
+     * @param params the ordered list of bound values, appended when the condition is kept
+     * @return the condition when presence is not blank, "1=1" otherwise
+     */
+    private static String condition( String boundCondition, String boundValue, String presence, List<String> params )
+    {
+        if ( StringUtils.isBlank( presence ) )
+        {
+            return "1=1";
+        }
+        params.add( boundValue );
+        return boundCondition;
     }
     
     /**
