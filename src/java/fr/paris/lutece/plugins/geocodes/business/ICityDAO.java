@@ -169,7 +169,7 @@ public interface ICityDAO
 	List<City> getCitiesListByCode( Plugin _plugin, String code );
 
 	/**
-     * Load the data from the table
+     * Load the data from the table, non deprecated codes first, deprecated codes if none is found
      * @param strCode The identifier of the city
      * @param dateCode the date of avaibility
      * @param plugin the Plugin
